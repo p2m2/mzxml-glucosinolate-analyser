@@ -6,13 +6,13 @@ import java.io.File
 
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {
-    val v = ScanLoader.read(new File(getClass.getResource("/test.mzXML").getPath))
+    val v = ScanLoader.read(new File(getClass.getResource("/test64.mzXML").getPath))
 
     test("getIdentifiedMetaboliteMonoCharged") {
       val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesWithEqualDelta(v._1,v._2)
       ScanLoader.getIdentifiedMetaboliteMonoCharged(v2)
     }
-
+/*
     test("detectNeutralLoss") {
       val p = List(
         PeakIdentification(1107, 692, List(233.93598079258905, 234.073373358917, 235.92627811976865)),
@@ -28,7 +28,7 @@ object ScanLoaderTest extends TestSuite {
 
       p.foreach(x => println(ScanLoader.detectNeutralLoss(v._1, x, 80.0)))
     }
-
+*/
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining") {
       val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2)
       MetaboliteIdentification(v._1,v._2,v2).getInfos()
