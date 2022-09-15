@@ -43,7 +43,7 @@ case object ScanLoader {
       .getMapByRawNum
       .keySet() // The second parameter asks the parser to parse the spectrum along
       .asScala
-      .filter( _ == 3569)
+     // .filter( _ == 3569)
       .filter(scanNumRaw => source.parseScan(scanNumRaw, false).getMsLevel == 1)
       //.slice(0, 10)
       .flatMap(

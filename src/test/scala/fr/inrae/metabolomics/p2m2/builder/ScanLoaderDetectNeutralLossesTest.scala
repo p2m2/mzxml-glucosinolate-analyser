@@ -18,12 +18,12 @@ object ScanLoaderDetectNeutralLossesTest extends TestSuite {
       //1501 M
       //1509 M+1
       //1516 M+2
-      println(spectrum.getMZs()(1501),spectrum.getIntensities()(1501))
-      println(spectrum.getMZs()(1509),spectrum.getIntensities()(1509))
-      println(spectrum.getMZs()(1516),spectrum.getIntensities()(1516))
+      println(spectrum.getMZs()(1501),spectrum.getIntensities()(1501)) //477.0616149902344,105534.6953125
+      println(spectrum.getMZs()(1509),spectrum.getIntensities()(1509)) //478.0632019042969,19678.484375
+      println(spectrum.getMZs()(1516),spectrum.getIntensities()(1516)) //479.05609130859375,8352.0478515625
       println(scan.getBasePeakIntensity)
-      val r = (ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2))
-      println(r)
+     // val r = (ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2))
+     // println(r)
     }
 
   }

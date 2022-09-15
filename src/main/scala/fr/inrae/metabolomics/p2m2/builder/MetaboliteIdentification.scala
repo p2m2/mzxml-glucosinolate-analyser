@@ -44,6 +44,6 @@ case class MetaboliteIdentification(
   }
 
   def getInfos() : Seq[CsvMetabolitesIdentification] = {
-    peaks.map( getInfo ).sortBy(_.rt)
+    peaks.map( getInfo ).sortBy( x => (x.rt,x.mz.head) )
   }
 }
