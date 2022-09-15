@@ -6,14 +6,11 @@ import java.io.File
 
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {
-    val v = ScanLoader.read(new File(getClass.getResource("/test64.mzXML").getPath))
+    val v = ScanLoader.read(new File(getClass.getResource("/test.mzXML").getPath))
 
-    test("getIdentifiedMetaboliteMonoCharged") {
-      val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesWithEqualDelta(v._1,v._2)
-      ScanLoader.getIdentifiedMetaboliteMonoCharged(v2)
-    }
-/*
+
     test("detectNeutralLoss") {
+      /*
       val p = List(
         PeakIdentification(1107, 692, List(233.93598079258905, 234.073373358917, 235.92627811976865)),
         PeakIdentification(2583, 135, List(140.10892640034714, 141.70386329740901, 142.09905700269698)),
@@ -26,9 +23,9 @@ object ScanLoaderTest extends TestSuite {
         PeakIdentification(3525, 443, List(211.92736190753823, 212.91058199483302, 213.91706839249088)),
         PeakIdentification(2505, 338, List(193.44624662680576, 195.0480828142617, 195.43531090871707)))
 
-      p.foreach(x => println(ScanLoader.detectNeutralLoss(v._1, x, 80.0)))
+      p.foreach(x => println(ScanLoader.detectNeutralLoss(v._1, v._2,x, 80.0)))*/
     }
-*/
+
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining") {
       val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2)
       MetaboliteIdentification(v._1,v._2,v2).getInfos()

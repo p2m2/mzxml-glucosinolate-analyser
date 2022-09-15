@@ -1,3 +1,4 @@
+import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 
 import java.io.{BufferedWriter, File, FileWriter}
@@ -54,23 +55,12 @@ object Main extends App {
     }
 
     values.slice(0,3) foreach {
-      case l => println("=========1,3");println(l.mkString(";"))
+      case l => println("=========1,3");println(l)
     }
 
     new File("test.csv").delete()
+    CsvMetabolitesIdentificationFile.build(values,new File("test.csv"))
 
-    val bw = new BufferedWriter(new FileWriter(new File("test.csv")))
-    bw.write("ms0;intensity0;abundance0;ms1;intensity1;abundance1;ms2;intensity2;abundance2;gluconolactone_178;sulfureTrioxide_80;anhydroglucose_162;thioglucose_s03_242;thioglucose_196;last_223\n")
-
-    values foreach {
-      (list : Seq[Any]) => bw.write(list.map {
-        case Some(o)  => o
-        case None => ""
-        case v => v.toString
-      } . mkString(";") + "\n")
-    }
-
-    bw.close()
     println("========= check test.csv ===============")
   }
 }
