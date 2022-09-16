@@ -116,7 +116,7 @@ case object ScanLoader {
       })
       .filter(_.getMsLevel == 2)
       .filter(scanMs2 => {
-        (scanMs2.getRt - scan.getRt).abs < 0.3
+        (scanMs2.getRt - scan.getRt).abs < 0.01
       })
 
     distances.map (

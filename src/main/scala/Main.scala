@@ -14,6 +14,7 @@ object Main extends App {
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
                      toleranceMz : Double = 0.01,
+                     outfile : Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
                    )
@@ -22,21 +23,21 @@ object Main extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("msd-metdisease-database-pmid-cid-builder"),
-      head("msd-metdisease-database-pmid-cid-builder", "1.0"),
+      programName("mzxml-analyser-test"),
+      head("mzxml-analyser-test", "1.0"),
       opt[Double]('i',"thresholdIntensityFilter")
         .optional()
         .action((x, c) => c.copy(thresholdIntensityFilter = x))
-        .text(s"Keep ions above ${Config().overrepresentedPeakFilter} intensity"),
-      opt[Int]('o',"overrepresentedPeakFilter")
+        .text(s"Keep ions above ${Config().thresholdIntensityFilter} intensity"),
+      opt[Int]('p',"overrepresentedPeakFilter")
         .optional()
         .action((x, c) => c.copy(overrepresentedPeakFilter = x))
         .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
-      opt[Double]('s', "start RT")
+      opt[Double]('s', "startRT")
         .optional()
         .action((x, c) => c.copy(startRT = Some(x)))
         .text(s"start RT"),
-      opt[Double]('e', "end RT")
+      opt[Double]('e', "endRT")
         .optional()
         .action((x, c) => c.copy(endRT = Some(x)))
         .text(s"start RT"),
@@ -44,6 +45,10 @@ object Main extends App {
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
         .text(s"tolerance accepted. ${Config().toleranceMz}"),
+      opt[File]('o',"outputFile")
+        .optional()
+        .action((x, c) => c.copy(outfile = Some(x)))
+        .text(s"output path file."),
       opt[Unit]("verbose")
         .optional()
         .action((_, c) => c.copy(verbose = true))
@@ -94,9 +99,10 @@ object Main extends App {
       case l => println("=========1,3");println(l)
     }
 
-    new File("test.csv").delete()
-    CsvMetabolitesIdentificationFile.build(values,new File("test.csv"))
+    val f = config.outfile.getOrElse(new File("output.csv"))
+    f.delete()
+    CsvMetabolitesIdentificationFile.build(values,f)
 
-    println("========= check test.csv ===============")
+    println(s"========= check ${f.getPath} ===============")
   }
 }
