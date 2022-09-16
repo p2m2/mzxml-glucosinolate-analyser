@@ -70,6 +70,8 @@ object Main extends App {
             getScanIdxAndSpectrum3IsotopesSulfurContaining(
               source,
               index,
+              None,
+              None,
               config.thresholdIntensityFilter,
               config.toleranceMz)
 

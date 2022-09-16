@@ -46,6 +46,7 @@ case class MetaboliteIdentification(
     MetaboliteIdentification(source,index,newL)
   }
 
+
   def filterOverRepresentedPeak(threshold: Int): MetaboliteIdentification = {
 
     println(s"=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
@@ -56,25 +57,23 @@ case class MetaboliteIdentification(
         s.fetchSpectrum().getMZs()(p.indexIsotopeInSpectrum.head)
       })
 
-      println("2===")
-
       val countAllPeak : Seq[Int]= index
           .getMapByRawNum
           .keySet() // The second parameter asks the parser to parse the spectrum along
           .asScala
           // .filter( _ == 3569)
-          .filter(scanNumRaw => Try(source.parseScan(scanNumRaw, false).getMsLevel == 1) match {
-            case Success(a) => a
-            case _ => false
-          })
+          .flatMap(scanRaw => Try(source.parseScan(scanRaw, true)) match {
+            case Success(a) => Some(a)
+            case _ => None
+          }).
+          filter( _.getMsLevel == 1 )
           //.slice(0, 10)
           .map(
-            scanNumRaw => {
+            scan => {
               // Do something with the scan.
               // Note that some features, like scan.getChildScans() will not work in
               // this case, as there is not enough information to build those
               // relationships.
-              val scan: IScan = source.parseScan(scanNumRaw, true)
               val spectrum = scan.fetchSpectrum()
               mzs.indices
                 .map( id => {
@@ -114,7 +113,7 @@ case class MetaboliteIdentification(
 
 
     val spectrum = scan.fetchSpectrum()
-    val mz = p.indexIsotopeInSpectrum.map(idx => spectrum.getMZs()(idx))
+    val mz = p.indexIsotopeInSpectrum.map(idx => (spectrum.getMZs()(idx)*1000 ).round / 1000.toDouble )
     val intensities = p.indexIsotopeInSpectrum.map(idx => spectrum.getIntensities()(idx))
     val abundance = intensities.map( i => (i / scan.getBasePeakIntensity) )
     CsvMetabolitesIdentification(

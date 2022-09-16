@@ -2,6 +2,7 @@ package fr.inrae.metabolomics.p2m2.builder
 
 import umich.ms.fileio.filetypes.mzxml.{MZXMLIndex, _}
 import umich.ms.datatypes.scan.IScan
+import umich.ms.fileio.filetypes.mzxml.jaxb.Scan
 
 import java.io.File
 import scala.jdk.CollectionConverters._
@@ -33,6 +34,8 @@ case object ScanLoader {
   def getScanIdxAndSpectrum3IsotopesSulfurContaining(
                                       source: MZXMLFile,
                                       index: MZXMLIndex,
+                                      start : Option[Double] = None,
+                                      end : Option[Double] = None,
                                       intensityFilter : Double = 10000.0,
                                       precision: Double = 0.01
                                     ): Seq[PeakIdentification] = {
@@ -49,16 +52,20 @@ case object ScanLoader {
         case Success(a) => a
         case _ => false
       }).toList.sorted
-      //.slice(0, 10)
+      .map( source.parseScan(_, true) )
+      .filter( scan => start match {
+        case Some(v) => v < scan.getRt
+        case None => true
+      })
+      .filter(scan => end match {
+        case Some(v) => v > scan.getRt
+        case None => true
+      })
 
     allScans.zipWithIndex.flatMap {
-        case (scanNumRaw,i) => {
+        case (scan,i) => {
           println(s"$i/${allScans.size}")
-          // Do something with the scan.
-          // Note that some features, like scan.getChildScans() will not work in
-          // this case, as there is not enough information to build those
-          // relationships.
-          val scan: IScan = source.parseScan(scanNumRaw, true)
+
           val spectrum = scan.fetchSpectrum()
           val mzValues = spectrum.getMZs
 
@@ -80,7 +87,7 @@ case object ScanLoader {
               ((mz - mz_p2).abs - 1.99).abs < precision
             }}
             .map { case (_, idx1,_,idx2) =>
-              PeakIdentification(scanNumRaw.toInt, Seq(idx1,idx2))
+              PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }
         }}.toSeq
   }
@@ -103,18 +110,17 @@ case object ScanLoader {
 
     val l = index.getMapByRawNum.keySet() // The second parameter asks the parser to parse the spectrum along
       .asScala
-      .filter(scanNumRaw => Try(source.parseScan(scanNumRaw, false).getMsLevel == 2) match {
-        case Success(a) => a
-        case _ => false
+      .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, true)) match {
+        case Success(a) => Some(a)
+        case _ => None
       })
-      .filter(scanNumRaw => {
-        val scanMs2 = source.parseScan(scanNumRaw, false)
+      .filter(_.getMsLevel == 2)
+      .filter(scanMs2 => {
         (scanMs2.getRt - scan.getRt).abs < 0.3
       })
 
       l.flatMap {
-      case scanMs2 =>
-        val scan2 = source.parseScan(scanMs2, true)
+      case scan2 =>
         scan2.getSpectrum match {
           case spectrum if (spectrum != null)  => val v = (spectrum.findClosestMzIdx(mzSearch))
             if ((mzSearch - spectrum.getMZs()(v)).abs < precision)
