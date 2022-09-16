@@ -6,7 +6,7 @@ import java.io.File
 
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {
-    val v = ScanLoader.read(new File(getClass.getResource("/test.mzXML").getPath))
+
 
 
     test("detectNeutralLoss") {
@@ -27,8 +27,9 @@ object ScanLoaderTest extends TestSuite {
     }
 
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining") {
+      val v = ScanLoader.read(new File(getClass.getResource("/test.mzXML").getPath))
       val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2)
-      MetaboliteIdentification(v._1,v._2,v2).getInfos()
+      MetaboliteIdentification(v._1,v._2,v2.slice(0,10)).filterOverRepresentedPeak(200).getInfos()
       println(v2.slice(0,10))
     }
 

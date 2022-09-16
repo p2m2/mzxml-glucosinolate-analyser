@@ -26,5 +26,10 @@ object ScanLoaderDetectNeutralLossesTest extends TestSuite {
      // println(r)
     }
 
+    test("============ 2=================") {
+      val IsotopesSulfur = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2)
+
+    }
+
   }
 }

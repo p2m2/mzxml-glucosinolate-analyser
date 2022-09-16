@@ -8,7 +8,10 @@ object Main extends App {
   import scopt.OParser
 
   case class Config(
-                   mzfiles : Seq[File] = Seq(),
+                     mzfiles : Seq[File] = Seq(),
+                     thresholdIntensityFilter : Double = 10000.0,
+                     overrepresentedPeakFilter : Int = 100,
+                     toleranceMz : Double = 0.01,
                      verbose: Boolean = false,
                      debug: Boolean = false
                    )
@@ -19,6 +22,18 @@ object Main extends App {
     OParser.sequence(
       programName("msd-metdisease-database-pmid-cid-builder"),
       head("msd-metdisease-database-pmid-cid-builder", "1.0"),
+      opt[Double]('i',"thresholdIntensityFilter")
+        .optional()
+        .action((x, c) => c.copy(thresholdIntensityFilter = x))
+        .text(s"Keep ions above ${Config().overrepresentedPeakFilter} intensity"),
+      opt[Int]('o',"overrepresentedPeakFilter")
+        .optional()
+        .action((x, c) => c.copy(overrepresentedPeakFilter = x))
+        .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
+      opt[Double]('t',"toleranceMz")
+        .optional()
+        .action((x, c) => c.copy(toleranceMz = x))
+        .text(s"tolerance accepted. ${Config().toleranceMz}"),
       opt[Unit]("verbose")
         .optional()
         .action((_, c) => c.copy(verbose = true))
@@ -50,8 +65,17 @@ object Main extends App {
     val values = config.mzfiles.flatMap {
       mzFile =>
         val (source,index) = ScanLoader.read(mzFile)
-        val listSulfurMetabolites: Seq[PeakIdentification] = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(source, index)
-        MetaboliteIdentification(source,index,listSulfurMetabolites).getInfos()
+        val listSulfurMetabolites: Seq[PeakIdentification] =
+          ScanLoader.
+            getScanIdxAndSpectrum3IsotopesSulfurContaining(
+              source,
+              index,
+              config.thresholdIntensityFilter,
+              config.toleranceMz)
+
+        MetaboliteIdentification(source,index,listSulfurMetabolites)
+          .filterOverRepresentedPeak(config.overrepresentedPeakFilter)
+          .getInfos()
     }
 
     values.slice(0,3) foreach {
