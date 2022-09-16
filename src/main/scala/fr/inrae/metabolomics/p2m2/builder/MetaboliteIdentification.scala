@@ -104,13 +104,7 @@ case class MetaboliteIdentification(
   def getInfo( p :PeakIdentification) : CsvMetabolitesIdentification = {
     val scan : IScan = source.parseScan(p.numScan, true)
 
-    val gluconolactone_178 = ScanLoader.detectNeutralLoss(source,index,p,178)
-    val sulfureTrioxide_80 = ScanLoader.detectNeutralLoss(source,index,p,80)
-    val anhydroglucose_162 = ScanLoader.detectNeutralLoss(source,index,p,162)
-    val thioglucose_s03_242 = ScanLoader.detectNeutralLoss(source,index,p,242)
-    val thioglucose_196 = ScanLoader.detectNeutralLoss(source,index,p,196)
-    val last_223 = ScanLoader.detectNeutralLoss(source,index,p,223)
-
+    val listV = ScanLoader.detectNeutralLoss(source,index,p,Seq(178,80,162,242,196,223))
 
     val spectrum = scan.fetchSpectrum()
     val mz = p.indexIsotopeInSpectrum.map(idx => (spectrum.getMZs()(idx)*1000 ).round / 1000.toDouble )
@@ -122,12 +116,12 @@ case class MetaboliteIdentification(
       abundance,
       scan.getRt,
       neutralLosses = Map(
-        NLs.gluconolactone -> gluconolactone_178,
-        NLs.sulfureTrioxide -> sulfureTrioxide_80,
-        NLs.anhydroglucose -> anhydroglucose_162,
-        NLs.thioglucose_s03 -> thioglucose_s03_242,
-        NLs.thioglucose -> thioglucose_196,
-        NLs.glucosinolate_223 -> last_223
+        NLs.gluconolactone -> listV(0),
+        NLs.sulfureTrioxide -> listV(1),
+        NLs.anhydroglucose -> listV(2),
+        NLs.thioglucose_s03 -> listV(3),
+        NLs.thioglucose -> listV(4),
+        NLs.glucosinolate_223 -> listV(5)
       ),
       daughterIons = Map()
     )

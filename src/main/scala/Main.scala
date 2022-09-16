@@ -11,6 +11,8 @@ object Main extends App {
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Double = 10000.0,
                      overrepresentedPeakFilter : Int = 100,
+                     startRT : Option[Double] = None,
+                     endRT : Option[Double] = None,
                      toleranceMz : Double = 0.01,
                      verbose: Boolean = false,
                      debug: Boolean = false
@@ -30,6 +32,14 @@ object Main extends App {
         .optional()
         .action((x, c) => c.copy(overrepresentedPeakFilter = x))
         .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
+      opt[Double]('s', "start RT")
+        .optional()
+        .action((x, c) => c.copy(startRT = Some(x)))
+        .text(s"start RT"),
+      opt[Double]('e', "end RT")
+        .optional()
+        .action((x, c) => c.copy(endRT = Some(x)))
+        .text(s"start RT"),
       opt[Double]('t',"toleranceMz")
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
@@ -70,8 +80,8 @@ object Main extends App {
             getScanIdxAndSpectrum3IsotopesSulfurContaining(
               source,
               index,
-              None,
-              None,
+              config.startRT,
+              config.endRT,
               config.thresholdIntensityFilter,
               config.toleranceMz)
 

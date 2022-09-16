@@ -101,12 +101,12 @@ case object ScanLoader {
                          source: MZXMLFile,
                          index : MZXMLIndex,
                          p : PeakIdentification,
-                         distance : Double,
+                         distances : Seq[Double],
                          precision: Double = 0.1
-                       ) : Option[Double] = {
+                       ) : Seq[Option[Double]] = {
     val scan : IScan = source.parseScan(p.numScan, true)
     val mz = scan.getSpectrum.getMZs()(p.indexIsotopeInSpectrum.head)
-    val mzSearch = mz-distance
+
 
     val l = index.getMapByRawNum.keySet() // The second parameter asks the parser to parse the spectrum along
       .asScala
@@ -119,16 +119,20 @@ case object ScanLoader {
         (scanMs2.getRt - scan.getRt).abs < 0.3
       })
 
-      l.flatMap {
-      case scan2 =>
-        scan2.getSpectrum match {
-          case spectrum if (spectrum != null)  => val v = (spectrum.findClosestMzIdx(mzSearch))
-            if ((mzSearch - spectrum.getMZs()(v)).abs < precision)
-              Some(spectrum.getIntensities()(v))
-            else None
-          case _ => None
-        }
-    }.toSeq.sorted.lastOption //prendre la plus grande valeur
-    //    println(  p.mz(0)-distance, spectrum.getMZs()(v1),spectrum.getMZs()(v2),spectrum.getMZs()(v3))
+    distances.map (
+      distance => {
+        val mzSearch = mz - distance
+        l.flatMap {
+          scan2 =>
+            scan2.getSpectrum match {
+              case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
+                if ((mzSearch - spectrum.getMZs()(v)).abs < precision)
+                  Some(spectrum.getIntensities()(v))
+                else None
+              case _ => None
+            }
+        }.toSeq.sorted.lastOption // take the biggest value
+      }
+    )
   }
 }
