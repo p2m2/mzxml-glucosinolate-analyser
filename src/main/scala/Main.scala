@@ -1,7 +1,7 @@
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io.File
 
 object Main extends App {
 
@@ -9,7 +9,7 @@ object Main extends App {
 
   case class Config(
                      mzfiles : Seq[File] = Seq(),
-                     thresholdIntensityFilter : Double = 10000.0,
+                     thresholdIntensityFilter : Option[Int] = None,
                      overrepresentedPeakFilter : Int = 100,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
@@ -25,10 +25,10 @@ object Main extends App {
     OParser.sequence(
       programName("mzxml-analyser-test"),
       head("mzxml-analyser-test", "1.0"),
-      opt[Double]('i',"thresholdIntensityFilter")
+      opt[Int]('i',"thresholdIntensityFilter")
         .optional()
-        .action((x, c) => c.copy(thresholdIntensityFilter = x))
-        .text(s"Keep ions above ${Config().thresholdIntensityFilter} intensity"),
+        .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
+        .text(s"Keep ions above a x intensity (calculation on start-up time)"),
       opt[Int]('p',"overrepresentedPeakFilter")
         .optional()
         .action((x, c) => c.copy(overrepresentedPeakFilter = x))
@@ -80,6 +80,12 @@ object Main extends App {
     val values = config.mzfiles.flatMap {
       mzFile =>
         val (source,index) = ScanLoader.read(mzFile)
+        println(" == Phase 1 == ")
+        val intensityFilter = config.thresholdIntensityFilter match {
+          case Some(v) => v
+          case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+        }
+
         val listSulfurMetabolites: Seq[PeakIdentification] =
           ScanLoader.
             getScanIdxAndSpectrum3IsotopesSulfurContaining(
@@ -87,16 +93,20 @@ object Main extends App {
               index,
               config.startRT,
               config.endRT,
-              config.thresholdIntensityFilter,
+              intensityFilter,
               config.toleranceMz)
+        println(" == Phase 2 == ")
+        val m : MetaboliteIdentification =
+          ScanLoader.filterOverRepresentedPeak(
+            source,
+            index,
+            config.startRT,
+            config.endRT,
+            listSulfurMetabolites,
+            intensityFilter,
+            config.overrepresentedPeakFilter)
 
-        MetaboliteIdentification(source,index,listSulfurMetabolites)
-          .filterOverRepresentedPeak(config.overrepresentedPeakFilter)
-          .getInfos()
-    }
-
-    values.slice(0,3) foreach {
-      case l => println("=========1,3");println(l)
+          m.getInfos
     }
 
     val f = config.outfile.getOrElse(new File("output.csv"))

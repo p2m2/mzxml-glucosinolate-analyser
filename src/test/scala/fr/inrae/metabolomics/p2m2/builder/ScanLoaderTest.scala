@@ -36,7 +36,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          intensityFilter = 1000000,
+          intensityFilter = 0.1,
           precision = 0.01
         )
 
