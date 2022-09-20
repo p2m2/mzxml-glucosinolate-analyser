@@ -2,6 +2,7 @@ package fr.inrae.metabolomics.p2m2.builder
 
 import umich.ms.fileio.filetypes.mzxml.{MZXMLIndex, _}
 import umich.ms.datatypes.scan.IScan
+import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml.jaxb.Scan
 
 import java.io.File
@@ -10,12 +11,14 @@ import scala.util.{Success, Try}
 
 case object ScanLoader {
 
+  /**
+   * Reade a MZXML File and give MZXML Structure file
+   * @param f
+   * @return
+   */
   def read( f : File ) : (MZXMLFile,MZXMLIndex) = {
     val source : MZXMLFile = new MZXMLFile(f.getPath)
     println(source.parseRunInfo())
-    // Notice that we use fetchIndex() instead of getIndex().
-    // fetchIndex() will either get a cached copy or parse it from
-    // disk, if no cache is available. The index will be cached after parsing.
     source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
@@ -23,13 +26,65 @@ case object ScanLoader {
     // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
   }
 
-  /*
-   * Intensité = abondance relative
-   *  Proportionnelle à la
-   *  concentration mais aussi à la
-   *  capacité d’ionisation de la
-   *  molécule
+  /**
+   *
+   * @param scan           : Scan of MzXML
+   * @param spectrum       : Spectrum (list ok peak detection)
+   * @param idxIsotope0    : index of M+0 in the spectrum
+   * @param idxIsotope1    : index of M+1 in the spectrum - could be None if the method don't use M+1
+   * @param idxIsotope2    : index of M+2 in the spectrum - could be None if the method don't use M+2
+   * @return PeakIdentification
    */
+  def fillPeakIdentification(
+                              scan : IScan,
+                              spectrum : ISpectrum,
+                              idxIsotope0: Int,
+                              idxIsotope1: Option[Int],
+                              idxIsotope2: Option[Int],
+                            ) : PeakIdentification = {
+    val lIdxPeaks = Seq(Some(idxIsotope0),idxIsotope1,idxIsotope2)
+    PeakIdentification(
+      scan.getNum,
+      lIdxPeaks.flatten,
+      lIdxPeaks.zipWithIndex.flatMap{
+        case (idxOption,isotopeNum) => idxOption match {
+          case Some(idx) =>
+            Some(Peak(
+              isotopeNum,
+              spectrum.getIntensities()(idx),
+              spectrum.getIntensities()(idx) / scan.getBasePeakIntensity,
+              spectrum.getMZs()(idx)))
+          case None => None
+      }},
+      scan.getRt
+    )
+
+  }
+
+  /**
+   * Get Scan according MS Type.
+   * Spectrum are not loaded.
+   * @param source   : source of MZXML
+   * @param index    : index of MZXML
+   * @param ms       :1 or 2 MS Type
+   * @return available scans
+   */
+  def getScansMs(
+                source: MZXMLFile,
+                index: MZXMLIndex,
+                ms : Integer
+             ) : Seq[IScan] = {
+    index
+      .getMapByRawNum
+      .keySet() // The second parameter asks the parser to parse the spectrum along
+      .asScala
+      // .filter( _ == 3569)
+      .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, false)) match {
+        case Success(scan) => Some(scan)
+        case _ => None
+      })
+      .filter(_.getMsLevel == ms).toSeq
+  }
 
   def getScanIdxAndSpectrum3IsotopesSulfurContaining(
                                       source: MZXMLFile,
@@ -43,16 +98,7 @@ case object ScanLoader {
     // the file using those numbers. We need the raw scan numbers (the numbers
     // as they're used in the file). The internal scan numbering scheme always
     // renumbers all scans starting from 1 and increasing by 1 consecutively.
-    val allScans = index
-      .getMapByRawNum
-      .keySet() // The second parameter asks the parser to parse the spectrum along
-      .asScala
-     // .filter( _ == 3569)
-      .filter(scanNumRaw => Try(source.parseScan(scanNumRaw, false).getMsLevel == 1) match {
-        case Success(a) => a
-        case _ => false
-      }).toList.sorted
-      .map( source.parseScan(_, true) )
+    val allScans = getScansMs(source,index,1)
       .filter( scan => start match {
         case Some(v) => v < scan.getRt
         case None => true
@@ -62,10 +108,13 @@ case object ScanLoader {
         case None => true
       })
 
+    println("["+0.until((allScans.size/50)).map(_ => " ").mkString("")+"]")
+    print(" ")
     allScans.zipWithIndex.flatMap {
-        case (scan,i) => {
-          println(s"$i/${allScans.size}")
-
+        case (basicScan,i) => {
+        //  System.out.flush()
+          print(s".")
+          val scan = source.parseScan(basicScan.getNum, true)
           val spectrum = scan.fetchSpectrum()
           val mzValues = spectrum.getMZs
 
@@ -86,8 +135,8 @@ case object ScanLoader {
             .filter { case (mz, idx1,mz_p2,idx2) => {
               ((mz - mz_p2).abs - 1.99).abs < precision
             }}
-            .map { case (_, idx1,_,idx2) =>
-              PeakIdentification(scan.getNum, Seq(idx1,idx2))
+            .map { case (_, idx1,_,idx2) => fillPeakIdentification(scan,spectrum,idx1,None,Some(idx2))
+              //PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }
         }}.toSeq
   }
@@ -104,26 +153,18 @@ case object ScanLoader {
                          distances : Seq[Double],
                          precision: Double = 0.1
                        ) : Seq[Option[Double]] = {
-    val scan : IScan = source.parseScan(p.numScan, true)
-    val mz = scan.getSpectrum.getMZs()(p.indexIsotopeInSpectrum.head)
-
-
-    val l = index.getMapByRawNum.keySet() // The second parameter asks the parser to parse the spectrum along
-      .asScala
-      .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, true)) match {
-        case Success(a) => Some(a)
-        case _ => None
-      })
-      .filter(_.getMsLevel == 2)
+    val mz = p.peaks.head.mz
+    val l = getScansMs(source,index,2)
       .filter(scanMs2 => {
-        (scanMs2.getRt - scan.getRt).abs < 0.01
+        (scanMs2.getRt - p.rt).abs < 0.01
       })
 
     distances.map (
       distance => {
         val mzSearch = mz - distance
         l.flatMap {
-          scan2 =>
+          scanMs2 =>
+            val scan2 = source.parseScan(scanMs2.getNum, true)
             scan2.getSpectrum match {
               case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
                 if ((mzSearch - spectrum.getMZs()(v)).abs < precision)
@@ -131,7 +172,7 @@ case object ScanLoader {
                 else None
               case _ => None
             }
-        }.toSeq.sorted.lastOption // take the biggest value
+        }.sorted.lastOption // take the biggest value
       }
     )
   }

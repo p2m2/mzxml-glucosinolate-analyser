@@ -19,7 +19,7 @@ case class MetaboliteIdentification(
     val newL : Seq[PeakIdentification] = peaks.flatMap (
       p => {
         val s = source.parseScan(p.numScan, true)
-        val mz = s.fetchSpectrum().getMZs()(p.indexIsotopeInSpectrum.head)
+        val mz = p.peaks.head.mz
 
         index
           .getMapByRawNum
@@ -51,11 +51,7 @@ case class MetaboliteIdentification(
 
     println(s"=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
 
-    val mzs = peaks.map(
-      p => {
-        val s = source.parseScan(p.numScan, true)
-        s.fetchSpectrum().getMZs()(p.indexIsotopeInSpectrum.head)
-      })
+    val mzs = peaks.map(_.peaks.head.mz)
 
       val countAllPeak : Seq[Int]= index
           .getMapByRawNum
@@ -106,10 +102,9 @@ case class MetaboliteIdentification(
 
     val listV = ScanLoader.detectNeutralLoss(source,index,p,Seq(178,80,162,242,196,223))
 
-    val spectrum = scan.fetchSpectrum()
-    val mz = p.indexIsotopeInSpectrum.map(idx => (spectrum.getMZs()(idx)*1000 ).round / 1000.toDouble )
-    val intensities = p.indexIsotopeInSpectrum.map(idx => spectrum.getIntensities()(idx))
-    val abundance = intensities.map( i => (i / scan.getBasePeakIntensity) )
+    val mz = p.peaks.map(p2 => (p2.mz*1000 ).round / 1000.toDouble )
+    val intensities = p.peaks.map(_.intensity)
+    val abundance = p.peaks.map(_.abundance)
     CsvMetabolitesIdentification(
       mz,
       intensities,
