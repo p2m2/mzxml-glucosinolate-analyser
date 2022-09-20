@@ -15,12 +15,10 @@ case object CsvMetabolitesIdentificationFile {
 
       /* Header */
 
-      0.until(size).foreach(
-        i => bw.write(s"ms+0;intensity+0;abundance+0;ms+2;intensity+2;abundance+2;")
-      )
+      bw.write(s"ms+0;intensity+0;abundance+0;ms+2;intensity+2;abundance+2;")
       bw.write("RT;")
-      neutralLosses.foreach {  name => bw.write(s"$name;")}
-      daughterIons.foreach {  name => bw.write(s"$name;")}
+      neutralLosses.foreach {  name => bw.write(s"NL_$name;")}
+      daughterIons.foreach {  name => bw.write(s"DI_$name;")}
       bw.write("\n")
 
       list.foreach(

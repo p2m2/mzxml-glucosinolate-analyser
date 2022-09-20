@@ -1,5 +1,6 @@
 package fr.inrae.metabolomics.p2m2.builder
 
+import fr.inrae.metabolomics.p2m2.builder.GLSRelatedDiagnostic.GLSRelatedDiagnostic.{DaughterIons, NeutralLosses}
 import umich.ms.fileio.filetypes.mzxml.{MZXMLIndex, _}
 import umich.ms.datatypes.scan.IScan
 import umich.ms.datatypes.spectrum.ISpectrum
@@ -69,7 +70,7 @@ case object ScanLoader {
    * @param ms       :1 or 2 MS Type
    * @return available scans
    */
-  def getScansMs(
+  def scansMs(
                 source: MZXMLFile,
                 index: MZXMLIndex,
                 ms : Integer
@@ -98,7 +99,7 @@ case object ScanLoader {
     // the file using those numbers. We need the raw scan numbers (the numbers
     // as they're used in the file). The internal scan numbering scheme always
     // renumbers all scans starting from 1 and increasing by 1 consecutively.
-    val allScans = getScansMs(source,index,1)
+    val allScans = scansMs(source,index,1)
       .filter( scan => start match {
         case Some(v) => v < scan.getRt
         case None => true
@@ -141,6 +142,24 @@ case object ScanLoader {
         }}.toSeq
   }
 
+  def searchIons(source: MZXMLFile,
+                 l: Seq[IScan],
+                 mzSearch:Double,
+                 precisionPeakDetection: Double = 0.1
+                ): Option[Double] = {
+    l.flatMap {
+      scanMs2 =>
+        val scan2 = source.parseScan(scanMs2.getNum, true)
+        scan2.getSpectrum match {
+          case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
+            if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection)
+              Some(spectrum.getIntensities()(v))
+            else None
+          case _ => None
+        }
+    }.sorted.lastOption // take the biggest value
+  }
+
   /**
    *
    * @param distance distance in m/z to check a peak
@@ -150,30 +169,48 @@ case object ScanLoader {
                          source: MZXMLFile,
                          index : MZXMLIndex,
                          p : PeakIdentification,
-                         distances : Seq[Double],
-                         precision: Double = 0.1
-                       ) : Seq[Option[Double]] = {
-    val mz = p.peaks.head.mz
-    val l = getScansMs(source,index,2)
+                         nls : Seq[NeutralLosses],
+                         precisionPeakDetection: Double = 0.1,
+                         precisionRtTime : Double = 0.01
+                       ) : Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.NLs.Value,Option[Double]] = {
+
+    val scanMs2: Seq[IScan] = scansMs(source, index, 2)
       .filter(scanMs2 => {
-        (scanMs2.getRt - p.rt).abs < 0.01
+        (scanMs2.getRt - p.rt).abs < precisionRtTime
       })
 
-    distances.map (
-      distance => {
-        val mzSearch = mz - distance
-        l.flatMap {
-          scanMs2 =>
-            val scan2 = source.parseScan(scanMs2.getNum, true)
-            scan2.getSpectrum match {
-              case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
-                if ((mzSearch - spectrum.getMZs()(v)).abs < precision)
-                  Some(spectrum.getIntensities()(v))
-                else None
-              case _ => None
-            }
-        }.sorted.lastOption // take the biggest value
+    val mz = p.peaks.head.mz
+
+    nls.map (
+      nl => {
+        nl.name->searchIons(source,scanMs2,mz - nl.distance,precisionPeakDetection)
       }
-    )
+    ).toMap
+  }
+
+  /**
+   *
+   * @param distance distance in m/z to check a peak
+   * @return
+   */
+  def detectDaughterIons(
+                         source: MZXMLFile,
+                         index: MZXMLIndex,
+                         p: PeakIdentification,
+                         dis: Seq[DaughterIons],
+                         precisionPeakDetection: Double = 0.1,
+                         precisionRtTime: Double = 0.01
+                       ): Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.DIs.Value, Option[Double]] = {
+
+    val scanMs2 = scansMs(source, index, 2)
+      .filter(scanMs2 => {
+        (scanMs2.getRt - p.rt).abs < precisionRtTime
+      })
+
+    dis.map(
+      di => {
+        di.name->searchIons(source,scanMs2,di.distance,precisionPeakDetection)
+      }
+    ).toMap
   }
 }

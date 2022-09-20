@@ -25,15 +25,26 @@ case object GLSRelatedDiagnostic {
     )
   }
 
-  object Fragments extends Enumeration {
+  object DIs extends Enumeration {
     type Fragments = Value
     val
-    f1 = Value
+    `C6H11O9S_259`,
+    `C6H11O8S2_275`,
+    `C6H11NOXSY_291`,
+    `C6H9NO8S_241`,
+    `C6H11O7S_227`
+    = Value
   }
 
-  case class DaughterIons(name : GLSRelatedDiagnostic.Fragments.Value,distance: Double)
+  case class DaughterIons(name : GLSRelatedDiagnostic.DIs.Value, distance: Double)
 
-  def fragments() : Seq[DaughterIons] = Seq()
+  def dis() : Seq[DaughterIons] = Seq(
+    DaughterIons(DIs.`C6H11O9S_259`,259),
+    DaughterIons(DIs.`C6H11O8S2_275`,275),
+    DaughterIons(DIs.`C6H11NOXSY_291`,291),
+    DaughterIons(DIs.`C6H9NO8S_241`,241),
+    DaughterIons(DIs.`C6H11O7S_227`,227),
+  )
 }
 
 

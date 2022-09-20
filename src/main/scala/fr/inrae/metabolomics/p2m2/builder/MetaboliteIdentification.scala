@@ -98,27 +98,17 @@ case class MetaboliteIdentification(
   }
 
   def getInfo( p :PeakIdentification) : CsvMetabolitesIdentification = {
-    val scan : IScan = source.parseScan(p.numScan, true)
-
-    val listV = ScanLoader.detectNeutralLoss(source,index,p,Seq(178,80,162,242,196,223))
-
     val mz = p.peaks.map(p2 => (p2.mz*1000 ).round / 1000.toDouble )
     val intensities = p.peaks.map(_.intensity)
     val abundance = p.peaks.map(_.abundance)
+
     CsvMetabolitesIdentification(
       mz,
       intensities,
       abundance,
-      scan.getRt,
-      neutralLosses = Map(
-        NLs.gluconolactone -> listV(0),
-        NLs.sulfureTrioxide -> listV(1),
-        NLs.anhydroglucose -> listV(2),
-        NLs.thioglucose_s03 -> listV(3),
-        NLs.thioglucose -> listV(4),
-        NLs.glucosinolate_223 -> listV(5)
-      ),
-      daughterIons = Map()
+      p.rt,
+      neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,GLSRelatedDiagnostic.GLSRelatedDiagnostic.nls()),
+      daughterIons = ScanLoader.detectDaughterIons(source,index,p,GLSRelatedDiagnostic.GLSRelatedDiagnostic.dis())
     )
   }
 
@@ -129,6 +119,8 @@ case class MetaboliteIdentification(
      .zipWithIndex. map {
      case (x,idx) => { println(s"${idx}/${peaks.length}") ; getInfo(x) }
     }
+      /* remove entry if none neutral or daughters ions detected */
+      .filter( csvM => (csvM.neutralLosses.values.flatten.size+ csvM.daughterIons.values.flatten.size)>0)
       .sortBy( x => (x.rt,x.mz.head) )
   }
 }
