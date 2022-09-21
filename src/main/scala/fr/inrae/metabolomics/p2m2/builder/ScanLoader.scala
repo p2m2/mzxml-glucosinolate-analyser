@@ -1,10 +1,9 @@
 package fr.inrae.metabolomics.p2m2.builder
 
 import fr.inrae.metabolomics.p2m2.builder.GLSRelatedDiagnostic.GLSRelatedDiagnostic.{DaughterIons, NeutralLosses}
-import umich.ms.fileio.filetypes.mzxml.{MZXMLIndex, _}
 import umich.ms.datatypes.scan.IScan
 import umich.ms.datatypes.spectrum.ISpectrum
-import umich.ms.fileio.filetypes.mzxml.jaxb.Scan
+import umich.ms.fileio.filetypes.mzxml._
 
 import java.io.File
 import scala.jdk.CollectionConverters._
@@ -24,7 +23,8 @@ case object ScanLoader {
     source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
-
+    println("MS1 size= "+scansMs(source, index, None, None, 1).size)
+    println("MS2 size= "+scansMs(source, index, None, None, 2).size)
     (source,index)
     // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
   }
@@ -79,7 +79,7 @@ case object ScanLoader {
                 end: Option[Double],
                 ms : Integer
              ) : Seq[IScan] = {
-    val scans = index
+    index
       .getMapByRawNum
       .keySet() // The second parameter asks the parser to parse the spectrum along
       .asScala
@@ -97,8 +97,6 @@ case object ScanLoader {
         case Some(v) => v > scan.getRt
         case None => true
       })
-    println(s"Use scan MS$ms = ${scans.size}")
-    scans
   }
 
   def calculBackgroundNoisePeak(
@@ -106,8 +104,8 @@ case object ScanLoader {
                                  index: MZXMLIndex,
                                  start: Option[Double],
                                  end: Option[Double],
-                                 startDurationTime : Double = 1.0
-                               ): Double = {
+                                 startDurationTime : Double = 2.0
+                               ): Int = {
     val allScans =
       scansMs(source,index,start,end,1)
         .filter( _.getRt<startDurationTime)
@@ -115,13 +113,14 @@ case object ScanLoader {
           scanMs1 =>
             val scan = source.parseScan(scanMs1.getNum, true)
             val spectrum = scan.fetchSpectrum()
-            (spectrum.getIntensities().sum/spectrum.getIntensities().size)
+
+            spectrum.getSumInt/spectrum.getIntensities.length
         }
     val mean = allScans.sum/allScans.size
     val std = sqrt(allScans.map( v => (v - mean)*(v - mean) ).sum / allScans.size)
     println(" ======= BackgroundNoisePeak ==========")
     println(s"=====   mean = $mean std = $std =========")
-    mean
+    mean.toInt
   }
 
   def getScanIdxAndSpectrum3IsotopesSulfurContaining(
@@ -129,7 +128,8 @@ case object ScanLoader {
                                       index: MZXMLIndex,
                                       start : Option[Double] = None,
                                       end : Option[Double] = None,
-                                      intensityFilter : Double,
+                                      thresholdAbundanceM0Filter : Double,
+                                      intensityFilter : Int,
                                       precision: Double = 0.01
                                     ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
@@ -156,7 +156,7 @@ case object ScanLoader {
           // remove the first one to compute Delta M
           mzValues
             .zipWithIndex
-            .filter { case (_, idx) => spectrum.getIntensities()(idx)>intensityFilter   }
+            .filter { case (_, idx) => spectrum.getIntensities()(idx)>thresholdAbundanceM0Filter   }
             .map { case (mz, idx1) =>
               val mz_ms_p2 = mz + 1.99
               val idx2 = spectrum.findClosestMzIdx(mz_ms_p2)

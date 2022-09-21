@@ -10,6 +10,7 @@ object Main extends App {
   case class Config(
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
+                     thresholdAbundanceM0Filter : Double = 0.15,
                      overrepresentedPeakFilter : Int = 100,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
@@ -80,7 +81,7 @@ object Main extends App {
     val values = config.mzfiles.flatMap {
       mzFile =>
         val (source,index) = ScanLoader.read(mzFile)
-        println(" == Phase 1 == ")
+
         val intensityFilter = config.thresholdIntensityFilter match {
           case Some(v) => v
           case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
@@ -93,6 +94,7 @@ object Main extends App {
               index,
               config.startRT,
               config.endRT,
+              config.thresholdAbundanceM0Filter,
               intensityFilter,
               config.toleranceMz)
         println(" == Phase 2 == ")
