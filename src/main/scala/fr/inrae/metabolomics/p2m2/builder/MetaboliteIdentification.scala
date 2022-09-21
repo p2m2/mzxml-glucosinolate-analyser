@@ -63,11 +63,11 @@ case class MetaboliteIdentification(
       daughterIons = ScanLoader.detectDaughterIons(source,index,start,end,p,GLSRelatedDiagnostic.GLSRelatedDiagnostic.dis())
     )
   }
+
   def getInfos: Seq[CsvMetabolitesIdentification] = {
     println("\n== detectNeutralLoss/detectDaughterIons == ")
-    peaks
-    //  .slice(0,2) //debug
-     .zipWithIndex
+
+    peaks.zipWithIndex
       . map {
      case (x,idx) =>
        print(s"\r===>$idx/${peaks.size}")

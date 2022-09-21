@@ -156,7 +156,7 @@ case object ScanLoader {
           // remove the first one to compute Delta M
           mzValues
             .zipWithIndex
-            .filter { case (_, idx) => spectrum.getIntensities()(idx)>thresholdAbundanceM0Filter   }
+            .filter { case (_, idx) => (spectrum.getIntensities()(idx)/scan.getBasePeakIntensity)>thresholdAbundanceM0Filter   }
             .map { case (mz, idx1) =>
               val mz_ms_p2 = mz + 1.99
               val idx2 = spectrum.findClosestMzIdx(mz_ms_p2)
@@ -174,6 +174,26 @@ case object ScanLoader {
               //PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }
         }}.toSeq
+  }
+
+  /**
+   * Merge all M/z and keep the Ions with tha maximuma abundance
+   * @param peaks
+   * @return
+   */
+  def keepMzWithMaxAbundance(peaks: Seq[PeakIdentification]): Seq[PeakIdentification] = {
+    val precision : Int = 1000
+    peaks.map {
+      p =>
+        val mz = (p.peaks.head.mz * precision).round / precision.toDouble
+        (mz, p)
+    }.foldLeft(Map[Double, Seq[PeakIdentification]]()) {
+      case (acc, (mz, p)) if acc.contains(mz) => acc + (mz -> (acc(mz) ++ Seq(p)))
+      case (acc, (mz, p)) => acc + (mz -> Seq(p))
+
+    }.map {
+      case (_, listPeaks) => listPeaks.maxBy(_.peaks.head.abundance)
+    }.toSeq
   }
 
   def filterOverRepresentedPeak(
@@ -218,8 +238,22 @@ case object ScanLoader {
           s.zipWithIndex.map { case (e, i) => e + elt(i) }
         }
       )
-/* TODO ............................ */
-    println(countAllPeak)
+
+   // println(countAllPeak)
+    /* calcul distribution of Peak number  */
+   /*
+    val u = countAllPeak.foldLeft(Map[Int,Int]()) {
+      case (acc, c) if acc.contains(c) => acc + (c -> (acc(c)+1))
+      case (acc, c) => acc + (c -> 1)
+    }.map( x => (x._1,x._2) ).toSeq.sortWith(
+      (x,y) =>
+        if (x._2 == y._2) {
+          x._1 >= y._1
+        } else (x._2 >= y._2)
+    )
+
+    println(u)
+*/
     val newL = peaks.zipWithIndex filter {
       case (_, i) => countAllPeak(i) < threshold
     } map {

@@ -10,8 +10,8 @@ object Main extends App {
   case class Config(
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
-                     thresholdAbundanceM0Filter : Double = 0.15,
-                     overrepresentedPeakFilter : Int = 100,
+                     thresholdAbundanceM0Filter : Double = 0.10,
+                     overrepresentedPeakFilter : Int = 200,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
                      toleranceMz : Double = 0.01,
@@ -98,13 +98,18 @@ object Main extends App {
               intensityFilter,
               config.toleranceMz)
         println(" == Phase 2 == ")
-        val m : MetaboliteIdentification =
+
+        val listSulfurMetabolitesSelected : Seq[PeakIdentification] = ScanLoader.keepMzWithMaxAbundance(listSulfurMetabolites)
+
+        val m : MetaboliteIdentification = /*MetaboliteIdentification(source, index, config.startRT,
+          config.endRT,listSulfurMetabolitesSelected)*/
+
           ScanLoader.filterOverRepresentedPeak(
             source,
             index,
             config.startRT,
             config.endRT,
-            listSulfurMetabolites,
+            listSulfurMetabolitesSelected,
             intensityFilter,
             config.overrepresentedPeakFilter)
 
