@@ -21,3 +21,9 @@ java -jar ./assembly/pack.jar ./src/test/resources/test.mzXML
 java -jar ./assembly/pack.jar -i 10000  ./src/test/resources/20181018-038.mzXML
 java -jar ./assembly/pack.jar -i 10000 -s 3.0 -e 3.5 ./src/test/resources/20181018-038.mzXML
 ```
+
+## Chebi Glucosinolate
+
+1) https://www.ebi.ac.uk/chebi/advancedSearchFT.do?searchString=glucosinolate
+2) "Download your results"
+=>ChEBI_Results.tsv
