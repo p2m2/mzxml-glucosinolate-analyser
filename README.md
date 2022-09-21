@@ -17,3 +17,7 @@ java -jar ./assembly/pack.jar ./src/test/resources/test.mzXML
 [Identification and Quantification of Glucosinolates and Phenolics in a Large Panel of Brassica napus Highlight Valuable Genetic Resources for Chemical Ecology and Breeding](https://pubs.acs.org/doi/10.1021/acs.jafc.1c08118)
 
 
+``` 
+java -jar ./assembly/pack.jar -i 10000  ./src/test/resources/20181018-038.mzXML
+java -jar ./assembly/pack.jar -i 10000 -s 3.0 -e 3.5 ./src/test/resources/20181018-038.mzXML
+```

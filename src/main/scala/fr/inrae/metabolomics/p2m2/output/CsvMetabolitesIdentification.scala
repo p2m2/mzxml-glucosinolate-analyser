@@ -8,5 +8,5 @@ case class CsvMetabolitesIdentification(
                                         abundance : Seq[Double],
                                         rt :Double,
                                         neutralLosses : Map[GLSRelatedDiagnostic.NLs.Value,Option[Double]],
-                                        daughterIons : Map[GLSRelatedDiagnostic.Fragments.Value,Option[Double]]
+                                        daughterIons : Map[GLSRelatedDiagnostic.DIs.Value,Option[Double]]
                                        )

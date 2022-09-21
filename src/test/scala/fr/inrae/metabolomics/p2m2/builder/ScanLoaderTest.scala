@@ -7,6 +7,45 @@ import java.io.File
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {
 
+    def read = ScanLoader.read(new File(getClass.getResource("/20181018-037.mzXML").getPath))
+
+    test("read") {
+      val v = read
+      assert(v._1 != null && v._2 != null)
+    }
+
+    test("getScanIdxAndSpectrum3IsotopesSulfurContaining - intensityFilter >>>") {
+      val v = read
+      val v2 =
+        ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(
+          v._1,
+          v._2,
+          None,  // RT start
+          None,  // RT end
+          intensityFilter = 100000000,
+          precision = 0.01
+        )
+      assert(v2.isEmpty)
+    }
+
+    test("getScanIdxAndSpectrum3IsotopesSulfurContaining - intensityFilter >>>") {
+      val v = read
+      val v2 =
+        ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(
+          v._1,
+          v._2,
+          None, // RT start
+          None, // RT end
+          intensityFilter = 0.1,
+          precision = 0.01
+        )
+
+      assert(v2.nonEmpty)
+      assert(v2.map( _.peaks.head.abundance>0.99).size == v2.size) /* high intensity ~ abundance near 1 */
+
+    }
+    /* //MetaboliteIdentification(v._1, v._2, v2.slice(0, 10)).filterOverRepresentedPeak(200).getInfos()
+          //println(v2.slice(0, 10)) */
 
 
     test("detectNeutralLoss") {
@@ -26,12 +65,6 @@ object ScanLoaderTest extends TestSuite {
       p.foreach(x => println(ScanLoader.detectNeutralLoss(v._1, v._2,x, 80.0)))*/
     }
 
-    test("getScanIdxAndSpectrum3IsotopesSulfurContaining") {
-      val v = ScanLoader.read(new File(getClass.getResource("/test.mzXML").getPath))
-      val v2 = ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2)
-      MetaboliteIdentification(v._1,v._2,v2.slice(0,10)).filterOverRepresentedPeak(200).getInfos()
-      println(v2.slice(0,10))
-    }
 
 
   }

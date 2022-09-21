@@ -1,7 +1,7 @@
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io.File
 
 object Main extends App {
 
@@ -9,9 +9,13 @@ object Main extends App {
 
   case class Config(
                      mzfiles : Seq[File] = Seq(),
-                     thresholdIntensityFilter : Double = 10000.0,
-                     overrepresentedPeakFilter : Int = 100,
+                     thresholdIntensityFilter : Option[Int] = None,
+                     thresholdAbundanceM0Filter : Double = 0.10,
+                     overrepresentedPeakFilter : Int = 200,
+                     startRT : Option[Double] = None,
+                     endRT : Option[Double] = None,
                      toleranceMz : Double = 0.01,
+                     outfile : Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
                    )
@@ -20,20 +24,32 @@ object Main extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("msd-metdisease-database-pmid-cid-builder"),
-      head("msd-metdisease-database-pmid-cid-builder", "1.0"),
-      opt[Double]('i',"thresholdIntensityFilter")
+      programName("mzxml-analyser-test"),
+      head("mzxml-analyser-test", "1.0"),
+      opt[Int]('i',"thresholdIntensityFilter")
         .optional()
-        .action((x, c) => c.copy(thresholdIntensityFilter = x))
-        .text(s"Keep ions above ${Config().overrepresentedPeakFilter} intensity"),
-      opt[Int]('o',"overrepresentedPeakFilter")
+        .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
+        .text(s"Keep ions above a x intensity (calculation on start-up time)"),
+      opt[Int]('p',"overrepresentedPeakFilter")
         .optional()
         .action((x, c) => c.copy(overrepresentedPeakFilter = x))
         .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
+      opt[Double]('s', "startRT")
+        .optional()
+        .action((x, c) => c.copy(startRT = Some(x)))
+        .text(s"start RT"),
+      opt[Double]('e', "endRT")
+        .optional()
+        .action((x, c) => c.copy(endRT = Some(x)))
+        .text(s"start RT"),
       opt[Double]('t',"toleranceMz")
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
         .text(s"tolerance accepted. ${Config().toleranceMz}"),
+      opt[File]('o',"outputFile")
+        .optional()
+        .action((x, c) => c.copy(outfile = Some(x)))
+        .text(s"output path file."),
       opt[Unit]("verbose")
         .optional()
         .action((_, c) => c.copy(verbose = true))
@@ -65,26 +81,45 @@ object Main extends App {
     val values = config.mzfiles.flatMap {
       mzFile =>
         val (source,index) = ScanLoader.read(mzFile)
+
+        val intensityFilter = config.thresholdIntensityFilter match {
+          case Some(v) => v
+          case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+        }
+
         val listSulfurMetabolites: Seq[PeakIdentification] =
           ScanLoader.
             getScanIdxAndSpectrum3IsotopesSulfurContaining(
               source,
               index,
-              config.thresholdIntensityFilter,
+              config.startRT,
+              config.endRT,
+              config.thresholdAbundanceM0Filter,
+              intensityFilter,
               config.toleranceMz)
+        println(" == Phase 2 == ")
 
-        MetaboliteIdentification(source,index,listSulfurMetabolites)
-          .filterOverRepresentedPeak(config.overrepresentedPeakFilter)
-          .getInfos()
+        val listSulfurMetabolitesSelected : Seq[PeakIdentification] = ScanLoader.keepMzWithMaxAbundance(listSulfurMetabolites)
+
+        val m : MetaboliteIdentification = /*MetaboliteIdentification(source, index, config.startRT,
+          config.endRT,listSulfurMetabolitesSelected)*/
+
+          ScanLoader.filterOverRepresentedPeak(
+            source,
+            index,
+            config.startRT,
+            config.endRT,
+            listSulfurMetabolitesSelected,
+            intensityFilter,
+            config.overrepresentedPeakFilter)
+
+          m.getInfos
     }
 
-    values.slice(0,3) foreach {
-      case l => println("=========1,3");println(l)
-    }
+    val f = config.outfile.getOrElse(new File("output.csv"))
+    f.delete()
+    CsvMetabolitesIdentificationFile.build(values,f)
 
-    new File("test.csv").delete()
-    CsvMetabolitesIdentificationFile.build(values,new File("test.csv"))
-
-    println("========= check test.csv ===============")
+    println(s"========= check ${f.getPath} ===============")
   }
 }
