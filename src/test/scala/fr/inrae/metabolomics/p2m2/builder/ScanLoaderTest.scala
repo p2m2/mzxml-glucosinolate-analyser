@@ -22,7 +22,8 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None,  // RT start
           None,  // RT end
-          intensityFilter = 100000000,
+          thresholdAbundanceM0Filter = 0.10,
+          intensityFilter = 1,
           precision = 0.01
         )
       assert(v2.isEmpty)
@@ -36,7 +37,8 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          intensityFilter = 0.1,
+          thresholdAbundanceM0Filter = 0.10,
+          intensityFilter = 1,
           precision = 0.01
         )
 

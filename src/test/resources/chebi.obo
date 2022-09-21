@@ -1,0 +1,995 @@
+format-version: 1.2
+data-version: 213
+date: 09:09:2022 07:26
+saved-by: chebi
+subsetdef: 1_STAR "Preliminary entries"
+subsetdef: 2_STAR "Annotated by 3rd party"
+subsetdef: 3_STAR "Manually annotated by ChEBI Team"
+synonymtypedef: IUPAC_NAME "IUPAC NAME"
+synonymtypedef: BRAND_NAME "BRAND NAME"
+synonymtypedef: INN "INN"
+default-namespace: chebi_ontology
+remark: ChEBI subsumes and replaces the Chemical Ontology first
+remark: developed by Michael Ashburner & Pankaj Jaiswal.
+remark: Author: ChEBI curation team 
+remark: ChEBI Release version 213
+remark: For any queries contact chebi-help@ebi.ac.uk 
+ontology: chebi
+
+[Term]
+id: CHEBI:24431
+name: chemical entity
+subset: 3_STAR
+def: "A chemical entity is a physical entity of interest in chemistry including molecular entities, parts thereof, and chemical substances." []
+synonym: "chemical entity" EXACT [UniProt]
+
+[Term]
+id: CHEBI:23367
+name: molecular entity
+subset: 3_STAR
+def: "Any constitutionally or isotopically distinct atom, molecule, ion, ion pair, radical, radical ion, complex, conformer etc., identifiable as a separately distinguishable entity." []
+synonym: "entite moleculaire" RELATED [IUPAC]
+synonym: "entidad molecular" RELATED [IUPAC]
+synonym: "entidades moleculares" RELATED [IUPAC]
+synonym: "molecular entity" EXACT IUPAC_NAME [IUPAC]
+synonym: "molekulare Entitaet" RELATED [ChEBI]
+synonym: "molecular entities" RELATED [IUPAC]
+is_a: CHEBI:24431
+
+[Term]
+id: CHEBI:24870
+name: ion
+subset: 3_STAR
+def: "A molecular entity having a net electric charge." []
+synonym: "ion" EXACT IUPAC_NAME [IUPAC]
+synonym: "Ionen" RELATED [ChEBI]
+synonym: "ions" RELATED [ChEBI]
+synonym: "Ion" EXACT [ChEBI]
+synonym: "ion" EXACT [ChEBI]
+synonym: "iones" RELATED [ChEBI]
+is_a: CHEBI:23367
+
+[Term]
+id: CHEBI:24867
+name: monoatomic ion
+subset: 3_STAR
+synonym: "monoatomic ions" RELATED [ChEBI]
+is_a: CHEBI:24870
+is_a: CHEBI:33238
+
+[Term]
+id: CHEBI:23905
+name: monoatomic anion
+subset: 3_STAR
+synonym: "monoatomic anions" RELATED [ChEBI]
+is_a: CHEBI:24867
+is_a: CHEBI:22563
+
+[Term]
+id: CHEBI:33429
+name: monoatomic monoanion
+subset: 3_STAR
+synonym: "monoatomic monoanions" RELATED [ChEBI]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "0.00000" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[*-]" xsd:string
+is_a: CHEBI:23905
+is_a: CHEBI:36830
+
+[Term]
+id: CHEBI:30151
+name: aluminide(1-)
+subset: 3_STAR
+synonym: "Aluminum anion" RELATED [NIST_Chemistry_WebBook]
+synonym: "aluminide(1-)" EXACT IUPAC_NAME [IUPAC]
+synonym: "aluminide(-I)" EXACT IUPAC_NAME [IUPAC]
+synonym: "Al(-)" RELATED [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "26.98154" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "26.98209" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Al" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Al/q-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Al-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "SBLSYFIUPXRQRY-UHFFFAOYSA-N" xsd:string
+xref: CAS:22325-47-9 {source="NIST Chemistry WebBook"}
+is_a: CHEBI:33429
+is_a: CHEBI:33627
+
+[Term]
+id: CHEBI:16042
+name: halide anion
+alt_id: CHEBI:5605
+alt_id: CHEBI:14384
+subset: 3_STAR
+def: "A monoatomic monoanion resulting from the addition of an electron to any halogen atom." []
+synonym: "halides" RELATED [ChEBI]
+synonym: "HX" RELATED [KEGG_COMPOUND]
+synonym: "halogen anion" RELATED [ChEBI]
+synonym: "halide(1-)" RELATED [ChEBI]
+synonym: "halide anions" RELATED [ChEBI]
+synonym: "halide ions" EXACT IUPAC_NAME [IUPAC]
+synonym: "Halide" RELATED [KEGG_COMPOUND]
+synonym: "a halide anion" RELATED [UniProt]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "0.0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "0.0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "X" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[*-]" xsd:string
+xref: KEGG:C00462 
+is_a: CHEBI:33429
+is_a: CHEBI:79389
+
+[Term]
+id: CHEBI:17051
+name: fluoride
+alt_id: CHEBI:5113
+alt_id: CHEBI:49593
+alt_id: CHEBI:14271
+subset: 3_STAR
+synonym: "F(-)" RELATED [IUPAC]
+synonym: "Fluorine anion" RELATED [NIST_Chemistry_WebBook]
+synonym: "fluoride" EXACT [UniProt]
+synonym: "Fluoride ion" RELATED [KEGG_COMPOUND]
+synonym: "fluoride(1-)" EXACT IUPAC_NAME [IUPAC]
+synonym: "fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Fluoride" EXACT [KEGG_COMPOUND]
+synonym: "F-" RELATED [KEGG_COMPOUND]
+synonym: "FLUORIDE ION" RELATED [PDBeChem]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "18.99840" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "18.99895" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "F" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/FH/h1H/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "KRHYYFGTRYWZRS-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-]" xsd:string
+xref: Gmelin:14905 {source="Gmelin"}
+xref: CAS:16984-48-8 {source="NIST Chemistry WebBook"}
+xref: CAS:16984-48-8 {source="ChemIDplus"}
+xref: KEGG:C00742 
+xref: PDBeChem:F 
+is_a: CHEBI:16042
+is_a: CHEBI:36895
+relationship: is_conjugate_base_of CHEBI:29228
+
+[Term]
+id: CHEBI:24060
+name: fluoride salt
+subset: 3_STAR
+synonym: "fluorides" RELATED [ChEBI]
+synonym: "fluoride salts" RELATED [ChEBI]
+is_a: CHEBI:33958
+is_a: CHEBI:24062
+relationship: has_part CHEBI:17051
+
+[Term]
+id: CHEBI:28741
+name: sodium fluoride
+alt_id: CHEBI:26713
+alt_id: CHEBI:9178
+subset: 3_STAR
+def: "A metal fluoride salt with a Na(+) counterion." []
+synonym: "NaF" RELATED [IUPAC]
+synonym: "sodium fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Sodium fluoride" EXACT [KEGG_COMPOUND]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "41.98817" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "41.98817" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "FNa" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Na.F" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].[Na+]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "PUZPDOWCWNUUKD-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/FH.Na/h1H;/q;+1/p-1" xsd:string
+xref: Wikipedia:Sodium_Fluoride 
+xref: CAS:7681-49-4 {source="ChemIDplus"}
+xref: KEGG:D00943 
+xref: KEGG:C08142 
+xref: CAS:7681-49-4 {source="KEGG COMPOUND"}
+is_a: CHEBI:24060
+relationship: has_role CHEBI:25435
+
+[Term]
+id: CHEBI:32129
+name: diamminesilver(1+) fluoride
+subset: 3_STAR
+synonym: "diamminesilver(1+) fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "diammine silver fluoride" RELATED [ChemIDplus]
+synonym: "diamminefluorosilver" RELATED [ChemIDplus]
+synonym: "Silver diammine fluoride" RELATED [KEGG_COMPOUND]
+synonym: "[Ag(NH3)2]F" RELATED [IUPAC]
+synonym: "diamminesilver(I) fluoride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Ag.F.2H3N" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "AgFH6N2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "160.92772" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "159.95659" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].[H][N]([H])([H])[Ag+][N]([H])([H])[H]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ag.FH.2H3N/h;1H;2*1H3/q+1;;;/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "FJKGRAZQBBWYLG-UHFFFAOYSA-M" xsd:string
+xref: KEGG:D01502 
+xref: CAS:34445-07-3 {source="KEGG COMPOUND"}
+xref: CAS:34445-07-3 {source="ChemIDplus"}
+is_a: CHEBI:24060
+relationship: has_part CHEBI:33049
+
+[Term]
+id: CHEBI:30340
+name: silver monofluoride
+subset: 3_STAR
+synonym: "silver(1+) fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "silver(I) fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "argentous fluoride" RELATED [NIST_Chemistry_WebBook]
+synonym: "AgF" RELATED [IUPAC]
+synonym: "silver monofluoride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "126.86660" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "AgF" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "125.90349" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ag.FH/h;1H/q+1;/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "REYHXKZHIMGNSE-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].[Ag+]" xsd:string
+xref: CAS:7775-41-9 {source="ChemIDplus"}
+xref: Gmelin:122625 {source="Gmelin"}
+xref: CAS:7775-41-9 {source="NIST Chemistry WebBook"}
+is_a: CHEBI:33968
+is_a: CHEBI:24060
+
+[Term]
+id: CHEBI:51990
+name: tetrabutylammonium fluoride
+subset: 3_STAR
+synonym: "N,N,N-tributylbutan-1-aminium fluoride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "C16H36FN" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "261.46210" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "261.28318" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].CCCC[N+](CCCC)(CCCC)CCCC" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "FPGGTKZVZWFYPV-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/C16H36N.FH/c1-5-9-13-17(14-10-6-2,15-11-7-3)16-12-8-4;/h5-16H2,1-4H3;1H/q+1;/p-1" xsd:string
+xref: PMID:21142041 {source="Europe PMC"}
+xref: Beilstein:3570522 {source="Beilstein"}
+xref: PMID:22229781 {source="Europe PMC"}
+xref: Reaxys:3570522 {source="Reaxys"}
+xref: PMID:15074950 {source="Europe PMC"}
+xref: CAS:429-41-4 {source="ChemIDplus"}
+xref: PMID:21517057 {source="Europe PMC"}
+is_a: CHEBI:24060
+is_a: CHEBI:51992
+relationship: has_role CHEBI:63060
+
+[Term]
+id: CHEBI:49499
+name: beryllium difluoride
+subset: 3_STAR
+def: "The fluoride salt of beryllium (+2 oxidation state). In the solid state it exists as a glass, with four-coordinate Be(2+) tetrahedral centres and two-coordinate fluoride centres. As a gas it adopts a linear triatomic structure and in the liquid state a fluctuating tetrahedral structure. In protein crystallography it is used as a mimic of phosphate." []
+synonym: "Be2F4" RELATED [ChemIDplus]
+synonym: "Berylliumfluorid" RELATED [ChEBI]
+synonym: "Beryllium fluoride" RELATED [ChemIDplus]
+synonym: "BeF2" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "47.00899" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "47.00899" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "BeF2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Be.2FH/h;2*1H/q+2;;/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "JZKFIPKXQBZXMW-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "F[Be]F" xsd:string
+xref: PMID:21141831 {source="Europe PMC"}
+xref: PMID:17963376 {source="Europe PMC"}
+xref: PMID:1551879 {source="Europe PMC"}
+xref: PMID:16223284 {source="Europe PMC"}
+xref: PMID:2808407 {source="Europe PMC"}
+xref: PMID:11897645 {source="Europe PMC"}
+xref: CAS:7787-49-7 {source="ChemIDplus"}
+xref: PMID:16771420 {source="Europe PMC"}
+xref: Reaxys:14667390 {source="Reaxys"}
+xref: PMID:8800204 {source="Europe PMC"}
+xref: PMID:16771419 {source="Europe PMC"}
+xref: PMID:17979355 {source="Europe PMC"}
+xref: MetaCyc:CPD0-1230 
+xref: PMID:20572721 {source="Europe PMC"}
+xref: PMID:19561071 {source="Europe PMC"}
+xref: Gmelin:95146 {source="Gmelin"}
+xref: PMID:18651739 {source="Europe PMC"}
+xref: CAS:7787-49-7 {source="NIST Chemistry WebBook"}
+xref: PMID:20529842 {source="Europe PMC"}
+is_a: CHEBI:33780
+is_a: CHEBI:24060
+
+[Term]
+id: CHEBI:66871
+name: ammonium fluoride
+subset: 3_STAR
+def: "A fluoride salt having ammonium (NH4+) as the counterion." []
+synonym: "NH4F" RELATED [ChEBI]
+synonym: "Fluorure d'ammonium" RELATED [ChEBI]
+synonym: "ammonium fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Ammonium fluorure" RELATED [ChEBI]
+synonym: "Fluoruro amonico" RELATED [ChEBI]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "FH4N" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "37.03278" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "37.03690" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].[H][N+]([H])([H])[H]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/FH.H3N/h1H;1H3" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "LDDQLRUQCUTJBB-UHFFFAOYSA-N" xsd:string
+xref: CAS:12125-01-8 {source="ChemIDplus"}
+xref: Reaxys:13192588 {source="Reaxys"}
+xref: Wikipedia:Ammonium_fluoride 
+is_a: CHEBI:47704
+is_a: CHEBI:24060
+
+[Term]
+id: CHEBI:66872
+name: potassium fluoride
+subset: 3_STAR
+def: "A fluoride salt having K+ as the counterion." []
+synonym: "potassium fluoride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Fluorure de potassium" RELATED [ChemIDplus]
+synonym: "Potassium fluorure" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "57.96211" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "58.09670" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "FK" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[F-].[K+]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/FH.K/h1H;/q;+1/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "NROKBHXJSPEDAR-UHFFFAOYSA-M" xsd:string
+xref: PMID:21412559 {source="Europe PMC"}
+xref: Beilstein:3902818 {source="SUBMITTER"}
+xref: Reaxys:3902818 {source="Reaxys"}
+xref: Wikipedia:Potassium_fluoride 
+xref: PMID:22721409 {source="Europe PMC"}
+xref: PMID:21486073 {source="Europe PMC"}
+xref: Reaxys:11339017 {source="Reaxys"}
+xref: CAS:7789-23-3 {source="NIST Chemistry WebBook"}
+xref: CAS:7789-23-3 {source="ChemIDplus"}
+xref: PMID:22169214 {source="Europe PMC"}
+xref: PMID:22013284 {source="Europe PMC"}
+xref: PMID:21863787 {source="Europe PMC"}
+xref: PMID:21636316 {source="Europe PMC"}
+xref: PMID:22359362 {source="Europe PMC"}
+xref: PMID:22700337 {source="Europe PMC"}
+xref: PMID:22777777 {source="Europe PMC"}
+is_a: CHEBI:24060
+is_a: CHEBI:26218
+relationship: has_role CHEBI:64909
+
+[Term]
+id: CHEBI:190416
+name: inorganic fluoride salt
+subset: 2_STAR
+def: "A fluoride salt that lacks C-H bonds" []
+is_a: CHEBI:167164
+is_a: CHEBI:24060
+is_a: CHEBI:24839
+
+[Term]
+id: CHEBI:135933
+name: stannous fluoride
+subset: 2_STAR
+synonym: "difluorostannylene" RELATED [DrugCentral]
+synonym: "tin(II) fluoride" RELATED [ChemIDplus]
+synonym: "stannous fluoride (SnF2)" RELATED [ChemIDplus]
+synonym: "fluoristan" RELATED [DrugCentral]
+synonym: "tin bifluoride" RELATED [ChemIDplus]
+synonym: "tin fluoride (SnF2)" RELATED [ChemIDplus]
+synonym: "GingiMed" RELATED BRAND_NAME [KEGG_DRUG]
+synonym: "tin difluoride" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "156.707" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "F2Sn" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "157.89901" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2FH.Sn/h2*1H;/q;;+2/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "F[Sn]F" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "ANOBYBYXJXCGBS-UHFFFAOYSA-L" xsd:string
+xref: CAS:7783-47-3 {source="ChemIDplus"}
+xref: Chemspider:22956 
+xref: Wikipedia:Tin(II)_fluoride 
+xref: KEGG:D05919 
+xref: Drug_Central:4273 {source="DrugCentral"}
+xref: CAS:7783-47-3 {source="NIST Chemistry WebBook"}
+xref: DrugBank:DB11092 
+is_a: CHEBI:190416
+
+[Term]
+id: CHEBI:190417
+name: organic fluoride salt
+subset: 2_STAR
+def: "A fluoride salt with C-H bonds" []
+is_a: CHEBI:167164
+is_a: CHEBI:24060
+is_a: CHEBI:24868
+
+[Term]
+id: CHEBI:17996
+name: chloride
+alt_id: CHEBI:13291
+alt_id: CHEBI:3731
+alt_id: CHEBI:3616
+alt_id: CHEBI:13970
+alt_id: CHEBI:48804
+subset: 3_STAR
+def: "A halide anion formed when chlorine picks up an electron to form an an anion." []
+synonym: "Chloride ion" RELATED [KEGG_COMPOUND]
+synonym: "Cl(-)" RELATED [IUPAC]
+synonym: "chloride(1-)" EXACT IUPAC_NAME [IUPAC]
+synonym: "chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Chlorine anion" RELATED [NIST_Chemistry_WebBook]
+synonym: "Chloride(1-)" RELATED [ChemIDplus]
+synonym: "Chloride" EXACT [KEGG_COMPOUND]
+synonym: "Cl-" RELATED [KEGG_COMPOUND]
+synonym: "Chloride" EXACT [KEGG_COMPOUND]
+synonym: "chloride" EXACT [UniProt]
+synonym: "CHLORIDE ION" RELATED [PDBeChem]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "35.45270" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "34.96940" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "VEXZGXHMUGYJMC-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH/h1H/p-1" xsd:string
+xref: CAS:16887-00-6 {source="NIST Chemistry WebBook"}
+xref: CAS:16887-00-6 {source="ChemIDplus"}
+xref: CAS:16887-00-6 {source="KEGG COMPOUND"}
+xref: UM-BBD_compID:c0884 {source="UM-BBD"}
+xref: Gmelin:14910 {source="Gmelin"}
+xref: Beilstein:3587171 {source="Beilstein"}
+xref: KEGG:C00698 
+xref: KEGG:C00115 
+xref: PDBeChem:CL 
+is_a: CHEBI:16042
+is_a: CHEBI:33432
+relationship: is_conjugate_base_of CHEBI:17883
+relationship: has_role CHEBI:77746
+relationship: has_role CHEBI:76971
+relationship: has_role CHEBI:23357
+
+[Term]
+id: CHEBI:23114
+name: chloride salt
+subset: 3_STAR
+synonym: "chloride salts" RELATED [ChEBI]
+synonym: "chlorides" RELATED [ChEBI]
+is_a: CHEBI:33958
+relationship: has_part CHEBI:17996
+is_a: CHEBI:23117
+
+[Term]
+id: CHEBI:36093
+name: inorganic chloride
+subset: 3_STAR
+synonym: "inorganic chloride salts" RELATED [ChEBI]
+synonym: "inorganic chloride salt" RELATED [ChEBI]
+synonym: "inorganic chlorides" RELATED [ChEBI]
+is_a: CHEBI:23114
+is_a: CHEBI:24839
+
+[Term]
+id: CHEBI:6636
+name: magnesium dichloride
+subset: 3_STAR
+def: "A magnesium salt comprising of two chlorine atoms bound to a magnesium atom." []
+synonym: "MgCl2" RELATED [IUPAC]
+synonym: "Magnesium chloride anhydrous" RELATED [KEGG_COMPOUND]
+synonym: "Magnesiumchlorid" RELATED [ChEBI]
+synonym: "magnesium dichloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "[MgCl2]" RELATED [MolBase]
+synonym: "Magnesium chloride" RELATED [KEGG_COMPOUND]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "95.21040" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2Mg" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "93.92275" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "TWRXJAOTZQYOKJ-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Mg++].[Cl-].[Cl-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Mg/h2*1H;/q;;+2/p-2" xsd:string
+xref: CAS:7786-30-3 {source="NIST Chemistry WebBook"}
+xref: KEGG:C07755 
+xref: Reaxys:8128169 {source="Reaxys"}
+xref: Gmelin:9305 {source="Gmelin"}
+xref: MolBase:1868 
+xref: CAS:7786-30-3 {source="KEGG COMPOUND"}
+xref: CAS:7786-30-3 {source="ChemIDplus"}
+is_a: CHEBI:33975
+is_a: CHEBI:36093
+is_a: CHEBI:51234
+is_a: CHEBI:190297
+
+[Term]
+id: CHEBI:86345
+name: magnesium dichloride hexahydrate
+subset: 3_STAR
+def: "A hydrate that is the hexahydrate form of magnesium dichloride." []
+synonym: "Magnesium chloride" RELATED [ChemIDplus]
+synonym: "MgCl2.6H2O" RELATED [ChEBI]
+synonym: "CCRIS 3494" RELATED [ChemIDplus]
+synonym: "magnesium chloride hexahydrate" RELATED [ChEBI]
+synonym: "Magnesium chloride hydrate" RELATED [ChemIDplus]
+synonym: "Chlorure de magnesium hydrate" RELATED [ChemIDplus]
+synonym: "magnesium dichloride--water (1/6)" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "201.98614" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "203.30300" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2H12MgO6" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "O.O.O.O.O.O.[Mg++].[Cl-].[Cl-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "DHRRIBDTHFBPNG-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Mg.6H2O/h2*1H;;6*1H2/q;;+2;;;;;;/p-2" xsd:string
+xref: PMID:25430969 {source="Europe PMC"}
+xref: CAS:7791-18-6 {source="ChemIDplus"}
+xref: CAS:7791-18-6 {source="KEGG DRUG"}
+xref: PMID:25148974 {source="Europe PMC"}
+xref: PMID:24831644 {source="Europe PMC"}
+xref: KEGG:D04834 
+xref: Reaxys:11343754 {source="Reaxys"}
+is_a: CHEBI:35505
+relationship: has_part CHEBI:6636
+is_a: CHEBI:51234
+is_a: CHEBI:36093
+
+[Term]
+id: CHEBI:86355
+name: magnesium dichloride monohydrate
+subset: 3_STAR
+def: "A hydrate that is the monohydrate form of magnesium dichloride." []
+synonym: "Magnesium chloride, monohydrate" RELATED [ChemIDplus]
+synonym: "MgCl2.H2O" RELATED [ChEBI]
+synonym: "magnesium dichloride--water (1/1)" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "113.22600" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "111.93331" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2H2MgO" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "O.[Mg++].[Cl-].[Cl-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "MJMDTFNVECGTEM-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Mg.H2O/h2*1H;;1H2/q;;+2;/p-2" xsd:string
+xref: CAS:22756-14-5 {source="ChemIDplus"}
+xref: Reaxys:14847905 {source="Reaxys"}
+is_a: CHEBI:35505
+is_a: CHEBI:36093
+is_a: CHEBI:51234
+relationship: has_part CHEBI:6636
+
+[Term]
+id: CHEBI:131394
+name: magnesium dichloride dihydrate
+subset: 3_STAR
+def: "A hydrate that is the dihydrate form of magnesium dichloride." []
+synonym: "magnesium chloride dihydrate" RELATED [ChEBI]
+synonym: "MgCl2.2H2O" RELATED [ChEBI]
+synonym: "magnesium dichloride--water (1/2)" RELATED [ChEBI]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2H4MgO2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "131.241" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "129.94388" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "O.O.[Mg+2].[Cl-].[Cl-]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Mg.2H2O/h2*1H;;2*1H2/q;;+2;;/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "DARFZFVWKREYJJ-UHFFFAOYSA-L" xsd:string
+xref: PMID:16833602 {source="Europe PMC"}
+xref: Reaxys:16471381 {source="Reaxys"}
+is_a: CHEBI:35505
+is_a: CHEBI:36093
+is_a: CHEBI:51234
+relationship: has_part CHEBI:6636
+
+[Term]
+id: CHEBI:31206
+name: ammonium chloride
+subset: 3_STAR
+def: "An inorganic chloride having ammonium as the counterion." []
+synonym: "ammonium chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Ammoniumchlorid" RELATED [NIST_Chemistry_WebBook]
+synonym: "azanium chloride" RELATED [ChEBI]
+synonym: "[NH4]Cl" RELATED [IUPAC]
+synonym: "Ammonium chloride" EXACT [KEGG_COMPOUND]
+synonym: "NH4Cl" RELATED [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "53.00323" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "ClH4N" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "53.49120" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl.H4N" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "NLXLAEXVIDQMFP-UHFFFAOYSA-N" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[H][N+]([H])([H])[H]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH.H3N/h1H;1H3" xsd:string
+xref: Gmelin:10120 {source="Gmelin"}
+xref: KEGG:D01139 
+xref: Wikipedia:Ammonium_Chloride 
+xref: KEGG:C12538 
+xref: CAS:12125-02-9 {source="ChemIDplus"}
+xref: CAS:12125-02-9 {source="KEGG COMPOUND"}
+xref: CAS:12125-02-9 {source="NIST Chemistry WebBook"}
+is_a: CHEBI:36093
+is_a: CHEBI:47704
+relationship: has_role CHEBI:173084
+
+[Term]
+id: CHEBI:3312
+name: calcium dichloride
+subset: 3_STAR
+synonym: "CaCl2" RELATED [IUPAC]
+synonym: "calcium dichloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "[CaCl2]" RELATED [MolBase]
+synonym: "calcium chloride anhydrous" RELATED [ChemIDplus]
+synonym: "calcium chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Calcium chloride anhydrous" RELATED [KEGG_COMPOUND]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "CaCl2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "109.90030" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "110.98340" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ca.2ClH/h;2*1H/q+2;;/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "UXVMQQNJUSDDNG-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[Cl-].[Ca++]" xsd:string
+xref: PMID:34981086 {source="Europe PMC"}
+xref: CAS:10043-52-4 {source="KEGG COMPOUND"}
+xref: MolBase:1869 
+xref: FooDB:FDB015404 
+xref: PMID:13333715 {source="Europe PMC"}
+xref: PMID:35159592 {source="Europe PMC"}
+xref: PMID:35260323 {source="Europe PMC"}
+xref: PMID:32441097 {source="Europe PMC"}
+xref: PPDB:109 
+xref: PMID:35200459 {source="Europe PMC"}
+xref: PMID:11057678 {source="Europe PMC"}
+xref: CAS:10043-52-4 {source="ChemIDplus"}
+xref: AGR:IND607339542 {source="Europe PMC"}
+xref: CAS:10043-52-4 {source="NIST Chemistry WebBook"}
+xref: PMID:32018153 {source="Europe PMC"}
+xref: HMDB:HMDB0303526 
+xref: DrugBank:DB01164 
+xref: KEGG:C08130 
+xref: Wikipedia:Calcium_Chloride 
+xref: MetaCyc:CPD0-1589 
+xref: PMID:34618995 {source="Europe PMC"}
+xref: PMID:35159430 {source="Europe PMC"}
+is_a: CHEBI:35156
+is_a: CHEBI:36093
+relationship: has_role CHEBI:33287
+is_a: CHEBI:190295
+
+[Term]
+id: CHEBI:86158
+name: calcium chloride dihydrate
+subset: 3_STAR
+def: "A hydrate that is the dihydrate form of calcium chloride." []
+synonym: "calcium chloride--water (1/2)" EXACT IUPAC_NAME [IUPAC]
+synonym: "Calcium chloride" RELATED [ChemIDplus]
+synonym: "CaCl2.2H2O" RELATED [ChEBI]
+synonym: "Calcium chloride hydrate" RELATED [KEGG_DRUG]
+synonym: "calcium dichloride dihydrate" RELATED [ChEBI]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "145.92143" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "147.01500" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "CaCl2H4O2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "O.O.[Cl-].[Cl-].[Ca++]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "LLSDKQJKOVVTOJ-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ca.2ClH.2H2O/h;2*1H;2*1H2/q+2;;;;/p-2" xsd:string
+xref: DrugBank:DBSALT000772 
+xref: MetaCyc:CPD0-2507 
+xref: KEGG:D02256 
+xref: CAS:10035-04-8 {source="KEGG DRUG"}
+xref: CAS:10035-04-8 {source="ChemIDplus"}
+xref: Reaxys:11343730 {source="Reaxys"}
+is_a: CHEBI:35505
+relationship: has_part CHEBI:3312
+is_a: CHEBI:35156
+is_a: CHEBI:36093
+
+[Term]
+id: CHEBI:91243
+name: calcium chloride hexahydrate
+subset: 3_STAR
+def: "A hydrate that is the hexahydrate form of calcium chloride." []
+synonym: "CaCl2.6H2O" RELATED [ChEBI]
+synonym: "calcium chloride--water (1/6)" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "219.076" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "217.96368" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "CaCl2H12O6" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[Cl-].[Ca+2].O.O.O.O.O.O" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "QHFQAJHNDKBRBO-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ca.2ClH.6H2O/h;2*1H;6*1H2/q+2;;;;;;;;/p-2" xsd:string
+xref: DrugBank:DBSALT003069 
+xref: Reaxys:16513814 {source="Reaxys"}
+xref: Reaxys:14675496 {source="Reaxys"}
+xref: PMID:17832579 {source="Europe PMC"}
+xref: CAS:7774-34-7 {source="ChemIDplus"}
+is_a: CHEBI:35156
+is_a: CHEBI:35505
+is_a: CHEBI:36093
+relationship: has_part CHEBI:3312
+is_a: CHEBI:46714
+
+[Term]
+id: CHEBI:26710
+name: sodium chloride
+subset: 3_STAR
+def: "An inorganic chloride salt having sodium(1+) as the counterion." []
+synonym: "salt" RELATED [ChemIDplus]
+synonym: "Kochsalz" RELATED [ChEBI]
+synonym: "chlorure de sodium" RELATED [ChEBI]
+synonym: "rock salt" RELATED [ChemIDplus]
+synonym: "cloruro sodico" RELATED [ChEBI]
+synonym: "halite" RELATED [NIST_Chemistry_WebBook]
+synonym: "NaCl" RELATED [IUPAC]
+synonym: "sodium chloride" EXACT [ChEBI]
+synonym: "Natriumchlorid" RELATED [NIST_Chemistry_WebBook]
+synonym: "table salt" RELATED [ChemIDplus]
+synonym: "natrii chloridum" RELATED [ChEBI]
+synonym: "common salt" RELATED [ChemIDplus]
+synonym: "sodium chloride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/formula "ClNa" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "58.44247" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "57.95862" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "FAPWRFPIFSIZLT-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH.Na/h1H;/q;+1/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Na+].[Cl-]" xsd:string
+xref: Reaxys:3534976 {source="Reaxys"}
+xref: PPDB:595 
+xref: Wikipedia:Sodium_Chloride 
+xref: KEGG:C13563 
+xref: MetaCyc:NACL 
+xref: CAS:7647-14-5 {source="NIST Chemistry WebBook"}
+xref: Gmelin:13673 {source="Gmelin"}
+xref: KEGG:D02056 
+xref: Beilstein:3534976 {source="Beilstein"}
+xref: CAS:7647-14-5 {source="KEGG COMPOUND"}
+xref: CAS:7647-14-5 {source="ChemIDplus"}
+is_a: CHEBI:36093
+is_a: CHEBI:38702
+relationship: has_role CHEBI:149552
+relationship: has_role CHEBI:79314
+
+[Term]
+id: CHEBI:46715
+name: halite
+subset: 3_STAR
+synonym: "Steinsalz" RELATED [ChEBI]
+synonym: "halite" EXACT [ChemIDplus]
+synonym: "Halit" RELATED [ChEBI]
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "57.95862" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "58.443" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "ClNa" xsd:string
+xref: Gmelin:74542 {source="Gmelin"}
+xref: Gmelin:339371 {source="Gmelin"}
+xref: CAS:14762-51-7 {source="NIST Chemistry WebBook"}
+is_a: CHEBI:46714
+is_a: CHEBI:26710
+
+[Term]
+id: CHEBI:30341
+name: silver monochloride
+subset: 3_STAR
+synonym: "silver(1+) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "[AgCl]" RELATED [MolBase]
+synonym: "silver(I) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "AgCl" RELATED [IUPAC]
+synonym: "silver monochloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Silver chloride" RELATED [NIST_Chemistry_WebBook]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "143.32090" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "AgCl" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "141.87394" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[Ag+]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "HKZLPVFGJNLROG-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/Ag.ClH/h;1H/q+1;/p-1" xsd:string
+xref: MolBase:739 
+xref: Gmelin:122614 {source="Gmelin"}
+xref: CAS:7783-90-6 {source="NIST Chemistry WebBook"}
+xref: CAS:7783-90-6 {source="ChemIDplus"}
+is_a: CHEBI:33968
+is_a: CHEBI:36093
+
+[Term]
+id: CHEBI:32588
+name: potassium chloride
+subset: 3_STAR
+def: "A metal chloride salt with a K(+) counterion." []
+synonym: "muriate of potash" RELATED [NIST_Chemistry_WebBook]
+synonym: "[KCl]" RELATED [MolBase]
+synonym: "Kaliumchlorid" RELATED [ChEBI]
+synonym: "Monopotassium chloride" RELATED [DrugBank]
+synonym: "Klor-con" RELATED BRAND_NAME [KEGG_DRUG]
+synonym: "KCl" RELATED [IUPAC]
+synonym: "Klotrix" RELATED BRAND_NAME [KEGG_DRUG]
+synonym: "sylvite" RELATED [ChEBI]
+synonym: "Kaon-Cl 10" RELATED BRAND_NAME [KEGG_DRUG]
+synonym: "potassium chloride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "74.55100" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "73.93256" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "ClK" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[K+]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "WCUXLLCKKVVCTQ-UHFFFAOYSA-M" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH.K/h1H;/q;+1/p-1" xsd:string
+xref: Wikipedia:Potassium_Chloride 
+xref: Reaxys:3534978 {source="Reaxys"}
+xref: CAS:7447-40-7 {source="ChemIDplus"}
+xref: DrugBank:DB00761 
+xref: KEGG:D02060 
+xref: MetaCyc:KCL 
+xref: CAS:7447-40-7 {source="NIST Chemistry WebBook"}
+xref: MolBase:881 
+is_a: CHEBI:26218
+is_a: CHEBI:36093
+relationship: has_role CHEBI:33287
+is_a: CHEBI:190303
+
+[Term]
+id: CHEBI:35696
+name: cobalt dichloride
+subset: 3_STAR
+def: "A cobalt salt in which the cobalt metal is in the +2 oxidation state and the counter-anion is chloride. It is used as an indicator for water in desiccants." []
+synonym: "dichlorocobalt" RELATED [ChemIDplus]
+synonym: "cobalt chloride" RELATED [ChEBI]
+synonym: "CoCl2" RELATED [IUPAC]
+synonym: "cobaltous chloride anhydrous" RELATED [NIST_Chemistry_WebBook]
+synonym: "cobalt(II) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "Kobalt(II)-chlorid" RELATED [ChEBI]
+synonym: "cobalt dichloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "cobaltous dichloride" RELATED [ChemIDplus]
+synonym: "Kobaltdichlorid" RELATED [ChEBI]
+synonym: "cobaltous chloride" RELATED [ChemIDplus]
+synonym: "Kobalt chlorid" RELATED [ChemIDplus]
+synonym: "cobalt(2+) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "cobalt muriate" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "129.83860" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "128.87090" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2Co" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[Cl-].[Co++]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Co/h2*1H;/q;;+2/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "GVPFVAHMJGGAJG-UHFFFAOYSA-L" xsd:string
+xref: PMID:16623025 {source="Europe PMC"}
+xref: PMID:23568501 {source="Europe PMC"}
+xref: PMID:29079364 {source="Europe PMC"}
+xref: PMID:8566016 {source="Europe PMC"}
+xref: PMID:16848139 {source="Europe PMC"}
+xref: PMID:23651544 {source="Europe PMC"}
+xref: CAS:7646-79-9 {source="NIST Chemistry WebBook"}
+xref: PMID:11207315 {source="Europe PMC"}
+xref: PMID:7615984 {source="Europe PMC"}
+xref: PMID:23694759 {source="Europe PMC"}
+xref: Wikipedia:Cobalt(II)_chloride 
+xref: LINCS:LSM-5958 
+xref: PMID:16229947 {source="Europe PMC"}
+xref: Reaxys:3902826 {source="Reaxys"}
+xref: CAS:7646-79-9 {source="ChemIDplus"}
+xref: PMID:23566873 {source="Europe PMC"}
+xref: Gmelin:9298 {source="Gmelin"}
+xref: PMID:1108802 {source="Europe PMC"}
+xref: PMID:18837732 {source="Europe PMC"}
+xref: PMID:23542142 {source="Europe PMC"}
+xref: PMID:23420403 {source="Europe PMC"}
+xref: PMID:23065176 {source="Europe PMC"}
+xref: PMID:21616561 {source="Europe PMC"}
+xref: Beilstein:3902826 {source="Beilstein"}
+xref: PMID:16426290 {source="Europe PMC"}
+relationship: has_part CHEBI:48828
+is_a: CHEBI:35698
+is_a: CHEBI:36093
+relationship: has_role CHEBI:50412
+relationship: has_role CHEBI:50904
+relationship: has_role CHEBI:38215
+relationship: has_role CHEBI:139492
+
+[Term]
+id: CHEBI:53503
+name: cobalt chloride hexahydrate
+subset: 3_STAR
+def: "A hydrate of cobalt chloride containing cobalt (in +2 oxidation state), chloride and water moieties in the ratio 1:2:6." []
+synonym: "cobalt (II) chloride hexahydrate" RELATED [ChEBI]
+synonym: "cobalt chloride hydrate" RELATED [ChEBI]
+synonym: "cobalt(2+) dichloride hexahydrate" EXACT IUPAC_NAME [IUPAC]
+synonym: "Cobalt(II) chloride--water (1/7)" EXACT IUPAC_NAME [IUPAC]
+synonym: "Cobalt chloride hexahydrate" EXACT [ChemIDplus]
+synonym: "Cobalt dichloride hexahydrate" RELATED [ChemIDplus]
+synonym: "Cobalt(II) chloride hexahydrate" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "237.93100" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "236.93429" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2CoH12O6" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "O.O.O.O.O.O.[Cl-].[Cl-].[Co++]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Co.6H2O/h2*1H;;6*1H2/q;;+2;;;;;;/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "GFHNAMRJFCEERV-UHFFFAOYSA-L" xsd:string
+xref: PMID:2025398 {source="Europe PMC"}
+xref: PMID:11207315 {source="Europe PMC"}
+xref: Reaxys:11403444 {source="Reaxys"}
+xref: PMID:9106780 {source="Europe PMC"}
+xref: PMID:8404951 {source="Europe PMC"}
+xref: Patent:CN101077120 
+xref: PMID:21721333 {source="Europe PMC"}
+xref: CAS:7791-13-1 {source="ChemIDplus"}
+xref: Gmelin:16833 {source="Gmelin"}
+xref: PMID:16870561 {source="Europe PMC"}
+xref: PMID:8857117 {source="Europe PMC"}
+is_a: CHEBI:35505
+relationship: has_part CHEBI:35696
+relationship: has_role CHEBI:50904
+
+[Term]
+id: CHEBI:36383
+name: strontium dichloride
+subset: 3_STAR
+synonym: "strontium chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "SrCl2" RELATED [IUPAC]
+synonym: "strontium dichloride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "157.84332" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2Sr" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "158.52540" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "AHBGXTDRMVNFER-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.Sr/h2*1H;/q;;+2/p-2" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[Cl-].[Cl-].[Sr++]" xsd:string
+xref: CAS:10476-85-4 {source="ChemIDplus"}
+xref: CAS:10476-85-4 {source="NIST Chemistry WebBook"}
+xref: Gmelin:463924 {source="Gmelin"}
+is_a: CHEBI:36093
+is_a: CHEBI:36384
+
+[Term]
+id: CHEBI:36385
+name: strontium dichloride hexahydrate
+subset: 3_STAR
+synonym: "strontium dichloride hexahydrate" EXACT IUPAC_NAME [IUPAC]
+synonym: "SrCl2.6H2O" RELATED [IUPAC]
+synonym: "strontium dichloride--water (1/6)" EXACT IUPAC_NAME [IUPAC]
+synonym: "strontium chloride hexahydrate" RELATED [ChemIDplus]
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "265.90671" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl2H12O6Sr" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/mass "266.61708" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "AMGRXJSJSONEEG-UHFFFAOYSA-L" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "[H]O[H].[H]O[H].[H]O[H].[H]O[H].[H]O[H].[H]O[H].Cl[Sr]Cl" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/2ClH.6H2O.Sr/h2*1H;6*1H2;/q;;;;;;;;+2/p-2" xsd:string
+xref: CAS:10025-70-4 {source="ChemIDplus"}
+is_a: CHEBI:36384
+relationship: has_part CHEBI:36383
+is_a: CHEBI:35505
+
+[Term]
+id: CHEBI:37117
+name: thallium monochloride
+subset: 3_STAR
+synonym: "[TlCl]" RELATED [ChEBI]
+synonym: "Thallous chloride" RELATED [KEGG_COMPOUND]
+synonym: "thallium(1+) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "thallium chloride" RELATED [ChemIDplus]
+synonym: "thallium(I) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "chloridothallium" EXACT IUPAC_NAME [IUPAC]
+synonym: "TlCl" RELATED [IUPAC]
+synonym: "thallous chloride" RELATED [NIST_Chemistry_WebBook]
+synonym: "thallium monochloride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "239.83600" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "ClTl" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "239.94328" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "Cl[Tl]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH.Tl/h1H;/q;+1/p-1" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "GBECUEIQVRDUKB-UHFFFAOYSA-M" xsd:string
+xref: CAS:7791-12-0 {source="KEGG COMPOUND"}
+xref: CAS:7791-12-0 {source="NIST Chemistry WebBook"}
+xref: Gmelin:25486 {source="Gmelin"}
+xref: KEGG:C15226 
+xref: CAS:7791-12-0 {source="ChemIDplus"}
+xref: Gmelin:13669 {source="Gmelin"}
+is_a: CHEBI:37110
+is_a: CHEBI:36093
+
+[Term]
+id: CHEBI:32213
+name: ((201)Tl)thallium monochloride
+subset: 3_STAR
+synonym: "((201)Tl)thallium(1+) chloride" EXACT IUPAC_NAME [IUPAC]
+synonym: "thallium-201 chloride" RELATED [ChemIDplus]
+synonym: "(201)TlCl" RELATED [IUPAC]
+synonym: "((201)Tl)thallium(I) chloride" EXACT IUPAC_NAME [IUPAC]
+property_value: http://purl.obolibrary.org/obo/chebi/mass "236.420" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/charge "0" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/monoisotopicmass "235.93966" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/formula "Cl[201Tl]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchi "InChI=1S/ClH.Tl/h1H;/q;+1/p-1/i;1-3" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/smiles "Cl[201Tl]" xsd:string
+property_value: http://purl.obolibrary.org/obo/chebi/inchikey "GBECUEIQVRDUKB-RYDPDVNUSA-M" xsd:string
+xref: KEGG:D02402 
+xref: Drug_Central:5095 {source="DrugCentral"}
+xref: CAS:55172-29-7 {source="ChemIDplus"}
+is_a: CHEBI:37117
+relationship: has_part CHEBI:37804
+is_a: CHEBI:139358

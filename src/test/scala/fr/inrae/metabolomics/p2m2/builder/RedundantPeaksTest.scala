@@ -1,6 +1,5 @@
 package fr.inrae.metabolomics.p2m2.builder
 
-import fr.inrae.metabolomics.p2m2.builder.ScanLoaderDetectNeutralLossesTest.getClass
 import umich.ms.datatypes.scan.IScan
 import utest.{TestSuite, Tests, test}
 
