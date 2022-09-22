@@ -13,7 +13,7 @@ object Main extends App {
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
                      thresholdAbundanceM0Filter : Double = 0.1,
-                     overrepresentedPeakFilter : Int = 1000,
+                     overrepresentedPeakFilter : Int = 800,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
                      precisionMzh : Int = 1000,
