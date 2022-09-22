@@ -23,8 +23,17 @@ case object ScanLoader {
     source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
-    println("MS1 size= "+scansMs(source, index, None, None, 1).size)
-    println("MS2 size= "+scansMs(source, index, None, None, 2).size)
+    println("==========================================================")
+    println("MS1 size        : "+scansMs(source, index, None, None, 1).size)
+    println("MS2 size        : "+scansMs(source, index, None, None, 2).size)
+    println(s"Instruments    : \n${source.parseRunInfo().getInstruments.values().asScala.map(
+      k =>
+        "Model:"+k.getModel+" Analyzer:"+k.getAnalyzer +"\n"+
+        "Detector:"+k.getDetector +" Ionisation:"+k.getIonisation +"\n"+
+        "Manufacturer:"+k.getManufacturer + " S/N:" + k.getSerialNumber
+    ).mkString("\n\n") } ")
+
+
     (source,index)
     // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
   }
@@ -241,7 +250,7 @@ case object ScanLoader {
 
    // println(countAllPeak)
     /* calcul distribution of Peak number  */
-   /*
+    println("\n == distribution of selected peak ( intensity / number )")
     val u = countAllPeak.foldLeft(Map[Int,Int]()) {
       case (acc, c) if acc.contains(c) => acc + (c -> (acc(c)+1))
       case (acc, c) => acc + (c -> 1)
@@ -253,7 +262,7 @@ case object ScanLoader {
     )
 
     println(u)
-*/
+
     val newL = peaks.zipWithIndex filter {
       case (_, i) => countAllPeak(i) < threshold
     } map {

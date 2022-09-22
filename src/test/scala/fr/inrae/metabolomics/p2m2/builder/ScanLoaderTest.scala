@@ -36,7 +36,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          thresholdAbundanceM0Filter=0.1,intensityFilter = 1000000000,
+          thresholdAbundanceM0Filter=0.1,intensityFilter = 10,
           precision = 0.01
         )
 

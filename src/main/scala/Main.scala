@@ -13,7 +13,7 @@ object Main extends App {
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
                      thresholdAbundanceM0Filter : Double = 0.1,
-                     overrepresentedPeakFilter : Int = 4000,
+                     overrepresentedPeakFilter : Int = 1000,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
                      precisionMzh : Int = 1000,
@@ -27,8 +27,8 @@ object Main extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("mzxml-analyser-test"),
-      head("mzxml-analyser-test", "1.0"),
+      programName("mzxml-glucosinolates-phenolics-analyser"),
+      head("mzxml-glucosinolates-phenolics-analyser", "1.0"),
       opt[Int]('i',"thresholdIntensityFilter")
         .optional()
         .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
