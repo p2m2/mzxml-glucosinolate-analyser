@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
  *
  * Generation of src/main/resources/glucosinolate_ChEBI.tsv
  *
- * 1) https://www.ebi.ac.uk/chebi/advancedSearchFT.do?searchString=glucosinolate
+ * 1) https://www.ebi.ac.uk/chebi/advancedSearchFT.do - S2 in Formula
  * 2) "Download your results"
  * ChEBI_Results.tsv
  */

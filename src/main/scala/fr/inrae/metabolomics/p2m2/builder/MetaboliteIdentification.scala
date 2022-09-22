@@ -15,42 +15,8 @@ case class MetaboliteIdentification(
                                      end: Option[Double],
                                      peaks : Seq[PeakIdentification]
                                    ) {
-/*
-  def filterOverRepresentedPeak2(threshold : Int): MetaboliteIdentification = {
-
-    val newL : Seq[PeakIdentification] = peaks.flatMap (
-      p => {
-        val s = source.parseScan(p.numScan, true)
-        val mz = p.peaks.head.mz
-
-        index
-          .getMapByRawNum
-          .keySet() // The second parameter asks the parser to parse the spectrum along
-          .asScala
-          .filter(scanNumRaw => source.parseScan(scanNumRaw, false).getMsLevel == 1)
-          .map(
-            scanNumRaw => {
-              // Do something with the scan.
-              // Note that some features, like scan.getChildScans() will not work in
-              // this case, as there is not enough information to build those
-              // relationships.
-              val scan: IScan = source.parseScan(scanNumRaw, true)
-              val spectrum = scan.fetchSpectrum()
-              val idx = spectrum.findClosestMzIdx(mz)
-              spectrum.getIntensities()(idx)
-            }
-          ).size match {
-          case s if s>threshold => None
-          case _ => Some(p)
-        }
-      }
-    )
-    MetaboliteIdentification(source,index,newL)
-  }
-*/
-
-  def getInfo( p :PeakIdentification) : CsvMetabolitesIdentification = {
-    val mz = p.peaks.map(p2 => (p2.mz*1000 ).round / 1000.toDouble )
+  def getInfo( p :PeakIdentification,precisionMzh : Int) : CsvMetabolitesIdentification = {
+    val mz = p.peaks.map(p2 => (p2.mz*precisionMzh ).round / precisionMzh.toDouble )
     val intensities = p.peaks.map(_.intensity)
     val abundance = p.peaks.map(_.abundance)
 
@@ -64,17 +30,17 @@ case class MetaboliteIdentification(
     )
   }
 
-  def getInfos: Seq[CsvMetabolitesIdentification] = {
+  def getInfos(precisionMzh : Int): Seq[CsvMetabolitesIdentification] = {
     println("\n== detectNeutralLoss/detectDaughterIons == ")
 
     peaks.zipWithIndex
       . map {
      case (x,idx) =>
        print(s"\r===>$idx/${peaks.size}")
-       getInfo(x)
+       getInfo(x,precisionMzh)
     }
       /* remove entry if none neutral and none daughters ions detected or big abundance (>60%)*/
-      .filter( csvM => (csvM.abundance(0)>0.6)||(csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
+      .filter( csvM => (csvM.abundance.head>0.6)||(csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
       .sortBy( x => (x.rt,x.mz.head) )
   }
 }

@@ -13,10 +13,11 @@ object Main extends App {
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
                      thresholdAbundanceM0Filter : Double = 0.1,
-                     overrepresentedPeakFilter : Int = 2000,
+                     overrepresentedPeakFilter : Int = 4000,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
-                     toleranceMz : Double = 0.02,
+                     precisionMzh : Int = 1000,
+                     toleranceMz : Double = 0.01,
                      outfile : Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
@@ -44,6 +45,10 @@ object Main extends App {
         .optional()
         .action((x, c) => c.copy(endRT = Some(x)))
         .text(s"start RT"),
+      opt[Int]('m', "precisionMzh")
+        .optional()
+        .action((x, c) => c.copy(precisionMzh = x))
+        .text(s"precision/rounded Mzh (number to the right of the decimal point) . ${Config().precisionMzh}"),
       opt[Double]('t',"toleranceMz")
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
@@ -102,7 +107,7 @@ object Main extends App {
               config.toleranceMz)
 
         val listSulfurMetabolitesSelected : Seq[PeakIdentification] =
-          ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites)
+          ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites,config.precisionMzh)
 
         val m : MetaboliteIdentification = /*MetaboliteIdentification(source, index, config.startRT,
           config.endRT,listSulfurMetabolitesSelected)*/
@@ -116,7 +121,7 @@ object Main extends App {
             intensityFilter,
             config.overrepresentedPeakFilter)
 
-          m.getInfos
+          m.getInfos(config.precisionMzh)
     }
 
     val f = config.outfile.getOrElse(new File("output.csv"))

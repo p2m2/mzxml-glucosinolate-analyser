@@ -164,7 +164,7 @@ case object ScanLoader {
               (mz,idx1,mz_p2,idx2)
             }
             .filter { case (_,_,_,idx2) => spectrum.getIntensities()(idx2) > intensityFilter  }
-            .filter { case (_,_,_,idx2) => (spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*(25.0) > 1.0  }
+            //.filter { case (_,_,_,idx2) => (spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*(25.0) > 1.5  }
             /* abundance filter */
         /*    .filter { case (_,idx1,_,idx2) =>
               (spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2))/scan.getBasePeakIntensity > 0.1  }*/
@@ -182,11 +182,10 @@ case object ScanLoader {
    * @param peaks
    * @return
    */
-  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification]): Seq[PeakIdentification] = {
-    val precision : Int = 1000
+  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification],precisionMzh : Int): Seq[PeakIdentification] = {
     peaks.map {
       p =>
-        val mz = (p.peaks.head.mz * precision).round / precision.toDouble
+        val mz = (p.peaks.head.mz * precisionMzh).round / precisionMzh.toDouble
         (mz, p)
     }.foldLeft(Map[Double, Seq[PeakIdentification]]()) {
       case (acc, (mz, p)) if acc.contains(mz) => acc + (mz -> (acc(mz) ++ Seq(p)))
