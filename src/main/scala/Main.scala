@@ -12,11 +12,11 @@ object Main extends App {
   case class Config(
                      mzfiles : Seq[File] = Seq(),
                      thresholdIntensityFilter : Option[Int] = None,
-                     thresholdAbundanceM0Filter : Double = 0.10,
-                     overrepresentedPeakFilter : Int = 200,
+                     thresholdAbundanceM0Filter : Double = 0.1,
+                     overrepresentedPeakFilter : Int = 2000,
                      startRT : Option[Double] = None,
                      endRT : Option[Double] = None,
-                     toleranceMz : Double = 0.01,
+                     toleranceMz : Double = 0.02,
                      outfile : Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false

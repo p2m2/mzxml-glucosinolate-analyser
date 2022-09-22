@@ -15,6 +15,7 @@ import scala.util.{Failure, Success, Try}
 
 case object Chebi {
   private val r = getClass.getResource("/glucosinolate_ChEBI.tsv")
+  private val massProton : Double = 0.007276
 
   private val entries : Seq[Map[String,String]] = Try(r.getPath) match {
     case Success(_) =>
@@ -41,7 +42,7 @@ case object Chebi {
   def getEntries(monoIsotopicMassSearch : Double, tolerance : Double = 0.01): Seq[Map[String,String]] = {
     entries.filter {
       entry =>
-        val m = entry("MONOISOTOPIC MASS").toDouble
+        val m = entry("MONOISOTOPIC MASS").toDouble - massProton
         (monoIsotopicMassSearch > (m-tolerance)) && (monoIsotopicMassSearch < (m+tolerance))
     }
   }

@@ -1,5 +1,5 @@
 scalaVersion := "2.13.8"
-name := "mzxml-analyser-test"
+name := "mzxml-glucosinolate-analyser"
 organization := "com.github.p2m2"
 organizationName := "p2m2"
 organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))

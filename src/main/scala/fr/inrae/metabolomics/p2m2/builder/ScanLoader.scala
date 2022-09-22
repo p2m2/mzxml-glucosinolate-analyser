@@ -164,6 +164,7 @@ case object ScanLoader {
               (mz,idx1,mz_p2,idx2)
             }
             .filter { case (_,_,_,idx2) => spectrum.getIntensities()(idx2) > intensityFilter  }
+            .filter { case (_,_,_,idx2) => (spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*(25.0) > 1.0  }
             /* abundance filter */
         /*    .filter { case (_,idx1,_,idx2) =>
               (spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2))/scan.getBasePeakIntensity > 0.1  }*/
@@ -267,7 +268,7 @@ case object ScanLoader {
   def searchIons(source: MZXMLFile,
                  l: Seq[IScan],
                  mzSearch:Double,
-                 precisionPeakDetection: Double = 0.1
+                 precisionPeakDetection: Double
                 ): Option[Double] = {
     l.flatMap {
       scanMs2 =>
@@ -294,8 +295,8 @@ case object ScanLoader {
                          end: Option[Double],
                          p : PeakIdentification,
                          nls : Seq[NeutralLosses],
-                         precisionPeakDetection: Double = 0.1,
-                         precisionRtTime : Double = 0.01
+                         precisionPeakDetection: Double = 0.2,
+                         precisionRtTime : Double = 0.03
                        ) : Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.NLs.Value,Option[Double]] = {
 
     val scanMs2: Seq[IScan] = scansMs(source, index,start,end, 2)
@@ -325,7 +326,7 @@ case object ScanLoader {
                          p: PeakIdentification,
                          dis: Seq[DaughterIons],
                          precisionPeakDetection: Double = 0.1,
-                         precisionRtTime: Double = 0.01
+                         precisionRtTime: Double = 0.03
                        ): Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.DIs.Value, Option[Double]] = {
 
     val scanMs2 = scansMs(source, index,start,end, 2)

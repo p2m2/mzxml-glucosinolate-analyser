@@ -73,8 +73,8 @@ case class MetaboliteIdentification(
        print(s"\r===>$idx/${peaks.size}")
        getInfo(x)
     }
-      /* remove entry if none neutral and none daughters ions detected */
-      .filter( csvM => csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty)
+      /* remove entry if none neutral and none daughters ions detected or big abundance (>60%)*/
+      .filter( csvM => (csvM.abundance(0)>0.6)||(csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
       .sortBy( x => (x.rt,x.mz.head) )
   }
 }
