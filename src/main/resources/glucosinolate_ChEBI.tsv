@@ -1,0 +1,96 @@
+ID	NAME	DEFINITION	STAR	FORMULA	MONOISOTOPIC MASS	CHARGE	BPDB ACCESSION	CHEMIDPLUS	DRUGBANK ACCESSION	DRUGCENTRAL ACCESSION	ECMDB ACCESSION	GLYTOUCAN ACCESSION	GLYGEN ACCESSION	HMDB ACCESSION	KEGG COMPOUND ACCESSION	KEGG DRUG ACCESSION	KEGG GLYCAN ACCESSION	KNApSAcK ACCESSION	LINCS ACCESSION	LIPID MAPS INSTANCE ACCESSION	LIPID MAPS CLASS ACCESSION	METACYC ACCESSION	MOLBASE ACCESSION	NIST CHEMISTRY WEBBOOK	PDB ACCESSION	PDBECHEM ACCESSION	PESTICIDES ACCESSION	PPDB ACCESSION	SMID ACCESSION	VSDB ACCESSION	WEBELEMENTS ACCESSION	WIKIPEDIA ACCESSION	YMDB ACCESSION
+CHEBI:24279	glucosinolate	Water-soluble anionic substituted thioglucosides. Glucosinolates have a central C atom which is bonded via an S atom to a glycone group and via an N atom to a sulfonated oxime group, and which also carries a side-group. The side-chain and sulfate group have an anti stereochemical configuration across the C=N double bond.	3	C7H11NO9S2R	316.98752	-1									C17260																	Glucosinolate		
+CHEBI:183090	(Z)-3-hydroxypropyl glucosinolate(1-)		2	C10H18NO10S2	376.03776	-1																3-HYDROXYPROPYL-GLUCOSINOLATE												
+CHEBI:183099	(Z)-alkenyl glucosinolate(1-)		2	C9H14NO9S2R	344.01100	-1																alkenyl-glucosinolate												
+CHEBI:183098	(Z)-glucosinolate(1-)		2	C7H11NO9S2R	316.98752	-1																Glucosinolates												
+CHEBI:136435	omega-[(methylsulfinyl)alkyl]glucosinolate	An alkylglucosinolate resulting from the removal of the proton of the hydrogen sulfate group of any ω-[(methylsulfinyl)alkyl]glucosinolic acid.	3	(CH2)n.C10H18NO10S3		-1																omega-methylsulfinylalkylglucosinolate												
+CHEBI:24796	indolylmethylglucosinolate	A glucosinolate that is the conjugate base of indolylmethylglucosinolic acid.	3	C16H20N2O9S2	448.06102	0																												
+CHEBI:62724	4-hydroxyglucobrassicin(1-)	An indolylmethylglucosinolate that is the conjugate base of 4-hydroxyglucobrassicin.	3	C16H19N2O10S2	463.04866	-1									C08422			C00000127				4-HYDROXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:27506	neoglucobrassicin	An indolyl carbohydrate that is glucobrassicin methoxy substituted at position 1 of the indole moiety.	3	C17H22N2O10S2	478.07159	0		5187-84-8						HMDB0038384	C08424			C00000126				1-METHOXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:1890	4-methoxyglucobrassicin	An  indolylmethylglucosinolic acid that is glucobrassicin bearing a methoxy substituent at position 4 on the indole ring.	3	C17H22N2O10S2	478.07159	0		83327-21-3							C08423			C00000128				4-METHOXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:47798	xi-progoitrin(1-)	A glucosinolate resulting from the removal of a proton from the oxime hydrogen sulfate moiety of ξ-progoitrin.	3	C11H18NO10S2	388.03776	-1																												
+CHEBI:5416	glucoraphenin(1-)	A glucosinolate resulting from the removal of the proton from the oxime hydrogen sulfate group of glucoraphenin.	3	C12H20NO9S3	418.03057	-1									C08420			C00001481																
+CHEBI:36451	alkenylglucosinolate	A glucosinolate that is the conjugate base of alkenylglucosinolic acid.	3																															
+CHEBI:36452	aralkylglucosinolate	A glucosinolate having a aralkyl side chain.	3																															
+CHEBI:136434	omega-[(methylsulfanyl)alkyl]glucosinolate	A thia-alkylglucosinolate resulting from the removal of the proton of the hydrogen sulfate group of any ω-[(methylsulfanyl)alkyl]glucosinolic acid.	3	(CH2)n.C10H18NO9S3		-1																Aliphatic-glucosinolates												
+CHEBI:136425	omega-(methylsulfanyl)alkyl desulfoglucosinolate	A desulfoglucosinolic acid resulting from the formal condensation of the thiol group of any ω-[(methylsulfanyl)alkyl]thiohydroximic acid with β-D-glucopyranose.	3	(CH2)n.C10H19NO6S2		0																Desulfoaliphaticglucosinolates												
+CHEBI:80988	7-Methylthioheptyl glucosinolate		2	C15H29NO9S3	463.10045	0									C17252																			
+CHEBI:80989	8-Methylthiooctyl glucosinolate		2	C16H31NO9S3	477.11610	0									C17254																			
+CHEBI:80991	desulfo-Glucosinolate		2	C7H12NO6S	238.03853	0									C17259																			
+CHEBI:145995	3-benzoyloxypropyl glucosinolate		2	C17H23NO11S2	481.07125	0																												
+CHEBI:145996	4-benzoyloxybutyl glucosinolate		2	C18H25NO11S2	495.08690	0																												
+CHEBI:145997	5-benzoyloxypentyl glucosinolate		2	C19H27NO11S2	509.10255	0																												
+CHEBI:169658	4-Phenylbutyl glucosinolate		2	C17H25NO9S2	451.09707	0								HMDB0038415																				
+CHEBI:172657	6-Heptenyl glucosinolate		2	C14H25NO9S2	415.09707	0								HMDB0038425																				
+CHEBI:175821	2-Methylpropyl glucosinolate		2	C11H21NO9S2	375.06577	0									C17256																			
+CHEBI:177064	3-Hydroxypropyl-Glucosinolate		2	C10H19NO10S2	377.04504	0																												
+CHEBI:183832	Phenethyl glucosinolate		2	C15H21NO9S2	423.06577	0								HMDB0038423																				
+CHEBI:187253	3-Methylpentyl glucosinolate		2	C13H25NO9S2	403.09707	0								HMDB0036355																				
+CHEBI:189879	(2R)-2-Hydroxy-2-phenylethyl glucosinolate		2	C15H21NO10S2	439.06069	0								HMDB0037205																				
+CHEBI:191822	3-Phenylpropyl glucosinolate		2	C16H23NO9S2	437.08142	0								HMDB0038422																				
+CHEBI:62651	thia-alkylglucosinolate	A glucosinolate in which the side-chain consists of a thia-alkyl group.	3																															
+CHEBI:62652	hydroxy-alkylglucosinolate	A glucosinolate in which the side-chain consists of a hydroxylated alkyl group.	3																															
+CHEBI:62663	hydroxy-alkenylglucosinolate	A glucosinolate in which the side-chain consists of a hydroxylated alkenyl group.	3																															
+CHEBI:178120	2-(Methylthio)ethyl glucosinolate		2	C10H19NO9S3	393.02219	0								HMDB0038408																				
+CHEBI:191676	6-(Methylsulfonyl)hexyl glucosinolate		2	C14H27NO11S3	481.07462	0								HMDB0038411																				
+CHEBI:1865	4-hydroxyglucobrassicin	An indolylmethylglucosinolic acid that is glucobrassicin bearing a hydroxy substituent at position 4 on the indole ring.	3	C16H20N2O10S2	464.05594	0		83327-20-2							C08422			C00000127				4-HYDROXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:5407	glucoiberverin(1-)	A thia-alkylglucosinolate resulting from the removal of the proton of the hydrogen sulfate group of glucoiberverin.	3	C11H20NO9S3	406.03057	-1									C08412							3-METHYLTHIOPROPYL-GLUCOSINOLATE												
+CHEBI:62725	4-methoxyglucobrassicin(1-)	An indolylmethylglucosinolate that is the conjugate base of 4-methoxyglucobrassicin, obtained by deprotonation of the sulfo group.	3	C17H21N2O10S2	477.06431	-1									C08423			C00000128				4-METHOXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:64965	neoglucobrassicin(1-)	An indolylmethylglucosinolate that is the conjugate base of neoglucobrassicin, obtained by deprotonation of the sulfo group.	3	C17H21N2O10S2	477.06431	-1									C08424							1-METHOXY-3-INDOLYLMETHYL-GLUCOSINOLATE												
+CHEBI:5415	glucoraphanin(1-)	A glucosinolate that is the  conjugate base of glucoraphanin.	3	C12H22NO10S3	436.04113	-1																												
+CHEBI:5408	glucolepidiin	An alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to an -N-(sulfooxy)propanimidoyl group at the anomeric sulfur. It occurs in Lepidium sativum (garden cress) and Armoracia lapathifolia (horseraddish). A flavour component; the hydrolysis product, ethyl isothiocyanate, is very pungent and garlic-like.	3	C9H17NO9S2	347.03447	0									C08413			C00001474																
+CHEBI:79311	glucoraphanin	A thia-glucosinolic acid that is glucoerucin in which the sulfur atom of the methyl thioether group has been oxidised to the corresponding sulfoxide.	3	C12H23NO10S3	437.04841	0		21414-41-5						HMDB0038404	C08419			C00007545														Glucoraphanin		
+CHEBI:79317	sinigrin	An alkenylglucosinolic acid that consists of 1-thio-β-D-glucopyranose having a 4-[(sulfooxy)imino]but-1-en-4-yl group attached to the anomeric sulfur.	3	C10H17NO9S2	359.03447	0		534-69-0						HMDB0034070	C08427			C00001488														Sinigrin		
+CHEBI:79318	glucobrassicanapin	An alkenylglucosinolic acid that consists of 1-thio-β-D-glucopyranose having a 6-[(sulfooxy)imino]hex-1-en-6-yl group attached to the anomeric sulfur.	3	C12H21NO9S2	387.06577	0		19041-10-2						HMDB0038417	C08403			C00001463																
+CHEBI:79324	glucoberteroin	A thia-alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 6-(methylsulfanyl)-N-(sulfooxy)hexanimidoyl group at the anomeric sulfur.	3	C13H25NO9S3	435.06914	0		29611-01-6							C08401			C00007593																
+CHEBI:79325	glucoerucin	A thia-alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose having a 5-(methylsulfanyl)-N-(sulfooxy)pentanimidoyl group attached to the anomeric sulfur.	3	C12H23NO9S3	421.05349	0		21973-56-8						HMDB0038403	C08409			C00007344																
+CHEBI:79326	glucoiberverin	An thia-alkylglucosinolic acid that is propylglucosinolic acid in which a hydrogen attached to the terminal carbon of the propyl group has been replaced by a methylsulfanediyl group.	3	C11H21NO9S3	407.03784	0		26888-03-9							C08412			C00001473																
+CHEBI:79328	glucocapparin	An alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a N-(sulfooxy)ethanimidoyl group at the anomeric sulfur.	3	C8H15NO9S2	333.01882	0								HMDB0038429	C08404			C00001465																
+CHEBI:79331	glucoputranjivin	An alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 2-methyl-N-(sulfooxy)propanimidoyl group at the anomeric sulfur.	3	C10H19NO9S2	361.05012	0									C08418			C00001479																
+CHEBI:79338	isobutylglucosinolic acid	An alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 3-methyl-N-(sulfooxy)butanimidoyl group at the anomeric sulfur.	3	C11H21NO9S2	375.06577	0									C17256																			
+CHEBI:79347	gluconasturtiin	An aralkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 3-phenyl-N-(sulfooxy)propanimidoyl group at the anomeric sulfur.	3	C15H21NO9S2	423.06577	0		499-30-9						HMDB0038423	C08417			C00007350																
+CHEBI:79349	gluconapoleiferin	A hydroxy-alkenylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 4-hydroxy-6-[(sulfooxy)imino]hex-1-en-6-yl group at the anomeric sulfur.	3	C12H21NO10S2	403.06069	0		19764-03-5							C08416			C00001477																
+CHEBI:79363	glucoconringiin	A hydroxy-alkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 3-hydroxy-3-methyl-N-(sulfooxy)butanimidoyl group at the anomeric sulfur.	3	C11H21NO10S2	391.06069	0								HMDB0038418	C08408			C00001469																
+CHEBI:17127	glucotropeolin	An aralkylglucosinolic acid that consists of 1-thio-β-D-glucopyranose attached to a 2-phenyl-N-(sulfooxy)ethanimidoyl group at the anomeric sulfur.	3	C14H19NO9S2	409.05012	0		499-26-3						HMDB0038419	C02153			C00007346																
+CHEBI:79351	epi-progoitrin	The stereoisomer of ξ-progoitrin that has S at the carbon bearing the allylic hydroxy group.	3	C11H19NO10S2	389.04504	0		19237-18-4																										
+CHEBI:5401	glucocleomin(1-)	A hydroxy-alkylglucosinolate that is 2-methylbutylglucosinolate which has been hydroxylated at the 2-position of the 2-methylbutyl chain.	3	C12H22NO10S2	404.06906	-1									C08406			C00001467																
+CHEBI:47797	epi-progoitrin(1-)	A ξ-progoitrin(1−) that is the conjugate base of epi-progoitrin.	3	C11H18NO10S2	388.03776	-1		19237-18-4														CPD-19497												
+CHEBI:5412	gluconapoleiferin(1-)	A glucosinolate that is glucobrassicanapin which has been hydroxylated at the 3-position of the hex-5-enimidoyl chain.	3	C12H20NO10S2	402.05341	-1									C08416																			
+CHEBI:5400	glucocheirolin		3	C11H20NO11S3	438.02040	-1									C08405			C00001466																
+CHEBI:79352	progoitrin	The stereoisomer of ξ-progoitrin that has R at the carbon bearing the allylic hydroxy group.	3	C11H19NO10S2	389.04504	0		585-95-5						HMDB0034071	C08425			C00001486														Progoitrin		
+CHEBI:136956	glucohesperin	An ω-[(methylsulfiny)alkyl]glucosinolic acid in which the ω-(methylsulfinyl)alkyl group is specified as 6-(methylsulfinyl)hexyl.	3	C14H27NO10S3	465.07971	0								HMDB0038410				C00007348				CPDQT-288												
+CHEBI:29028	glucobrassicin	An indolylmethylglucosinolic acid that is 1-thio-β-D-glucopyranose having a 2-(1H-indol-3-yl)-N-(sulfooxy)ethanimidoyl group attached to the anomeric sulfur.	3	C16H20N2O9S2; C16H20N2O9S2	448.06102	0		4356-52-9						HMDB0030243	C05837			C00000125				CPD-1863										Glucobrassicin		
+CHEBI:5402	glucocochlearin(1-)	An alkylglucosinolate that is the conjugate base of glucocochlearin.	3	C11H20NO9S2	374.05850	-1									C08407			C00001468																
+CHEBI:8454	progoitrin(1-)	A ξ-progoitrin(1−) that is the conjugate base of progoitrin.	3	C11H18NO10S2	388.03776	-1		585-95-5							C08425																			
+CHEBI:80987	Glucolesquerellin		2	C14H27NO9S3	449.08479	0									C17250																			
+CHEBI:80999	Glucoarabin		2	C17H33NO10S3	507.12666	0									C17272																			
+CHEBI:81000	Glucoaubrietin		2	C15H21NO10S2	439.06069	0									C17273																			
+CHEBI:81002	Glucosisymbrin		2	C10H19NO10S2	377.04504	0									C17275																			
+CHEBI:5395	glucoalyssin	A thia-glucosinolic acid that is glucoberteroin in which the sulfur atom of the methyl thioether group has been oxidised to the corresponding sulfoxide.	3	C13H25NO10S3	451.06406	0									C08400			C00007345																
+CHEBI:132553	glucoibarin	An alkylglucosinolic acid that is 1-thio-β-D-glucose in which the anomeric sulfanyl hydrogen has been replaced by a 8-(methanesulfinyl)-N-(sulfooxy)octanimidoyl group.	3	C15H29NO10S3	479.09536	0												C00007352				CPDQT-295												
+CHEBI:89494	iberin	An isothiocyanate that is 1-isothiocyanatopropane in which a hydrogen at position 3 has been replaced by a methylsulfinyl group. A glucosinolate hydrolysis product found in many members of the Brassicaceae family, it is a quorum-sensing inhibitor (QSI) of the bacterial pathogen Pseudomonas aeruginosa.	3	C5H9NOS2	163.01256	0		505-44-2						HMDB0006095										505-44-2										
+CHEBI:5405	glucoerysolin		3	C12H22NO11S3	452.03605	-1									C08410			C00001471																
+CHEBI:5406	glucoiberin		3	C11H20NO10S3	422.02548	-1									C08411			C00007343																
+CHEBI:9151	Sinalbin		2	C14H18NO10S2	425.04504	0									C08426			C00001487																
+CHEBI:80998	Glucohirsutin		2	C16H31NO10S3	493.11101	0									C17271																			
+CHEBI:81001	Glucobarbarin		2	C15H21NO10S2	439.06069	0									C17274																			
+CHEBI:183096	(Z)-progoitrin(1-)		2	C11H18NO10S2	388.03776	-1																												
+CHEBI:36445	alkylglucosinolate		3																															
+CHEBI:36446	propylglucosinolate	An alkylglucosinolate that is the conjugate base of propylglucosinolic acid.	3	C10H18NO9S2	360.04285	-1																												
+CHEBI:36447	isobutylglucosinolate	An alkylglucosinolate that is the conjugate base of isobutylglucosinolic acid.	3	C11H20NO9S2	374.05850	-1																												
+CHEBI:36448	butylglucosinolate	An alkylglucosinolate that is the conjugate base of butylglucosinolic acid.	3	C11H20NO9S2	374.05850	-1																												
+CHEBI:36449	2-methylbutylglucosinolate	An alkylglucosinolate that is the conjugate base of 2-methylbutylglucosinolic acid.	3	C12H22NO9S2	388.07415	-1																												
+CHEBI:36450	pentylglucosinolate	An alkylglucosinolate that is the conjugate base of pentylglucosinolic acid.	3	C12H22NO9S2	388.07415	-1																												
+CHEBI:80545	indolylmethyl desulfoglucosinolate	A desulfoglucosinolic acid resulting from the formal condensation of the thiol group of N-hydroxy(indol-3-yl)ethanethioamide with β-D-glucopyranose.	3	C16H20N2O6S	368.10421	0									C16517			C00007398				CPD-1862												
+CHEBI:136527	(Z)-indolylmethyl desulfoglucosinolate	An indolylmethyl desulfoglucosinolate in which the C=N double bond has Z configuration.	3	C16H20N2O6S	368.10421	0																												
+CHEBI:136926	2-hydroxy-3-butenyldesulfoglucosinolate	A desulfoglucosinolic acid resulting from the formal condensation of the thiol group of (3S)-N,3-dihydroxypent-4-enethioamide with β-D-glucopyranose.	3	C11H19NO7S	309.08822	0																												
+CHEBI:136946	7-(methylthio)heptyldesulfoglucosinolate	An ω-(methylsulfany)alkyl desulfoglucosinolate in which the ω-(methylsulfany)alkyl group is specified as 7-(methylsulfanyl)heptyl.	3	C15H29NO6S2	383.14363	0									C21650							CPDQT-418												
+CHEBI:136950	5-(methylthio)pentyldesulfoglucosinolate	An ω-(methylsulfany)alkyl desulfoglucosinolate in which the ω-(methylsulfany)alkyl group is specified as 5-(methylsulfanyl)pentyl.	3	C13H25NO6S2	355.11233	0												C00007624				CPDQT-285												
+CHEBI:136952	6-(methylthio)hexyldesulfoglucosinolate	An ω-(methylsulfany)alkyl desulfoglucosinolate in which the ω-(methylsulfanyl)alkyl group is specified as 6-(methylsulfanyl)hexyl.	3	C14H27NO6S2	369.12798	0																CPDQT-417												
+CHEBI:136953	3-butenyldesulfoglucosinolate	A desulfoglucosinolic acid resulting from the formal condensation of the thiol group of N-hydroxypent-4-enethioamide with β-D-glucopyranose.	3	C11H19NO6S	293.09331	0																												
+CHEBI:192830	(Z)-omega-(methylsulfanyl)alkyl desulfoglucosinolate	A ω-(methylsulfanyl)alkyl desulfoglucosinolate in which the double bond adopts a Z-configuration.	3	(CH2)n.C10H19NO6S2		0																												
+CHEBI:80982	p-Hydroxybenzyldesulphoglucosinolate		2	C14H19NO7S	345.08822	0									C17240																			
+CHEBI:80985	3-Methylthiopropyl-desulfoglucosinolate		2	C11H21NO6S2	327.08103	0									C17244																			
+CHEBI:80986	4-(methylthio)butyldesulfoglucosinolate		2	C12H23NO6S2	341.09668	0									C17248																			
+CHEBI:190717	(2R)-2-Hydroxybut-3-enylglucosinolate		2	C11H19NO10S2	389.04504	0																												
+CHEBI:190725	4-(Methylsulfinyl)but-3-enylglucosinolate		2	C12H21NO10S3	435.03276	0																												

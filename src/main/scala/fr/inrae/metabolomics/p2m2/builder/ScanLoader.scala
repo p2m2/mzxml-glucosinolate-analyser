@@ -177,11 +177,11 @@ case object ScanLoader {
   }
 
   /**
-   * Merge all M/z and keep the Ions with tha maximuma abundance
+   * Merge all M/z and keep the Ions with the maximum abundance
    * @param peaks
    * @return
    */
-  def keepMzWithMaxAbundance(peaks: Seq[PeakIdentification]): Seq[PeakIdentification] = {
+  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification]): Seq[PeakIdentification] = {
     val precision : Int = 1000
     peaks.map {
       p =>
