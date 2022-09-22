@@ -73,27 +73,12 @@ object Main extends App {
   // OParser.parse returns Option[Config]
   OParser.parse(parser1, args, Config()) match {
     case Some(config) =>
-      getChEBIIdentifiers()
       process(config)
     // do something
     case _ => System.err.println("Ko")
     // arguments are bad, error message will have been displayed
   }
 
-  def getChEBIIdentifiers() = {
-    /* check ressource from EBI */
-    val r = getClass.getResource("/glucosinolate_ChEBI.tsv")
-
-    Try(r.getPath) match {
-      case Success(_) =>
-        println(Source.fromInputStream(r.openStream()).mkString(""))
-      case Failure(_) =>
-        System.err.println("Unable to find the export of glucosinolate entries from the ChEBI database .")
-        System.exit(1)
-    }
-
-
-  }
   def process(config : Config): Unit = {
 
     val values = config.mzfiles.flatMap {

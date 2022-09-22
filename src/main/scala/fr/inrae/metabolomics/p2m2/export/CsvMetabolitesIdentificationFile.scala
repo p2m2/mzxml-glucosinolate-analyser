@@ -1,6 +1,6 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
-import fr.inrae.metabolomics.p2m2.database.Chebi
+import fr.inrae.metabolomics.p2m2.database.{BrassicaAccession, Chebi}
 import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
@@ -18,6 +18,7 @@ case object CsvMetabolitesIdentificationFile {
 
       bw.write(s"ms+0;intensity+0;abundance+0;ms+2;intensity+2;abundance+2;")
       bw.write(s"CHEBI ID;")
+      bw.write(s"BRASSICA ID;")
       bw.write("RT;")
       neutralLosses.foreach {  name => bw.write(s"NL_$name;")}
       daughterIons.foreach {  name => bw.write(s"DI_$name;")}
@@ -32,6 +33,7 @@ case object CsvMetabolitesIdentificationFile {
           )
 
           bw.write(Chebi.getEntries(metabolitesIdentificationId.mz.head).map( entry => entry("ID")).mkString(",")+";")
+          bw.write(BrassicaAccession.getEntries(metabolitesIdentificationId.mz.head).map(entry => entry("ID")).mkString(",")+";")
 
           bw.write(s"${metabolitesIdentificationId.rt};")
           neutralLosses.foreach {  name => bw.write(s"${metabolitesIdentificationId.neutralLosses(name).getOrElse("")};")}
