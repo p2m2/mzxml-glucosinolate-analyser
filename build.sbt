@@ -20,6 +20,7 @@ developers := List(
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "4.1.0",
   "com.github.chhh" % "msftbx" % "1.8.8",
+  "com.lihaoyi" %% "ujson" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
 )

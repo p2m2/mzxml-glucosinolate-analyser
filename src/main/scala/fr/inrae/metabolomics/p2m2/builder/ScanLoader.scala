@@ -1,6 +1,5 @@
 package fr.inrae.metabolomics.p2m2.builder
 
-import fr.inrae.metabolomics.p2m2.builder.GLSRelatedDiagnostic.GLSRelatedDiagnostic.{DaughterIons, NeutralLosses}
 import umich.ms.datatypes.scan.IScan
 import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml._
@@ -207,7 +206,10 @@ case object ScanLoader {
                                  end: Option[Double],
                                  peaks: Seq[PeakIdentification],
                                  intensityFilter : Double,
-                                 threshold: Int): MetaboliteIdentification = {
+                                 threshold: Int,
+                                 nls: Seq[(String, Double)],
+                                 dis: Seq[(String, Double)]
+                               ): MetaboliteIdentification = {
 
     println(s"\n=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
 
@@ -270,7 +272,7 @@ case object ScanLoader {
     }
 
     println(s" new size:${newL.length}")
-    MetaboliteIdentification(source, index,start,end,newL)
+    MetaboliteIdentification(source, index,start,end,newL,nls,dis)
   }
 
   def searchIons(source: MZXMLFile,
@@ -303,10 +305,10 @@ case object ScanLoader {
                          start: Option[Double],
                          end: Option[Double],
                          p : PeakIdentification,
-                         nls : Seq[NeutralLosses],
+                         nls : Seq[(String,Double)], /* name, distance */
                          precisionPeakDetection: Double = 0.9,
                          precisionRtTime : Double = 0.001
-                       ) : Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.NLs.Value,Option[Double]] = {
+                       ) : Map[String,Option[Double]] = {
 /*
     val scanMs2: Seq[IScan] = scansMs(source, index,start,end, 2)
       .filter(scanMs2 => {
@@ -319,7 +321,7 @@ case object ScanLoader {
 
     nls.map (
       nl => {
-        nl.name->searchIons(source,scanMs2,mz - nl.distance,precisionPeakDetection)
+        nl._1->searchIons(source,scanMs2,mz - nl._2,precisionPeakDetection)
       }
     ).toMap
   }
@@ -335,10 +337,10 @@ case object ScanLoader {
                          start: Option[Double],
                          end: Option[Double],
                          p: PeakIdentification,
-                         dis: Seq[DaughterIons],
+                         dis: Seq[(String,Double)], /* name , mz */
                          precisionPeakDetection: Double = 0.3,
                          precisionRtTime: Double = 0.001
-                       ): Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.DIs.Value, Option[Double]] = {
+                       ): Map[String, Option[Double]] = {
 /*
     val scanMs22 = scansMs(source, index,start,end, 2)
       .filter(scanMs2 => {
@@ -349,7 +351,7 @@ case object ScanLoader {
 
     dis.map(
       di => {
-        di.name->searchIons(source,scanMs2,di.distance,precisionPeakDetection)
+        di._1->searchIons(source,scanMs2,di._2,precisionPeakDetection)
       }
     ).toMap
   }

@@ -8,7 +8,9 @@ case class MetaboliteIdentification(
                                      index : MZXMLIndex,
                                      start: Option[Double],
                                      end: Option[Double],
-                                     peaks : Seq[PeakIdentification]
+                                     peaks : Seq[PeakIdentification],
+                                     nls : Seq[(String,Double)],
+                                     dis : Seq[(String,Double)]
                                    ) {
   def getInfo( p :PeakIdentification,precisionMzh : Int) : CsvMetabolitesIdentification = {
     val mz = p.peaks.map(p2 => (p2.mz*precisionMzh ).round / precisionMzh.toDouble )
@@ -20,8 +22,8 @@ case class MetaboliteIdentification(
       intensities,
       abundance,
       p.rt,
-      neutralLosses = ScanLoader.detectNeutralLoss(source,index,start,end,p,GLSRelatedDiagnostic.GLSRelatedDiagnostic.nls()),
-      daughterIons = ScanLoader.detectDaughterIons(source,index,start,end,p,GLSRelatedDiagnostic.GLSRelatedDiagnostic.dis())
+      neutralLosses = ScanLoader.detectNeutralLoss(source,index,start,end,p,nls),
+      daughterIons = ScanLoader.detectDaughterIons(source,index,start,end,p,dis)
     )
   }
 

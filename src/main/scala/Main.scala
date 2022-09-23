@@ -1,7 +1,11 @@
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
+import fr.inrae.metabolomics.p2m2.config.ConfigReader
+import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
+import scala.io.Source
 
 object Main extends App {
 
@@ -83,51 +87,78 @@ object Main extends App {
   }
 
   def process(config : Config): Unit = {
+    val s = Source.fromFile("glucosinolate.json")
+    val confJson = ConfigReader.read(s.getLines().mkString)
+    s.close()
+    confJson.metabolites.foreach(
+      family => {
+        val values = config.mzfiles.flatMap {
+          mzFile =>
+            val (source, index) = ScanLoader.read(mzFile)
 
-    val values = config.mzfiles.flatMap {
-      mzFile =>
-        val (source,index) = ScanLoader.read(mzFile)
+            val intensityFilter = config.thresholdIntensityFilter match {
+              case Some(v) => v
+              case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+            }
 
-        val intensityFilter = config.thresholdIntensityFilter match {
-          case Some(v) => v
-          case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
-        }
-
-        val listSulfurMetabolites: Seq[PeakIdentification] =
-          ScanLoader.
-            getScanIdxAndSpectrumM0M2WithDelta(
+            analyse_metabolite(
+              config,
               source,
               index,
-              config.startRT,
-              config.endRT,
-              config.thresholdAbundanceM0Filter,
               intensityFilter,
-              filteringOnNbSulfur = 2,
-              config.toleranceMz,
-              deltaMOM2=1.996)
+              confJson.deltaMp0Mp2(family),
+              confJson.numberSulfurMin(family),
+              confJson.neutralLoss(family),
+              confJson.daughterIons(family)
+            )
+        }
+        val f = config.outfile.getOrElse(new File( s"$family.csv"))
+        f.delete()
+        CsvMetabolitesIdentificationFile.build(values,family,confJson,f)
+        println(s"========= check ${f.getPath} ===============")
+      })
+    }
 
-        val listSulfurMetabolitesSelected : Seq[PeakIdentification] =//listSulfurMetabolites
-          ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites,config.precisionMzh)
 
-        val m : MetaboliteIdentification = /*MetaboliteIdentification(source, index, config.startRT,
-          config.endRT,listSulfurMetabolitesSelected)*/
+    def analyse_metabolite(
+                            config: Config,
+                            source: MZXMLFile,
+                            index: MZXMLIndex,
+                            intensityFilter: Int,
+                            deltaMp0Mp2: Double,
+                            numberSulfurMin: Double,
+                            neutralLoss: Map[String, Double],
+                            daughterIons: Map[String, Double]
+                          ): Seq[CsvMetabolitesIdentification] = {
 
-          ScanLoader.filterOverRepresentedPeak(
+      val listSulfurMetabolites: Seq[PeakIdentification] =
+        ScanLoader.
+          getScanIdxAndSpectrumM0M2WithDelta(
             source,
             index,
             config.startRT,
             config.endRT,
-            listSulfurMetabolitesSelected,
+            config.thresholdAbundanceM0Filter,
             intensityFilter,
-            config.overrepresentedPeakFilter)
+            filteringOnNbSulfur = numberSulfurMin.toInt,
+            config.toleranceMz,
+            deltaMOM2 = deltaMp0Mp2)
 
-          m.getInfos(config.precisionMzh)
+      val listSulfurMetabolitesSelected: Seq[PeakIdentification] = //listSulfurMetabolites
+        ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
+
+      val m: MetaboliteIdentification =
+        ScanLoader.filterOverRepresentedPeak(
+          source,
+          index,
+          config.startRT,
+          config.endRT,
+          listSulfurMetabolitesSelected,
+          intensityFilter,
+          config.overrepresentedPeakFilter,
+          neutralLoss.toSeq,
+          daughterIons.toSeq
+        )
+      m.getInfos(config.precisionMzh)
     }
-
-    val f = config.outfile.getOrElse(new File("output.csv"))
-    f.delete()
-    CsvMetabolitesIdentificationFile.build(values,f)
-
-    println(s"========= check ${f.getPath} ===============")
-  }
 }

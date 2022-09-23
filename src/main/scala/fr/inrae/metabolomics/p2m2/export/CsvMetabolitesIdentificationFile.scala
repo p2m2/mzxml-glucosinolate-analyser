@@ -1,12 +1,15 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
-import fr.inrae.metabolomics.p2m2.database.{BrassicaAccession, Chebi}
+import fr.inrae.metabolomics.p2m2.config.ConfigReader
+import fr.inrae.metabolomics.p2m2.database.Chebi
 import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
 
 case object CsvMetabolitesIdentificationFile {
-  def build(list : Seq[CsvMetabolitesIdentification],out: File) : Unit = {
+  def build(list : Seq[CsvMetabolitesIdentification],
+            familyMetabolite : String,
+            configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
       val size = list.last.mz.length
       val neutralLosses = list.last.neutralLosses.keys
@@ -33,7 +36,7 @@ case object CsvMetabolitesIdentificationFile {
           )
 
           bw.write(Chebi.getEntries(metabolitesIdentificationId.mz.head).map( entry => entry("ID")).mkString(",")+";")
-          bw.write(BrassicaAccession.getEntries(metabolitesIdentificationId.mz.head).map(entry => entry("ID")).mkString(",")+";")
+          bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.mz.head).mkString(",")+";")
 
           bw.write(s"${metabolitesIdentificationId.rt};")
           neutralLosses.foreach {  name => bw.write(s"${metabolitesIdentificationId.neutralLosses(name).getOrElse("")};")}

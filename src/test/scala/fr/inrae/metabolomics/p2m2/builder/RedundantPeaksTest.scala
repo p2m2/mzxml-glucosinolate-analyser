@@ -1,6 +1,5 @@
 package fr.inrae.metabolomics.p2m2.builder
 
-import fr.inrae.metabolomics.p2m2.builder.ScanLoaderDetectNeutralLossesTest.getClass
 import umich.ms.datatypes.scan.IScan
 import utest.{TestSuite, Tests, test}
 
@@ -10,7 +9,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 object RedundantPeaksTest extends TestSuite {
 
 
-  val tests = Tests {
+  val tests: Tests = Tests {
     val v = ScanLoader.read(new File(getClass.getResource("/20181018-037.mzXML").getPath))
 
     def exec(mz : Double) = {
