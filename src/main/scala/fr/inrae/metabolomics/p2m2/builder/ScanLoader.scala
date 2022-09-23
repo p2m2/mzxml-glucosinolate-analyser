@@ -243,6 +243,7 @@ case object ScanLoader {
 
    // println(countAllPeak)
     /* calcul distribution of Peak number  */
+    /*
     println("\n=========================================================")
     println("== Number of Peak detected on MS1 scans by M/z selected    ")
     println("=========================================================\n")
@@ -252,6 +253,8 @@ case object ScanLoader {
     println("\n\n=========================================================")
     println(" -- The thirty most detected peaks selected --")
     println(countAllPeak.sorted(Ordering[Int].reverse).distinct.slice(0,30))
+
+     */
     /*
     val u = countAllPeak.foldLeft(Map[Int,Int]()) {
       case (acc, c) if acc.contains(c) => acc + (c -> (acc(c)+1))
