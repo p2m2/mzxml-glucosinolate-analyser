@@ -39,10 +39,10 @@ case object Chebi {
       }
   }
 
-  def getEntries(monoIsotopicMassSearch : Double, tolerance : Double = 0.01): Seq[Map[String,String]] = {
+  def getEntries(monoIsotopicMassSearch : Double, tolerance : Double = 0.005): Seq[Map[String,String]] = {
     entries.filter {
       entry =>
-        val m = entry("MONOISOTOPIC MASS").toDouble - massProton
+        val m : Double = entry("MONOISOTOPIC MASS").toDouble - massProton
         (monoIsotopicMassSearch > (m-tolerance)) && (monoIsotopicMassSearch < (m+tolerance))
     }
   }
