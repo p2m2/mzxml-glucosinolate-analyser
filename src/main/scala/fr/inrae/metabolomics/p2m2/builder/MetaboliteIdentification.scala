@@ -1,49 +1,43 @@
 package fr.inrae.metabolomics.p2m2.builder
 
-import umich.ms.datatypes.scan.IScan
+import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 case class MetaboliteIdentification(
                                      source : MZXMLFile,
                                      index : MZXMLIndex,
-                                     peaks : Seq[PeakIdentification]
+                                     start: Option[Double],
+                                     end: Option[Double],
+                                     peaks : Seq[PeakIdentification],
+                                     nls : Seq[(String,Double)],
+                                     dis : Seq[(String,Double)]
                                    ) {
+  def getInfo( p :PeakIdentification,precisionMzh : Int) : CsvMetabolitesIdentification = {
+    val mz = p.peaks.map(p2 => (p2.mz*precisionMzh ).round / precisionMzh.toDouble )
+    val intensities = p.peaks.map(_.intensity)
+    val abundance = p.peaks.map(_.abundance)
 
-  def getInfo( p :PeakIdentification) : Seq[Any] = {
-    val scan : IScan = source.parseScan(p.numScan, true)
-
-    val gluconolactone_178 = ScanLoader.detectNeutralLoss(source,p,178)
-    val sulfureTrioxide_80 = ScanLoader.detectNeutralLoss(source,p,80)
-    val anhydroglucose_162 = ScanLoader.detectNeutralLoss(source,p,162)
-    val thioglucose_s03_242 = ScanLoader.detectNeutralLoss(source,p,242)
-    val thioglucose_196 = ScanLoader.detectNeutralLoss(source,p,196)
-    val last_223 = ScanLoader.detectNeutralLoss(source,p,223)
-
-    val spectrum = scan.fetchSpectrum()
-
-    val intSpec0 = spectrum.getIntensities()(p.indexFirstIsotopeInSpectrum)
-    val intSpec1 = spectrum.getIntensities()(p.indexFirstIsotopeInSpectrum + 1)
-    val intSpec2 = spectrum.getIntensities()(p.indexFirstIsotopeInSpectrum + 2)
-
-    Seq(
-      spectrum.getMZs()(p.indexFirstIsotopeInSpectrum),
-      intSpec0,
-      (intSpec0/scan.getBasePeakIntensity) * 100.0,
-      spectrum.getMZs()(p.indexFirstIsotopeInSpectrum+1),
-      intSpec1,
-      (intSpec1 / scan.getBasePeakIntensity) * 100.0,
-      spectrum.getMZs()(p.indexFirstIsotopeInSpectrum+2),
-      intSpec2,
-      (intSpec2 / scan.getBasePeakIntensity) * 100.0,
-      gluconolactone_178,
-      sulfureTrioxide_80,
-      anhydroglucose_162,
-      thioglucose_s03_242,
-      thioglucose_196,
-      last_223)
+    CsvMetabolitesIdentification(
+      mz,
+      intensities,
+      abundance,
+      p.rt,
+      neutralLosses = ScanLoader.detectNeutralLoss(source,index,start,end,p,nls),
+      daughterIons = ScanLoader.detectDaughterIons(source,index,start,end,p,dis)
+    )
   }
 
-  def getInfos() : Seq[Seq[Any]] = {
-    peaks.map( getInfo )
+  def getInfos(precisionMzh : Int): Seq[CsvMetabolitesIdentification] = {
+    println("\n== detectNeutralLoss/detectDaughterIons == ")
+
+    peaks.zipWithIndex
+      . map {
+     case (x,idx) =>
+       print(s"\r===>$idx/${peaks.size}")
+       getInfo(x,precisionMzh)
+    }
+      /* remove entry if none neutral and none daughters ions detected or big abundance (>60%)*/
+      .filter( csvM => (csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
+      .sortBy( x => (x.rt,x.mz.head) )
   }
 }

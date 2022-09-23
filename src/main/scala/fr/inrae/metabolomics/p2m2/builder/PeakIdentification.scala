@@ -3,11 +3,11 @@ package fr.inrae.metabolomics.p2m2.builder
 /**
  *
  * @param numScan
- * @param indexFirstIsotopeInSpectrum
- * @param nbIsotope
+ * @param indexIsotopeInSpectrum
  */
 case class PeakIdentification(
-                               numScan : Int,
-                               indexFirstIsotopeInSpectrum : Int,
-                               mz: Seq[Double] // Others isotopes are on the right of the numSpectrum
+                               numScan : Int, /* scan on mzxml*/
+                               idxPeaks : Seq[Int], /* peaks index inside the spectrum */
+                               peaks : Seq[Peak],
+                               rt : Double /* Retention time */
                              )
