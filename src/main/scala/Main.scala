@@ -13,6 +13,7 @@ object Main extends App {
 
   case class Config(
                      mzfiles : Seq[File] = Seq(),
+                     jsonFamilyMetabolitesDetection : Option[File] = None,
                      thresholdIntensityFilter : Option[Int] = None,
                      thresholdAbundanceM0Filter : Double = 0.1,
                      overrepresentedPeakFilter : Int = 800,
@@ -31,6 +32,10 @@ object Main extends App {
     OParser.sequence(
       programName("mzxml-glucosinolates-phenolics-analyser"),
       head("mzxml-glucosinolates-phenolics-analyser", "1.0"),
+      opt[File]('j', "jsonFamilyMetabolitesDetection")
+        .optional()
+        .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
+        .text(s"json configuration to detect metabolite family."),
       opt[Int]('i',"thresholdIntensityFilter")
         .optional()
         .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
@@ -87,9 +92,20 @@ object Main extends App {
   }
 
   def process(config : Config): Unit = {
-    val s = Source.fromFile("glucosinolate.json")
-    val confJson = ConfigReader.read(s.getLines().mkString)
-    s.close()
+
+    val confJson = config.jsonFamilyMetabolitesDetection match {
+      case Some(jsonFilePath) =>
+        val s = Source.fromFile (jsonFilePath)
+        val res = ConfigReader.read(s.getLines ().mkString)
+        s.close()
+        res
+      case None =>
+        ConfigReader.read(
+          Source.fromInputStream(
+            getClass.getResource("/default.json")
+              .openStream()).getLines().mkString)
+    }
+
     confJson.metabolites.foreach(
       family => {
         val values = config.mzfiles.flatMap {
