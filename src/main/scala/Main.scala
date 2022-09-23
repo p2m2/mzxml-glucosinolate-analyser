@@ -2,8 +2,6 @@ import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 
 import java.io.File
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
 
 object Main extends App {
 
@@ -106,7 +104,7 @@ object Main extends App {
               intensityFilter,
               config.toleranceMz)
 
-        val listSulfurMetabolitesSelected : Seq[PeakIdentification] =
+        val listSulfurMetabolitesSelected : Seq[PeakIdentification] =//listSulfurMetabolites
           ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites,config.precisionMzh)
 
         val m : MetaboliteIdentification = /*MetaboliteIdentification(source, index, config.startRT,

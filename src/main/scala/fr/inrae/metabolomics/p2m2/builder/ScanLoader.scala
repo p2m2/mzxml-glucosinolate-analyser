@@ -20,7 +20,7 @@ case object ScanLoader {
   def read( f : File ) : (MZXMLFile,MZXMLIndex) = {
     val source : MZXMLFile = new MZXMLFile(f.getPath)
     println(source.parseRunInfo())
-    source.setExcludeEmptyScans(true)
+    //source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
     println("==========================================================")
@@ -99,11 +99,11 @@ case object ScanLoader {
       })
       .filter(_.getMsLevel == ms).toSeq
       .filter(scan => start match {
-        case Some(v) => v < scan.getRt
+        case Some(v) => v <= scan.getRt
         case None => true
       })
       .filter(scan => end match {
-        case Some(v) => v > scan.getRt
+        case Some(v) => v >= scan.getRt
         case None => true
       })
   }
@@ -146,14 +146,6 @@ case object ScanLoader {
     // as they're used in the file). The internal scan numbering scheme always
     // renumbers all scans starting from 1 and increasing by 1 consecutively.
     val allScans = scansMs(source,index,start,end,1)
-      .filter( scan => start match {
-        case Some(v) => v < scan.getRt
-        case None => true
-      })
-      .filter(scan => end match {
-        case Some(v) => v > scan.getRt
-        case None => true
-      })
 
     allScans.zipWithIndex.flatMap {
         case (basicScan,i) => {
@@ -226,10 +218,6 @@ case object ScanLoader {
         case (scanR,i) => {
           val scan = source.parseScan(scanR.getNum, true)
           print(s"\r===>$i/${allScans.size}")
-          // Do something with the scan.
-          // Note that some features, like scan.getChildScans() will not work in
-          // this case, as there is not enough information to build those
-          // relationships.
           val spectrum = scan.fetchSpectrum()
 
           peaks.map(_.peaks.head.mz)
@@ -257,8 +245,8 @@ case object ScanLoader {
     println(countAllPeak.zipWithIndex.map{  case (c,id) => s"${peaks(id).peaks.head.mz} m/z -> $c" }.mkString("\n"))
 
     println("\n\n=========================================================")
-    println(" -- The twenty most detected peaks selected --")
-    println(countAllPeak.sorted(Ordering[Int].reverse).distinct.slice(0,20))
+    println(" -- The thirty most detected peaks selected --")
+    println(countAllPeak.sorted(Ordering[Int].reverse).distinct.slice(0,30))
     /*
     val u = countAllPeak.foldLeft(Map[Int,Int]()) {
       case (acc, c) if acc.contains(c) => acc + (c -> (acc(c)+1))
@@ -293,7 +281,8 @@ case object ScanLoader {
         scan2.getSpectrum match {
           case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
             if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection)
-              Some(spectrum.getIntensities()(v))
+           //   Some(spectrum.getIntensities()(v))
+              Some(spectrum.getMZs()(v))
             else None
           case _ => None
         }
@@ -312,14 +301,16 @@ case object ScanLoader {
                          end: Option[Double],
                          p : PeakIdentification,
                          nls : Seq[NeutralLosses],
-                         precisionPeakDetection: Double = 0.2,
-                         precisionRtTime : Double = 0.03
+                         precisionPeakDetection: Double = 0.9,
+                         precisionRtTime : Double = 0.001
                        ) : Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.NLs.Value,Option[Double]] = {
-
+/*
     val scanMs2: Seq[IScan] = scansMs(source, index,start,end, 2)
       .filter(scanMs2 => {
-        (scanMs2.getRt - p.rt).abs < precisionRtTime
+        scanMs2.getRt == p.rt
       })
+*/
+    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     val mz = p.peaks.head.mz
 
@@ -342,14 +333,16 @@ case object ScanLoader {
                          end: Option[Double],
                          p: PeakIdentification,
                          dis: Seq[DaughterIons],
-                         precisionPeakDetection: Double = 0.1,
-                         precisionRtTime: Double = 0.03
+                         precisionPeakDetection: Double = 0.3,
+                         precisionRtTime: Double = 0.001
                        ): Map[GLSRelatedDiagnostic.GLSRelatedDiagnostic.DIs.Value, Option[Double]] = {
-
-    val scanMs2 = scansMs(source, index,start,end, 2)
+/*
+    val scanMs22 = scansMs(source, index,start,end, 2)
       .filter(scanMs2 => {
         (scanMs2.getRt - p.rt).abs < precisionRtTime
       })
+*/
+    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     dis.map(
       di => {
