@@ -17,7 +17,7 @@ object ScanLoaderTest extends TestSuite {
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining - intensityFilter >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(
+        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
           v._1,
           v._2,
           None,  // RT start
@@ -31,7 +31,7 @@ object ScanLoaderTest extends TestSuite {
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining - intensityFilter >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(
+        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
           v._1,
           v._2,
           None, // RT start

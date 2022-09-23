@@ -132,14 +132,16 @@ case object ScanLoader {
     mean.toInt
   }
 
-  def getScanIdxAndSpectrum3IsotopesSulfurContaining(
+  def getScanIdxAndSpectrumM0M2WithDelta(
                                       source: MZXMLFile,
                                       index: MZXMLIndex,
                                       start : Option[Double] = None,
                                       end : Option[Double] = None,
                                       thresholdAbundanceM0Filter : Double,
                                       intensityFilter : Int,
-                                      precision: Double = 0.01
+                                      filteringOnNbSulfur : Int = 0,
+                                      precision: Double = 0.01,
+                                      deltaMOM2 : Double
                                     ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
     // the file using those numbers. We need the raw scan numbers (the numbers
@@ -159,13 +161,14 @@ case object ScanLoader {
             .zipWithIndex
             .filter { case (_, idx) => (spectrum.getIntensities()(idx)/scan.getBasePeakIntensity)>thresholdAbundanceM0Filter   }
             .map { case (mz, idx1) =>
-              val mz_ms_p2 = mz + 1.99
+              val mz_ms_p2 = mz + deltaMOM2
               val idx2 = spectrum.findClosestMzIdx(mz_ms_p2)
               val mz_p2 = spectrum.getMZs()(idx2)
               (mz,idx1,mz_p2,idx2)
             }
             .filter { case (_,_,_,idx2) => spectrum.getIntensities()(idx2) > intensityFilter  }
-            //.filter { case (_,_,_,idx2) => (spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*(25.0) > 1.5  }
+            /* filtering on presence of souffer is too restrictive....*/
+            .filter { case (_,idx1,_,_) => (spectrum.getIntensities()(idx1)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
             /* abundance filter */
         /*    .filter { case (_,idx1,_,idx2) =>
               (spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2))/scan.getBasePeakIntensity > 0.1  }*/

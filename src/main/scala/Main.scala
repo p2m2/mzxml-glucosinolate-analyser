@@ -95,14 +95,16 @@ object Main extends App {
 
         val listSulfurMetabolites: Seq[PeakIdentification] =
           ScanLoader.
-            getScanIdxAndSpectrum3IsotopesSulfurContaining(
+            getScanIdxAndSpectrumM0M2WithDelta(
               source,
               index,
               config.startRT,
               config.endRT,
               config.thresholdAbundanceM0Filter,
               intensityFilter,
-              config.toleranceMz)
+              filteringOnNbSulfur = 2,
+              config.toleranceMz,
+              deltaMOM2=1.996)
 
         val listSulfurMetabolitesSelected : Seq[PeakIdentification] =//listSulfurMetabolites
           ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites,config.precisionMzh)

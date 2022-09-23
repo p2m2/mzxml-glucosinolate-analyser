@@ -1,12 +1,7 @@
 package fr.inrae.metabolomics.p2m2.builder
 
-import fr.inrae.metabolomics.p2m2.builder.GLSRelatedDiagnostic.GLSRelatedDiagnostic.NLs
 import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
-import umich.ms.datatypes.scan.IScan
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
-
-import scala.jdk.CollectionConverters.CollectionHasAsScala
-import scala.util.{Success, Try}
 
 case class MetaboliteIdentification(
                                      source : MZXMLFile,
@@ -40,7 +35,7 @@ case class MetaboliteIdentification(
        getInfo(x,precisionMzh)
     }
       /* remove entry if none neutral and none daughters ions detected or big abundance (>60%)*/
-      .filter( csvM => (csvM.abundance.head>0.6)||(csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
+      .filter( csvM => (csvM.neutralLosses.values.flatten.nonEmpty && csvM.daughterIons.values.flatten.nonEmpty) )
       .sortBy( x => (x.rt,x.mz.head) )
   }
 }
