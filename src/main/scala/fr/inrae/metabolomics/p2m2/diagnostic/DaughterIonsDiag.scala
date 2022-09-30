@@ -1,8 +1,8 @@
 package fr.inrae.metabolomics.p2m2.diagnostic
 
-import fr.inrae.metabolomics.p2m2.builder.PeakIdentification
+import fr.inrae.metabolomics.p2m2.builder.{PeakIdentification, ScanLoader}
 import umich.ms.datatypes.scan.IScan
-import umich.ms.fileio.filetypes.mzxml.MZXMLFile
+import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 case object DaughterIonsDiag {
 
@@ -10,13 +10,25 @@ case object DaughterIonsDiag {
 
   def getPeaksWithIntensitiesNoNull(
                                      source: MZXMLFile,
+                                     index: MZXMLIndex,
                                      p : PeakIdentification
                                    ) : Seq[Int] = {
-    val scan : IScan = source.parseScan(p.numScan, true)
 
-    (scan.getSpectrum().getMZs() zip scan.getSpectrum().getIntensities()).filter{
-      case (_,y) => y>0
-    } map { case (x,_) => round(x).toInt }
+    val sc : IScan = source.parseScan(p.numScan, false)
+
+    val step : Double = 0.02
+    val scans : Seq[IScan] = ScanLoader.scansMs(
+      source,index,Some(sc.getRt()-step),Some(sc.getRt()+step),2
+    )
+
+
+    scans.flatMap {
+      iscan =>
+        val scan : IScan = source.parseScan(iscan.getNum, true)
+        (scan.getSpectrum().getMZs() zip scan.getSpectrum().getIntensities()).filter {
+          case (_, y) => y > 0
+        } map { case (x, _) => round(x).toInt }
+    }
   }
 
   /**
@@ -24,9 +36,12 @@ case object DaughterIonsDiag {
    * @param peaks
    * @return
    */
-  def IonsFrequencyOnSelectedScanPeakDetected(source: MZXMLFile,peaks : Seq[PeakIdentification]) : Seq[(Int,Int)] = {
+  def IonsFrequencyOnSelectedScanPeakDetected(
+                                               source: MZXMLFile,
+                                               index: MZXMLIndex,
+                                               peaks : Seq[PeakIdentification]) : Seq[(Int,Int)] = {
     peaks.map(
-      p => DaughterIonsDiag.getPeaksWithIntensitiesNoNull(source, p)
+      p => DaughterIonsDiag.getPeaksWithIntensitiesNoNull(source,index, p)
     ).foldLeft(Map[Int, Int]())(
       (acc: Map[Int, Int], v: Seq[Int]) => {
         v.map(p2 => acc.get(p2) match {

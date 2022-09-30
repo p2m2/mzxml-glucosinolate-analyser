@@ -26,7 +26,7 @@ object DaughterIonsDiagTest extends TestSuite {
        */
 
       v2.map(
-       p => DaughterIonsDiag.getPeaksWithIntensitiesNoNull(v._1,p)
+       p => DaughterIonsDiag.getPeaksWithIntensitiesNoNull(v._1, v._2,p)
       ).foldLeft(Map[Int,Int]())(
         (acc : Map[Int,Int],v : Seq[Int]) => {
           v.map( p2 => acc.get(p2) match {
