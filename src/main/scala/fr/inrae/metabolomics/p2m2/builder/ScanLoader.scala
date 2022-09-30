@@ -310,15 +310,15 @@ case object ScanLoader {
                          p : PeakIdentification,
                          nls : Seq[(String,Double)], /* name, distance */
                          precisionPeakDetection: Double = 0.9,
-                         precisionRtTime : Double = 0.001
+                         precisionRtTime : Double = 0.02
                        ) : Map[String,Option[Double]] = {
-/*
-    val scanMs2: Seq[IScan] = scansMs(source, index,start,end, 2)
-      .filter(scanMs2 => {
-        scanMs2.getRt == p.rt
-      })
-*/
-    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
+
+    val sc = source.parseScan(p.numScan, false)
+    val scanMs2: Seq[IScan] = ScanLoader.scansMs(
+      source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
+    )
+
+  //  val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     val mz = p.peaks.head.mz
 
@@ -342,15 +342,14 @@ case object ScanLoader {
                          p: PeakIdentification,
                          dis: Seq[(String,Double)], /* name , mz */
                          precisionPeakDetection: Double = 0.3,
-                         precisionRtTime: Double = 0.001
+                         precisionRtTime: Double = 0.02
                        ): Map[String, Option[Double]] = {
-/*
-    val scanMs22 = scansMs(source, index,start,end, 2)
-      .filter(scanMs2 => {
-        (scanMs2.getRt - p.rt).abs < precisionRtTime
-      })
-*/
-    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
+
+    val sc = source.parseScan(p.numScan, false)
+    val scanMs2: Seq[IScan] = ScanLoader.scansMs(
+      source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
+    )
+    //val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     dis.map(
       di => {

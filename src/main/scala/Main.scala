@@ -1,7 +1,6 @@
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.diagnostic.DaughterIonsDiag
 import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
@@ -162,8 +161,9 @@ object Main extends App {
             deltaMOM2 = deltaMp0Mp2)
 
       /* Diagnostics : Ions frequency on selected Scan peak detected ! */
-      val frequencyOfMz : Seq[(Int,Int)] = DaughterIonsDiag.IonsFrequencyOnSelectedScanPeakDetected(source,listSulfurMetabolites)
 
+      val frequencyOfMz : Seq[(Int,Int)] = Seq() // DaughterIonsDiag.IonsFrequencyOnSelectedScanPeakDetected(source,index,listSulfurMetabolites)
+      println(frequencyOfMz)
       /* Attention c est lent..... peut etre a faire en option !!*/
       println("\n\n\n==============   Twenty Ions frequency on selected Scan peak detected =========================")
       println(frequencyOfMz.reverse.slice(1,20).map {
