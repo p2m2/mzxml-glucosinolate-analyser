@@ -13,8 +13,8 @@ object DaughterIonsDiagTest extends TestSuite {
         (ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
           v._1,
           v._2,
-          None, // RT start
-          None, // RT end
+          Some(2.0), // RT start
+          Some(2.2), // RT end
           thresholdAbundanceM0Filter = 0.1, intensityFilter = 0,
           precision = 0.01,
           deltaMOM2 = 1.996
