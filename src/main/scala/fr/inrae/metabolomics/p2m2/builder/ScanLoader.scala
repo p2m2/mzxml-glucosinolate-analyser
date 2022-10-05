@@ -64,7 +64,9 @@ case object ScanLoader {
               isotopeNum,
               spectrum.getIntensities()(idx),
               spectrum.getIntensities()(idx) / scan.getBasePeakIntensity,
-              spectrum.getMZs()(idx)))
+              spectrum.getMZs()(idx),
+              scan.getRt
+            ))
           case None => None
       }},
       scan.getRt
@@ -189,13 +191,14 @@ case object ScanLoader {
     peaks.map {
       p =>
         val mz = (p.peaks.head.mz * precisionMzh).round / precisionMzh.toDouble
-        (mz, p)
-    }.foldLeft(Map[Double, Seq[PeakIdentification]]()) {
-      case (acc, (mz, p)) if acc.contains(mz) => acc + (mz -> (acc(mz) ++ Seq(p)))
-      case (acc, (mz, p)) => acc + (mz -> Seq(p))
+        val rt =  (p.peaks.head.rt * 3).round / 3.toDouble // windows 0.3 sec
+        (mz, rt, p)
+    }.foldLeft(Map[(Double,Double), Seq[PeakIdentification]]()) {
+      case (acc, (mz, rt, p)) if acc.contains( (mz,rt) ) => acc + ( (mz,rt) -> (acc( (mz,rt) ) ++ Seq(p)))
+      case (acc, (mz, rt, p)) => acc + ( (mz,rt) -> Seq(p))
 
     }.map {
-      case (_, listPeaks) => listPeaks.maxBy(_.peaks.head.abundance)
+      case ( (_,_), listPeaks) => listPeaks.maxBy(_.peaks.head.abundance)
     }.toSeq
   }
 
@@ -288,10 +291,13 @@ case object ScanLoader {
         val scan2 = source.parseScan(scanMs2.getNum, true)
         scan2.getSpectrum match {
           case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
-            if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection)
+            if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection) {
            //   Some(spectrum.getIntensities()(v))
-              Some(spectrum.getMZs()(v))
-            else None
+              if (spectrum.getIntensities()(v)>0)
+                Some(spectrum.getMZs()(v))
+              else
+                None
+            } else None
           case _ => None
         }
     }.sorted.lastOption // take the biggest value

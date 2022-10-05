@@ -68,6 +68,21 @@ object ScanLoaderTest extends TestSuite {
       p.foreach(x => println(ScanLoader.detectNeutralLoss(v._1, v._2,x, 80.0)))*/
     }
 
+    test("calculBackgroundNoisePeak") {
+      val v = read
+      ScanLoader.calculBackgroundNoisePeak(
+        v._1,
+        v._2,
+        Some(1.0), // RT start
+        Some(1.3), // RT end
+      )
+    }
+
+    test("keepSimilarMzWithMaxAbundance") {
+      ScanLoader.keepSimilarMzWithMaxAbundance(
+        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0, 0)), 0.0)),1
+      )
+    }
 
 
   }
