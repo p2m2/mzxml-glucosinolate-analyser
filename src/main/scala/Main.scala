@@ -1,6 +1,7 @@
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
+import fr.inrae.metabolomics.p2m2.diagnostic.DaughterIonsDiag
 import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
@@ -170,7 +171,7 @@ object Main extends App {
         case (mz, freq) => (mz.toString + " m/z -> " + freq)
       }.mkString(" , "))
 
-      val listSulfurMetabolitesSelected: Seq[PeakIdentification] = //listSulfurMetabolites
+      val listSulfurMetabolitesSelected: Seq[PeakIdentification] = // listSulfurMetabolites
         ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
 
       val m: MetaboliteIdentification =
