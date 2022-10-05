@@ -7,6 +7,9 @@ import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
 import java.io.{BufferedWriter, File, FileWriter}
 
 case object CsvMetabolitesIdentificationFile {
+
+  val mzCoreStructureGlucosinolate : Double = 317.995896
+
   def build(list : Seq[CsvMetabolitesIdentification],
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
@@ -23,8 +26,12 @@ case object CsvMetabolitesIdentificationFile {
       bw.write(s"CHEBI ID;")
       bw.write(s"BRASSICA ID;")
       bw.write("RT;")
+      bw.write("Hyp. Identification Sulfur Polypeptide;")
+      bw.write("Nb (NL+DI);")
+
       neutralLosses.foreach {  name => bw.write(s"NL_$name;")}
       daughterIons.foreach {  name => bw.write(s"DI_$name;")}
+
       bw.write("\n")
 
       list.foreach(
@@ -37,8 +44,15 @@ case object CsvMetabolitesIdentificationFile {
 
           bw.write(Chebi.getEntries(metabolitesIdentificationId.mz.head).map( entry => entry("ID")).mkString(",")+";")
           bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.mz.head).mkString(",")+";")
-
           bw.write(s"${metabolitesIdentificationId.rt};")
+
+          if ( metabolitesIdentificationId.mz.head < mzCoreStructureGlucosinolate ) {
+            bw.write("*;")
+          } else
+            bw.write(";")
+          val c : Int = (metabolitesIdentificationId.neutralLosses.values.flatten.size)+(metabolitesIdentificationId.daughterIons.values.flatten.size)
+          bw.write(s"$c;")
+
           neutralLosses.foreach {  name => bw.write(s"${metabolitesIdentificationId.neutralLosses(name).getOrElse("")};")}
           daughterIons.foreach {  name => bw.write(s"${metabolitesIdentificationId.daughterIons(name).getOrElse("")};")}
           bw.write("\n")
