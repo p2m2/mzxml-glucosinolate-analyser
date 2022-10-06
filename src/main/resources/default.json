@@ -4,18 +4,29 @@
     "numberSulfurMin" : 2,
     "neutralLoss" :
       {
-        "gluconolactone" : 178.0,
-        "sulfureTrioxide" : 80.0,
-        "anhydroglucose" : 162.0,
         "thioglucose_s03" : 242.0,
+        "glucosinolate_223" : 223.0,
         "thioglucose" : 196.0,
-        "glucosinolate_223" : 223.0
+        "gluconolactone" : 178.0,
+        "RCNO4S2-" : 163.0,
+        "anhydroglucose" : 162.0,
+        "sulfureTrioxide" : 80.0
       },
     "daughterIons" : {
-      "C6H11O9S_259" : 259.0,
       "C6H11O8S2_275" : 275.0,
+      "C6H11O9S_259" : 259.0,
+      "C6H10O8S-_241" : 242.0,
       "C6H9NO8S_241" : 241.0,
-      "C6H11O7S_227" : 227.0
+      "C6H11O7S-_227" :  227.0,
+      "C6H11O5S-_195" : 195.03,
+      "C6H11O2-_153" : 163.0,
+      "C2H4O5NS-_153" : 153.98,
+      "C2H3O5S-_138" : 138.97,
+      "C2H2O4S-_135" : 135.97,
+      "HO4S2-_128" : 128.93,
+      "HSO4-_97" : 96.95,
+      "SO4-_95" : 96.0,
+      "C2H3OS-" : 74.99
     },
     "databaseReference" : {
       "G01" : 406.029,
