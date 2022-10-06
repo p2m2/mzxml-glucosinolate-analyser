@@ -14,7 +14,7 @@ object MetaboliteIdentificationTest extends TestSuite {
     }
 
     test("getInfo") {
-      MetaboliteIdentification(v._1,v._2,None,None,Seq(),Seq(),Seq()).getInfo(PeakIdentification(0,Seq(1501),Seq(),0.0),1)
+      MetaboliteIdentification(v._1,v._2,None,None,Seq(),Seq(),Seq()).getInfo(PeakIdentification(0,Seq(1501),Seq(),0.0),1,0.0)
     }
 
 
@@ -22,17 +22,18 @@ object MetaboliteIdentificationTest extends TestSuite {
     test("getInfo 2") {
       MetaboliteIdentification(v._1, v._2, None, None, Seq(), Seq(), Seq()).getInfo(
         PeakIdentification(3569, Seq(1501),
-        Seq(Peak(0,0.0,0,0,0)), 0.0), 1)
+        Seq(Peak(0,0.0,0,0)), 0.0), 1,0.0)
     }
 
     test("getInfos") {
-      MetaboliteIdentification(v._1, v._2, None, None, Seq(), Seq(), Seq()).getInfos(1)
+      MetaboliteIdentification(v._1, v._2, None, None, Seq(), Seq(), Seq()).findDiagnosticIonsAndNeutralLosses(1,0.0)
     }
 
     test("getInfos 2") {
       MetaboliteIdentification(v._1, v._2, None, None,
-        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0, 0)), 0.0)),
-        Seq(), Seq()).getInfos(1)
+        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0)), 0.0)),
+        Seq(), Seq())
+        .findDiagnosticIonsAndNeutralLosses(1,0.0)
     }
 
   }
