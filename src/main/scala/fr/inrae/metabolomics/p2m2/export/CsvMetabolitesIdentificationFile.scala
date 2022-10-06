@@ -8,15 +8,13 @@ import java.io.{BufferedWriter, File, FileWriter}
 
 case object CsvMetabolitesIdentificationFile {
 
-  val mzCoreStructureGlucosinolate : Double = 317.995896
-
   def build(list : Seq[CsvMetabolitesIdentification],
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
       val size = list.last.mz.length
-      val neutralLosses = list.last.neutralLosses.keys
-      val daughterIons = list.last.daughterIons.keys
+      val neutralLosses = configJson.neutralLoss(familyMetabolite).keys
+      val daughterIons = configJson.daughterIons(familyMetabolite).keys
 
       val bw = new BufferedWriter(new FileWriter(out))
 
@@ -46,15 +44,20 @@ case object CsvMetabolitesIdentificationFile {
           bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.mz.head).mkString(",")+";")
           bw.write(s"${metabolitesIdentificationId.rt};")
 
-          if ( metabolitesIdentificationId.mz.head < mzCoreStructureGlucosinolate ) {
+          if ( metabolitesIdentificationId.mz.head < configJson.minMzCoreStructure(familyMetabolite) ) {
             bw.write("*;")
           } else
             bw.write(";")
+
           val c : Int = (metabolitesIdentificationId.neutralLosses.values.flatten.size)+(metabolitesIdentificationId.daughterIons.values.flatten.size)
           bw.write(s"$c;")
 
-          neutralLosses.foreach {  name => bw.write(s"${metabolitesIdentificationId.neutralLosses(name).getOrElse("")};")}
-          daughterIons.foreach {  name => bw.write(s"${metabolitesIdentificationId.daughterIons(name).getOrElse("")};")}
+          neutralLosses
+            .map( name => metabolitesIdentificationId.neutralLosses.getOrElse(name,None).getOrElse(""))
+            .foreach {  value => bw.write(s"$value;")}
+          daughterIons
+            .map( name => metabolitesIdentificationId.daughterIons.getOrElse(name,None).getOrElse(""))
+            .foreach {  value => bw.write(s"$value;")}
           bw.write("\n")
         }
       )

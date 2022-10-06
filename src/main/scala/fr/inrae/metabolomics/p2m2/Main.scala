@@ -126,6 +126,7 @@ object Main extends App {
               intensityFilter,
               confJson.deltaMp0Mp2(family),
               confJson.numberSulfurMin(family),
+              confJson.minMzCoreStructure(family),
               confJson.neutralLoss(family),
               confJson.daughterIons(family)
             )
@@ -145,6 +146,7 @@ object Main extends App {
                           intensityFilter: Int,
                           deltaMp0Mp2: Double,
                           numberSulfurMin: Double,
+                          mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
                           daughterIons: Map[String, Double]
                         ): Seq[CsvMetabolitesIdentification] = {
@@ -187,6 +189,6 @@ object Main extends App {
         neutralLoss.toSeq,
         daughterIons.toSeq
       )
-    m.getInfos(config.precisionMzh)
+    m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
   }
 }
