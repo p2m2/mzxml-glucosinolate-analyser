@@ -2,18 +2,19 @@ package fr.inrae.metabolomics.p2m2.`export`
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.database.Chebi
-import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
 
 case object CsvMetabolitesIdentificationFile {
-  def build(list : Seq[CsvMetabolitesIdentification],
+
+  def build(list : Seq[MetabolitesIdentification],
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
       val size = list.last.mz.length
-      val neutralLosses = list.last.neutralLosses.keys
-      val daughterIons = list.last.daughterIons.keys
+      val neutralLosses = configJson.neutralLoss(familyMetabolite).keys
+      val daughterIons = configJson.daughterIons(familyMetabolite).keys
 
       val bw = new BufferedWriter(new FileWriter(out))
 
@@ -23,8 +24,12 @@ case object CsvMetabolitesIdentificationFile {
       bw.write(s"CHEBI ID;")
       bw.write(s"BRASSICA ID;")
       bw.write("RT;")
+      bw.write("Hyp. Identification Sulfur Polypeptide;")
+      bw.write("Nb (NL+DI);")
+
       neutralLosses.foreach {  name => bw.write(s"NL_$name;")}
       daughterIons.foreach {  name => bw.write(s"DI_$name;")}
+
       bw.write("\n")
 
       list.foreach(
@@ -37,10 +42,21 @@ case object CsvMetabolitesIdentificationFile {
 
           bw.write(Chebi.getEntries(metabolitesIdentificationId.mz.head).map( entry => entry("ID")).mkString(",")+";")
           bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.mz.head).mkString(",")+";")
-
           bw.write(s"${metabolitesIdentificationId.rt};")
-          neutralLosses.foreach {  name => bw.write(s"${metabolitesIdentificationId.neutralLosses(name).getOrElse("")};")}
-          daughterIons.foreach {  name => bw.write(s"${metabolitesIdentificationId.daughterIons(name).getOrElse("")};")}
+
+          if ( metabolitesIdentificationId.mz.head < configJson.minMzCoreStructure(familyMetabolite) ) {
+            bw.write("*;")
+          } else
+            bw.write(";")
+
+          bw.write(s"${metabolitesIdentificationId.scoreIdentification};")
+
+          neutralLosses
+            .map( name => metabolitesIdentificationId.neutralLosses.getOrElse(name,None).getOrElse(""))
+            .foreach {  value => bw.write(s"$value;")}
+          daughterIons
+            .map( name => metabolitesIdentificationId.daughterIons.getOrElse(name,None).getOrElse(""))
+            .foreach {  value => bw.write(s"$value;")}
           bw.write("\n")
         }
       )

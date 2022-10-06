@@ -64,7 +64,8 @@ case object ScanLoader {
               isotopeNum,
               spectrum.getIntensities()(idx),
               spectrum.getIntensities()(idx) / scan.getBasePeakIntensity,
-              spectrum.getMZs()(idx)))
+              spectrum.getMZs()(idx)
+            ))
           case None => None
       }},
       scan.getRt
@@ -181,7 +182,7 @@ case object ScanLoader {
   }
 
   /**
-   * Merge all M/z and keep the Ions with the maximum abundance
+   * Merge all M/z in a short Windows RT and keep the Ions with the maximum abundance
    * @param peaks
    * @return
    */
@@ -189,13 +190,14 @@ case object ScanLoader {
     peaks.map {
       p =>
         val mz = (p.peaks.head.mz * precisionMzh).round / precisionMzh.toDouble
-        (mz, p)
-    }.foldLeft(Map[Double, Seq[PeakIdentification]]()) {
-      case (acc, (mz, p)) if acc.contains(mz) => acc + (mz -> (acc(mz) ++ Seq(p)))
-      case (acc, (mz, p)) => acc + (mz -> Seq(p))
+        val rt =  (p.rt * 3).round / 3.toDouble // windows 0.6 sec ... to check
+        (mz, rt, p)
+    }.foldLeft(Map[(Double,Double), Seq[PeakIdentification]]()) {
+      case (acc, (mz, rt, p)) if acc.contains( (mz,rt) ) => acc + ( (mz,rt) -> (acc( (mz,rt) ) ++ Seq(p)))
+      case (acc, (mz, rt, p)) => acc + ( (mz,rt) -> Seq(p))
 
     }.map {
-      case (_, listPeaks) => listPeaks.maxBy(_.peaks.head.abundance)
+      case ( (_,_), listPeaks) => listPeaks.maxBy(_.peaks.head.abundance)
     }.toSeq
   }
 
@@ -243,6 +245,7 @@ case object ScanLoader {
 
    // println(countAllPeak)
     /* calcul distribution of Peak number  */
+    /*
     println("\n=========================================================")
     println("== Number of Peak detected on MS1 scans by M/z selected    ")
     println("=========================================================\n")
@@ -252,6 +255,8 @@ case object ScanLoader {
     println("\n\n=========================================================")
     println(" -- The thirty most detected peaks selected --")
     println(countAllPeak.sorted(Ordering[Int].reverse).distinct.slice(0,30))
+
+     */
     /*
     val u = countAllPeak.foldLeft(Map[Int,Int]()) {
       case (acc, c) if acc.contains(c) => acc + (c -> (acc(c)+1))
@@ -285,10 +290,12 @@ case object ScanLoader {
         val scan2 = source.parseScan(scanMs2.getNum, true)
         scan2.getSpectrum match {
           case spectrum if (spectrum != null) => val v = (spectrum.findClosestMzIdx(mzSearch))
-            if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection)
-           //   Some(spectrum.getIntensities()(v))
-              Some(spectrum.getMZs()(v))
-            else None
+            if ((mzSearch - spectrum.getMZs()(v)).abs < precisionPeakDetection) {
+              if (spectrum.getIntensities()(v)>0)
+                Some(spectrum.getMZs()(v))
+              else
+                None
+            } else None
           case _ => None
         }
     }.sorted.lastOption // take the biggest value
@@ -307,15 +314,15 @@ case object ScanLoader {
                          p : PeakIdentification,
                          nls : Seq[(String,Double)], /* name, distance */
                          precisionPeakDetection: Double = 0.9,
-                         precisionRtTime : Double = 0.001
+                         precisionRtTime : Double = 0.02
                        ) : Map[String,Option[Double]] = {
-/*
-    val scanMs2: Seq[IScan] = scansMs(source, index,start,end, 2)
-      .filter(scanMs2 => {
-        scanMs2.getRt == p.rt
-      })
-*/
-    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
+
+    val sc = source.parseScan(p.numScan, false)
+    val scanMs2: Seq[IScan] = ScanLoader.scansMs(
+      source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
+    )
+
+  //  val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     val mz = p.peaks.head.mz
 
@@ -339,15 +346,14 @@ case object ScanLoader {
                          p: PeakIdentification,
                          dis: Seq[(String,Double)], /* name , mz */
                          precisionPeakDetection: Double = 0.3,
-                         precisionRtTime: Double = 0.001
+                         precisionRtTime: Double = 0.02
                        ): Map[String, Option[Double]] = {
-/*
-    val scanMs22 = scansMs(source, index,start,end, 2)
-      .filter(scanMs2 => {
-        (scanMs2.getRt - p.rt).abs < precisionRtTime
-      })
-*/
-    val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
+
+    val sc = source.parseScan(p.numScan, false)
+    val scanMs2: Seq[IScan] = ScanLoader.scansMs(
+      source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
+    )
+    //val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     dis.map(
       di => {

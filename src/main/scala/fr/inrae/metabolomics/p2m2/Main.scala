@@ -1,7 +1,9 @@
+package fr.inrae.metabolomics.p2m2
+
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
@@ -12,16 +14,16 @@ object Main extends App {
   import scopt.OParser
 
   case class Config(
-                     mzfiles : Seq[File] = Seq(),
-                     jsonFamilyMetabolitesDetection : Option[File] = None,
-                     thresholdIntensityFilter : Option[Int] = None,
-                     thresholdAbundanceM0Filter : Double = 0.1,
-                     overrepresentedPeakFilter : Int = 800,
-                     startRT : Option[Double] = None,
-                     endRT : Option[Double] = None,
-                     precisionMzh : Int = 1000,
-                     toleranceMz : Double = 0.01,
-                     outfile : Option[File] = None,
+                     mzfiles: Seq[File] = Seq(),
+                     jsonFamilyMetabolitesDetection: Option[File] = None,
+                     thresholdIntensityFilter: Option[Int] = None,
+                     thresholdAbundanceM0Filter: Double = 0.1,
+                     overrepresentedPeakFilter: Int = 800,
+                     startRT: Option[Double] = None,
+                     endRT: Option[Double] = None,
+                     precisionMzh: Int = 1000,
+                     toleranceMz: Double = 0.01,
+                     outfile: Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
                    )
@@ -36,11 +38,11 @@ object Main extends App {
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
         .text(s"json configuration to detect metabolite family."),
-      opt[Int]('i',"thresholdIntensityFilter")
+      opt[Int]('i', "thresholdIntensityFilter")
         .optional()
         .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
         .text(s"Keep ions above a x intensity (calculation on start-up time)"),
-      opt[Int]('p',"overrepresentedPeakFilter")
+      opt[Int]('p', "overrepresentedPeakFilter")
         .optional()
         .action((x, c) => c.copy(overrepresentedPeakFilter = x))
         .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
@@ -56,11 +58,11 @@ object Main extends App {
         .optional()
         .action((x, c) => c.copy(precisionMzh = x))
         .text(s"precision/rounded Mzh (number to the right of the decimal point) . ${Config().precisionMzh}"),
-      opt[Double]('t',"toleranceMz")
+      opt[Double]('t', "toleranceMz")
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
         .text(s"tolerance accepted. ${Config().toleranceMz}"),
-      opt[File]('o',"outputFile")
+      opt[File]('o', "outputFile")
         .optional()
         .action((x, c) => c.copy(outfile = Some(x)))
         .text(s"output path file."),
@@ -91,12 +93,12 @@ object Main extends App {
     // arguments are bad, error message will have been displayed
   }
 
-  def process(config : Config): Unit = {
+  def process(config: Config): Unit = {
 
     val confJson = config.jsonFamilyMetabolitesDetection match {
       case Some(jsonFilePath) =>
-        val s = Source.fromFile (jsonFilePath)
-        val res = ConfigReader.read(s.getLines ().mkString)
+        val s = Source.fromFile(jsonFilePath)
+        val res = ConfigReader.read(s.getLines().mkString)
         s.close()
         res
       case None =>
@@ -124,57 +126,69 @@ object Main extends App {
               intensityFilter,
               confJson.deltaMp0Mp2(family),
               confJson.numberSulfurMin(family),
+              confJson.minMzCoreStructure(family),
               confJson.neutralLoss(family),
               confJson.daughterIons(family)
             )
         }
-        val f = config.outfile.getOrElse(new File( s"$family.csv"))
+        val f = config.outfile.getOrElse(new File(s"$family.csv"))
         f.delete()
-        CsvMetabolitesIdentificationFile.build(values,family,confJson,f)
+        CsvMetabolitesIdentificationFile.build(values, family, confJson, f)
         println(s"========= check ${f.getPath} ===============")
       })
-    }
+  }
 
 
-    def analyse_metabolite(
-                            config: Config,
-                            source: MZXMLFile,
-                            index: MZXMLIndex,
-                            intensityFilter: Int,
-                            deltaMp0Mp2: Double,
-                            numberSulfurMin: Double,
-                            neutralLoss: Map[String, Double],
-                            daughterIons: Map[String, Double]
-                          ): Seq[CsvMetabolitesIdentification] = {
+  def analyse_metabolite(
+                          config: Config,
+                          source: MZXMLFile,
+                          index: MZXMLIndex,
+                          intensityFilter: Int,
+                          deltaMp0Mp2: Double,
+                          numberSulfurMin: Double,
+                          mzCoreStructure : Double,
+                          neutralLoss: Map[String, Double],
+                          daughterIons: Map[String, Double]
+                        ): Seq[MetabolitesIdentification] = {
 
-      val listSulfurMetabolites: Seq[PeakIdentification] =
-        ScanLoader.
-          getScanIdxAndSpectrumM0M2WithDelta(
-            source,
-            index,
-            config.startRT,
-            config.endRT,
-            config.thresholdAbundanceM0Filter,
-            intensityFilter,
-            filteringOnNbSulfur = numberSulfurMin.toInt,
-            config.toleranceMz,
-            deltaMOM2 = deltaMp0Mp2)
-
-      val listSulfurMetabolitesSelected: Seq[PeakIdentification] = //listSulfurMetabolites
-        ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
-
-      val m: MetaboliteIdentification =
-        ScanLoader.filterOverRepresentedPeak(
+    val listSulfurMetabolites: Seq[PeakIdentification] =
+      ScanLoader.
+        getScanIdxAndSpectrumM0M2WithDelta(
           source,
           index,
           config.startRT,
           config.endRT,
-          listSulfurMetabolitesSelected,
+          config.thresholdAbundanceM0Filter,
           intensityFilter,
-          config.overrepresentedPeakFilter,
-          neutralLoss.toSeq,
-          daughterIons.toSeq
-        )
-      m.getInfos(config.precisionMzh)
-    }
+          filteringOnNbSulfur = numberSulfurMin.toInt,
+          config.toleranceMz,
+          deltaMOM2 = deltaMp0Mp2)
+
+    /* Diagnostics : Ions frequency on selected Scan peak detected ! */
+
+    val frequencyOfMz: Seq[(Int, Int)] = Seq() // DaughterIonsDiag.IonsFrequencyOnSelectedScanPeakDetected(source,index,listSulfurMetabolites)
+    println(frequencyOfMz)
+    /* Attention c est lent..... peut etre a faire en option !!*/
+    println("\n\n\n==============   Twenty Ions frequency on selected Scan peak detected =========================")
+    println(frequencyOfMz.reverse.slice(1, 20).map {
+      case (mz, freq) => (mz.toString + " m/z -> " + freq)
+    }.mkString(" , "))
+
+    val listSulfurMetabolitesSelected: Seq[PeakIdentification] = // listSulfurMetabolites
+      ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
+
+    val m: MetaboliteIdentification =
+      ScanLoader.filterOverRepresentedPeak(
+        source,
+        index,
+        config.startRT,
+        config.endRT,
+        listSulfurMetabolitesSelected,
+        intensityFilter,
+        config.overrepresentedPeakFilter,
+        neutralLoss.toSeq,
+        daughterIons.toSeq
+      )
+    m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
+  }
 }

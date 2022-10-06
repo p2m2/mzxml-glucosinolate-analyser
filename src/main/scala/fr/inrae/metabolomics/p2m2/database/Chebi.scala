@@ -15,7 +15,7 @@ import scala.util.{Failure, Success, Try}
 
 case object Chebi {
   private val r = getClass.getResource("/glucosinolate_ChEBI.tsv")
-  private val massProton : Double = 0.007276
+  private val massProton : Double = 1.007276
 
   private val entries : Seq[Map[String,String]] = Try(r.getPath) match {
     case Success(_) =>
