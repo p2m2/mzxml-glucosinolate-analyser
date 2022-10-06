@@ -80,7 +80,7 @@ object ScanLoaderTest extends TestSuite {
 
     test("keepSimilarMzWithMaxAbundance") {
       ScanLoader.keepSimilarMzWithMaxAbundance(
-        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0, 0)), 0.0)),1
+        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0)), 0.0)),1
       )
     }
 

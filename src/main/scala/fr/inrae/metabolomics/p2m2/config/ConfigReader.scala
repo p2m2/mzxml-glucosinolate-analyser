@@ -15,7 +15,6 @@ case object ConfigReader {
   }
 
   def read(config : String) : ConfigReader = {
-    //Source.fromFile("./glucosinolate.json").getLines().mkString
     val u = ujson.read(config)
 
     val metabolites: Map[String, Map[Params.Value, String]] = u.obj.map(

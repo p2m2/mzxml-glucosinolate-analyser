@@ -22,7 +22,7 @@ object MetaboliteIdentificationTest extends TestSuite {
     test("getInfo 2") {
       MetaboliteIdentification(v._1, v._2, None, None, Seq(), Seq(), Seq()).getInfo(
         PeakIdentification(3569, Seq(1501),
-        Seq(Peak(0,0.0,0,0,0)), 0.0), 1)
+        Seq(Peak(0,0.0,0,0)), 0.0), 1)
     }
 
     test("getInfos") {
@@ -31,7 +31,7 @@ object MetaboliteIdentificationTest extends TestSuite {
 
     test("getInfos 2") {
       MetaboliteIdentification(v._1, v._2, None, None,
-        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0, 0)), 0.0)),
+        Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0)), 0.0)),
         Seq(), Seq()).getInfos(1)
     }
 

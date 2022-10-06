@@ -64,8 +64,7 @@ case object ScanLoader {
               isotopeNum,
               spectrum.getIntensities()(idx),
               spectrum.getIntensities()(idx) / scan.getBasePeakIntensity,
-              spectrum.getMZs()(idx),
-              scan.getRt
+              spectrum.getMZs()(idx)
             ))
           case None => None
       }},
@@ -191,7 +190,7 @@ case object ScanLoader {
     peaks.map {
       p =>
         val mz = (p.peaks.head.mz * precisionMzh).round / precisionMzh.toDouble
-        val rt =  (p.peaks.head.rt * 3).round / 3.toDouble // windows 0.3 sec
+        val rt =  (p.rt * 3).round / 3.toDouble // windows 0.3 sec
         (mz, rt, p)
     }.foldLeft(Map[(Double,Double), Seq[PeakIdentification]]()) {
       case (acc, (mz, rt, p)) if acc.contains( (mz,rt) ) => acc + ( (mz,rt) -> (acc( (mz,rt) ) ++ Seq(p)))

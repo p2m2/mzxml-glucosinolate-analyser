@@ -18,14 +18,14 @@ case object DaughterIonsDiag {
 
     val step : Double = 0.02
     val scans : Seq[IScan] = ScanLoader.scansMs(
-      source,index,Some(sc.getRt()-step),Some(sc.getRt()+step),2
+      source,index,Some(sc.getRt-step),Some(sc.getRt+step),2
     )
 
 
     scans.flatMap {
       iscan =>
         val scan : IScan = source.parseScan(iscan.getNum, true)
-        (scan.getSpectrum().getMZs() zip scan.getSpectrum().getIntensities()).filter {
+        (scan.getSpectrum.getMZs zip scan.getSpectrum.getIntensities()).filter {
           case (_, y) => y > 0
         } map { case (x, _) => round(x).toInt }
     }
