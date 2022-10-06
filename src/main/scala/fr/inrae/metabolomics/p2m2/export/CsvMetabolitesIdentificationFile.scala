@@ -2,13 +2,13 @@ package fr.inrae.metabolomics.p2m2.`export`
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.database.Chebi
-import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
 
 case object CsvMetabolitesIdentificationFile {
 
-  def build(list : Seq[CsvMetabolitesIdentification],
+  def build(list : Seq[MetabolitesIdentification],
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
@@ -49,8 +49,7 @@ case object CsvMetabolitesIdentificationFile {
           } else
             bw.write(";")
 
-          val c : Int = (metabolitesIdentificationId.neutralLosses.values.flatten.size)+(metabolitesIdentificationId.daughterIons.values.flatten.size)
-          bw.write(s"$c;")
+          bw.write(s"${metabolitesIdentificationId.scoreIdentification};")
 
           neutralLosses
             .map( name => metabolitesIdentificationId.neutralLosses.getOrElse(name,None).getOrElse(""))

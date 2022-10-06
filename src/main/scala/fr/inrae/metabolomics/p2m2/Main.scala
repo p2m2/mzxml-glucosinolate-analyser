@@ -3,7 +3,7 @@ package fr.inrae.metabolomics.p2m2
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
@@ -149,7 +149,7 @@ object Main extends App {
                           mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
                           daughterIons: Map[String, Double]
-                        ): Seq[CsvMetabolitesIdentification] = {
+                        ): Seq[MetabolitesIdentification] = {
 
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
