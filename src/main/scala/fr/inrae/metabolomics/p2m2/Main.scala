@@ -1,6 +1,6 @@
 package fr.inrae.metabolomics.p2m2
 
-import fr.inrae.metabolomics.p2m2.`export`.CsvIonsIdentificationFile
+import fr.inrae.metabolomics.p2m2.`export`.{CsvIonsIdentificationFile, IonsIdentificationFile}
 import fr.inrae.metabolomics.p2m2.builder.{IonsIdentificationBuilder, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
@@ -110,7 +110,7 @@ object Main extends App {
 
     confJson.metabolites.foreach(
       family => {
-        val values = config.mzfiles.flatMap {
+        config.mzfiles.foreach {
           mzFile =>
             val (source, index) = ScanLoader.read(mzFile)
 
@@ -119,7 +119,7 @@ object Main extends App {
               case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
             }
 
-            analyse_metabolite(
+            val values = analyse_metabolite(
               config,
               source,
               index,
@@ -130,11 +130,18 @@ object Main extends App {
               confJson.neutralLoss(family),
               confJson.daughterIons(family)
             )
+
+            val baseName = mzFile.getName.split("\\.").dropRight(1).mkString(".")
+
+            val f = config.outfile.getOrElse(new File(s"${baseName}_$family.csv"))
+            f.delete()
+            CsvIonsIdentificationFile.build(values, family, confJson, f)
+
+            val f2 = config.outfile.getOrElse(new File(s"${baseName}_$family"))
+            IonsIdentificationFile.save(values, family, confJson, f2)
+            println(s"========= check ${f.getPath},${f2.getPath} ===============")
         }
-        val f = config.outfile.getOrElse(new File(s"$family.csv"))
-        f.delete()
-        CsvIonsIdentificationFile.build(values, family, confJson, f)
-        println(s"========= check ${f.getPath} ===============")
+
       })
   }
 

@@ -1,10 +1,12 @@
 package fr.inrae.metabolomics.p2m2.config
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader.Params
+import upickle.default._
 
 case object ConfigReader {
-
+  implicit val rw: ReadWriter[ConfigReader] = macroRW
   object Params extends Enumeration {
+    implicit val rw: ReadWriter[Params] = readwriter[Int].bimap[Params](x => x.id, Params(_))
     private type Params = Value
     val
     deltaMp0Mp2,
@@ -43,7 +45,7 @@ case object ConfigReader {
 }
 
 case class ConfigReader(
-                         metabolitesMap: Map[String, Map[Params.Value, Any]],
+                         metabolitesMap: Map[String, Map[Params.Value, String]],
                          nl : Map[String,Map[String,Double]],
                          di:Map[String,Map[String,Double]],
                          baseRef:Map[String,Map[String,Double]]) {
