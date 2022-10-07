@@ -9,19 +9,18 @@ case object ConfigReader {
     val
     deltaMp0Mp2,
     numberSulfurMin,
-    neutralLoss,
-    daughterIons
+    minMzCoreStructure
      = Value
   }
 
   def read(config : String) : ConfigReader = {
-    //Source.fromFile("./glucosinolate.json").getLines().mkString
     val u = ujson.read(config)
 
     val metabolites: Map[String, Map[Params.Value, String]] = u.obj.map(
       k => k._1 -> Map(
         Params.deltaMp0Mp2 -> k._2("deltaMp0Mp2").value.toString,
-        Params.numberSulfurMin -> k._2("numberSulfurMin").value.toString
+        Params.numberSulfurMin -> k._2("numberSulfurMin").value.toString,
+        Params.minMzCoreStructure -> k._2("minMzCoreStructure").value.toString
       )
     ).toMap
 
@@ -52,6 +51,7 @@ case class ConfigReader(
   def metabolites : Seq[String] = metabolitesMap.keys.toSeq
   def deltaMp0Mp2(m: String) : Double = metabolitesMap(m)(Params.deltaMp0Mp2).toString.toDouble
   def numberSulfurMin(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
+  def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble
   def neutralLoss(m: String) : Map[String,Double] = nl(m)
   def daughterIons(m: String) : Map[String,Double] = di(m)
   def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[String] = {

@@ -10,6 +10,7 @@ object ConfigReaderTest extends TestSuite {
         |  "Glucosinolate" : {
         |    "deltaMp0Mp2" : 1.996,
         |    "numberSulfurMin" : 2,
+        |    "minMzCoreStructure" : 0,
         |    "neutralLoss" :
         |      {
         |        "gluconolactone" : 178.0

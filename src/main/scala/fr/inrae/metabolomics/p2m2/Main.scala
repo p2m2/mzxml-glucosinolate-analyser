@@ -3,7 +3,7 @@ package fr.inrae.metabolomics.p2m2
 import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
 import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.output.CsvMetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
@@ -126,6 +126,7 @@ object Main extends App {
               intensityFilter,
               confJson.deltaMp0Mp2(family),
               confJson.numberSulfurMin(family),
+              confJson.minMzCoreStructure(family),
               confJson.neutralLoss(family),
               confJson.daughterIons(family)
             )
@@ -145,9 +146,10 @@ object Main extends App {
                           intensityFilter: Int,
                           deltaMp0Mp2: Double,
                           numberSulfurMin: Double,
+                          mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
                           daughterIons: Map[String, Double]
-                        ): Seq[CsvMetabolitesIdentification] = {
+                        ): Seq[MetabolitesIdentification] = {
 
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
@@ -187,6 +189,6 @@ object Main extends App {
         neutralLoss.toSeq,
         daughterIons.toSeq
       )
-    m.getInfos(config.precisionMzh)
+    m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
   }
 }
