@@ -20,19 +20,13 @@ case class IonsIdentificationBuilder(
 
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
-          mz,
-          intensities,
-          abundance,
-          p.rt,
-          neutralLosses = ScanLoader.detectNeutralLoss(source,index,start,end,p,nls),
-          daughterIons = ScanLoader.detectDaughterIons(source,index,start,end,p,dis)
+          p,
+          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls),
+          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis)
         ))
       else
         Some(IonsIdentification(
-          mz,
-          intensities,
-          abundance,
-          p.rt,
+          p,
           neutralLosses = Map(),
           daughterIons = Map()
         ))
@@ -54,6 +48,6 @@ case class IonsIdentificationBuilder(
        print(s"\r===>$idx/${peaks.size}")
        getInfo(x,precisionMzh,mzCoreStructure)
     }
-      .sortBy( x => (x.rt,x.mz.head) )
+      .sortBy( x => (x.ion.rt,x.ion.peaks.head.mz) )
   }
 }

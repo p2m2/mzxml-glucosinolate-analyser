@@ -1,4 +1,8 @@
 package fr.inrae.metabolomics.p2m2.builder
+import upickle.default._
+object PeakIdentification {
+  implicit val rw: ReadWriter[PeakIdentification] = macroRW
+}
 
 /**
  *
@@ -6,8 +10,8 @@ package fr.inrae.metabolomics.p2m2.builder
  * @param indexIsotopeInSpectrum
  */
 case class PeakIdentification(
-                               numScan : Int, /* scan on mzxml*/
-                               idxPeaks : Seq[Int], /* peaks index inside the spectrum */
-                               peaks : Seq[Peak],
-                               rt : Double /* Retention time */
+                               numScan : Int = -1, /* scan on mzxml*/
+                               idxPeaks : Seq[Int]= Seq(), /* peaks index inside the spectrum */
+                               peaks : Seq[Peak] = Seq(),
+                               rt : Double = 0.0 /* Retention time */
                              )

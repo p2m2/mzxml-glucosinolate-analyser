@@ -12,7 +12,7 @@ case object CsvIonsIdentificationFile {
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
-      val size = list.last.mz.length
+      val size =  2
       val neutralLosses = configJson.neutralLoss(familyMetabolite).keys
       val daughterIons = configJson.daughterIons(familyMetabolite).keys
 
@@ -33,27 +33,29 @@ case object CsvIonsIdentificationFile {
 
       bw.write("\n")
 
-      list.foreach(
+      list
+        .filter( _.ion.peaks.nonEmpty)
+        .foreach(
         metabolitesIdentificationId => {
           0.until(size).foreach(
-            i => bw.write(s"${metabolitesIdentificationId.mz(i)};"+
-              s"${metabolitesIdentificationId.intensity(i)};"+
-              s"${metabolitesIdentificationId.abundance(i)};")
+            i => bw.write(s"${metabolitesIdentificationId.ion.peaks(i).mz};"+
+              s"${metabolitesIdentificationId.ion.peaks(i).intensity};"+
+              s"${metabolitesIdentificationId.ion.peaks(i).abundance};")
           )
 
           bw.write(
             Chebi.getEntries(
-              metabolitesIdentificationId.mz.head).map( entry => entry("ID")).mkString(",")
+              metabolitesIdentificationId.ion.peaks.head.mz).map( entry => entry("ID")).mkString(",")
               +";")
 
           bw.write(
             BraChemDb.getEntries(
-              metabolitesIdentificationId.mz.head).mkString(",") + ";")
+              metabolitesIdentificationId.ion.peaks.head.mz).mkString(",") + ";")
 
-          bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.mz.head).mkString(",")+";")
-          bw.write(s"${metabolitesIdentificationId.rt};")
+          bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz).mkString(",")+";")
+          bw.write(s"${metabolitesIdentificationId.ion.rt};")
 
-          if ( metabolitesIdentificationId.mz.head < configJson.minMzCoreStructure(familyMetabolite) ) {
+          if ( metabolitesIdentificationId.ion.peaks.head.mz < configJson.minMzCoreStructure(familyMetabolite) ) {
             bw.write("*;")
           } else
             bw.write(";")

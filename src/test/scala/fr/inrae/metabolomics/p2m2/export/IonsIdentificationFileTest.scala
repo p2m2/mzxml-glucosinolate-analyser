@@ -1,9 +1,8 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
-import fr.inrae.metabolomics.p2m2.builder.ScanLoader
+import fr.inrae.metabolomics.p2m2.builder.{PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
-
 import utest.{TestSuite, Tests, test}
 
 import java.io.File
@@ -24,10 +23,7 @@ object IonsIdentificationFileTest extends TestSuite {
       CsvIonsIdentificationFile.build(
         Seq(
           IonsIdentification(
-            mz = Seq(1.0, 1.0),
-            intensity = Seq(1.0, 1.0),
-            abundance = Seq(1.0, 1.0),
-            rt = 0.1,
+            PeakIdentification(),
             neutralLosses = Map(),
             daughterIons = Map()
           )
