@@ -1,6 +1,5 @@
 package fr.inrae.metabolomics.p2m2
 
-import fr.inrae.metabolomics.p2m2.Main.getClass
 import utest.{TestSuite, Tests, test}
 
 import java.io.File

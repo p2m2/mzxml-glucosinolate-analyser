@@ -211,7 +211,7 @@ case object ScanLoader {
                                  threshold: Int,
                                  nls: Seq[(String, Double)],
                                  dis: Seq[(String, Double)]
-                               ): MetaboliteIdentification = {
+                               ): IonsIdentificationBuilder = {
 
     println(s"\n=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
 
@@ -277,7 +277,7 @@ case object ScanLoader {
     }
 
     println(s" new size:${newL.length}")
-    MetaboliteIdentification(source, index,start,end,newL,nls,dis)
+    IonsIdentificationBuilder(source, index,start,end,newL,nls,dis)
   }
 
   def searchIons(source: MZXMLFile,
@@ -309,8 +309,6 @@ case object ScanLoader {
   def detectNeutralLoss(
                          source: MZXMLFile,
                          index : MZXMLIndex,
-                         start: Option[Double],
-                         end: Option[Double],
                          p : PeakIdentification,
                          nls : Seq[(String,Double)], /* name, distance */
                          precisionPeakDetection: Double = 0.9,
@@ -341,8 +339,6 @@ case object ScanLoader {
   def detectDaughterIons(
                          source: MZXMLFile,
                          index: MZXMLIndex,
-                         start: Option[Double],
-                         end: Option[Double],
                          p: PeakIdentification,
                          dis: Seq[(String,Double)], /* name , mz */
                          precisionPeakDetection: Double = 0.3,

@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "com.github.chhh" % "msftbx" % "1.8.8",
   "com.lihaoyi" %% "ujson" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
+  "com.lihaoyi" %% "upickle" % "2.0.0",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
   "org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
 )
@@ -54,12 +55,12 @@ publishMavenStyle := true
 
 // Coverage
 
-coverageMinimumStmtTotal := 0
-coverageMinimumBranchTotal := 0
-coverageMinimumStmtPerPackage := 0
-coverageMinimumBranchPerPackage := 0
-coverageMinimumStmtPerFile := 0
-coverageMinimumBranchPerFile := 0
+coverageMinimumStmtTotal := 70
+coverageMinimumBranchTotal := 70
+coverageMinimumStmtPerPackage := 70
+coverageMinimumBranchPerPackage := 70
+coverageMinimumStmtPerFile := 70
+coverageMinimumBranchPerFile := 70
 coverageFailOnMinimum := true
 coverageHighlighting := true
 
