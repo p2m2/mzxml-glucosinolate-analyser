@@ -21,7 +21,7 @@ case object IonsIdentificationFile {
     val s = Source.fromFile(in.getPath)
     Try(read[FormatIonsIdentification](s.getLines().mkString(""))) match {
       case Success(value) => (value.list,value.familyMetabolite,value.configJson)
-      case Failure(exception) => System.err.println(exception);(Seq(),"",ConfigReader(Map(),Map(),Map(),Map()))
+      case Failure(exception) => throw exception
     }
   }
 

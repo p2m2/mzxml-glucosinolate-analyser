@@ -19,5 +19,10 @@ object IonsIdentificationFileTest extends TestSuite {
         case Failure(_) => assert(false)
       }
     }
+
+    test("failed load") {
+      val f = File.createTempFile("pref","suf")
+      assert(Try(IonsIdentificationFile.load(f)).isFailure)
+    }
   }
 }
