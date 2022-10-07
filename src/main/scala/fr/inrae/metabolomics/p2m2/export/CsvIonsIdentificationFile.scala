@@ -1,17 +1,14 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-
 import fr.inrae.metabolomics.p2m2.database.{BraChemDb, Chebi}
-
-import fr.inrae.metabolomics.p2m2.database.Chebi
-import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
 
-case object CsvMetabolitesIdentificationFile {
+case object CsvIonsIdentificationFile {
 
-  def build(list : Seq[MetabolitesIdentification],
+  def build(list : Seq[IonsIdentification],
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {

@@ -1,6 +1,10 @@
 package fr.inrae.metabolomics.p2m2.output
+import upickle.default._
 
-case class MetabolitesIdentification(
+object IonsIdentification {
+  implicit val rw: ReadWriter[IonsIdentification] = macroRW
+}
+case class IonsIdentification(
                                         mz : Seq[Double],
                                         intensity : Seq[Double],
                                         abundance : Seq[Double],

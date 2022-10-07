@@ -1,9 +1,9 @@
 package fr.inrae.metabolomics.p2m2
 
-import fr.inrae.metabolomics.p2m2.`export`.CsvMetabolitesIdentificationFile
-import fr.inrae.metabolomics.p2m2.builder.{MetaboliteIdentification, PeakIdentification, ScanLoader}
+import fr.inrae.metabolomics.p2m2.`export`.CsvIonsIdentificationFile
+import fr.inrae.metabolomics.p2m2.builder.{IonsIdentificationBuilder, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.output.MetabolitesIdentification
+import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
@@ -133,7 +133,7 @@ object Main extends App {
         }
         val f = config.outfile.getOrElse(new File(s"$family.csv"))
         f.delete()
-        CsvMetabolitesIdentificationFile.build(values, family, confJson, f)
+        CsvIonsIdentificationFile.build(values, family, confJson, f)
         println(s"========= check ${f.getPath} ===============")
       })
   }
@@ -149,7 +149,7 @@ object Main extends App {
                           mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
                           daughterIons: Map[String, Double]
-                        ): Seq[MetabolitesIdentification] = {
+                        ): Seq[IonsIdentification] = {
 
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
@@ -177,7 +177,7 @@ object Main extends App {
     val listSulfurMetabolitesSelected: Seq[PeakIdentification] = // listSulfurMetabolites
       ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
 
-    val m: MetaboliteIdentification =
+    val m: IonsIdentificationBuilder =
       ScanLoader.filterOverRepresentedPeak(
         source,
         index,

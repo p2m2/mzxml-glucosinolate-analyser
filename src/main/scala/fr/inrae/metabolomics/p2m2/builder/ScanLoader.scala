@@ -211,7 +211,7 @@ case object ScanLoader {
                                  threshold: Int,
                                  nls: Seq[(String, Double)],
                                  dis: Seq[(String, Double)]
-                               ): MetaboliteIdentification = {
+                               ): IonsIdentificationBuilder = {
 
     println(s"\n=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
 
@@ -277,7 +277,7 @@ case object ScanLoader {
     }
 
     println(s" new size:${newL.length}")
-    MetaboliteIdentification(source, index,start,end,newL,nls,dis)
+    IonsIdentificationBuilder(source, index,start,end,newL,nls,dis)
   }
 
   def searchIons(source: MZXMLFile,
