@@ -37,36 +37,38 @@ object MainClustering extends App {
     // arguments are bad, error message will have been displayed
   }
 
+  def precision(mz:Double,precision: Int) : Double = (mz * precision).round / precision.toDouble
+
   def process(config : Config) = {
     val r = config.mzFiles.zipWithIndex.map {
       case (f, idx) => (idx, IonsIdentificationFile.load(f))
     }
 
-    println("=============== DI =================")
+    println("=============== DI >7 =================")
 
     /* Index file, Seq(IonsIdentification) */
     val res = r.map {
       case (idxFile, v) => (idxFile, v._1)
     }.flatMap {
-      case (_, v : Seq[IonsIdentification]) => {
+      case (idxF, v : Seq[IonsIdentification]) => {
         v
-          .filter( _.daughterIons.size>10)
+          .filter( _.daughterIons.nonEmpty )
+          .filter( x=> x.daughterIons.values.flatten.size > 7)
           .map(
           ii => {
-            val mz = (ii.ion.peaks.head.mz * 100).round / 100.toDouble
-            val rt = (ii.ion.rt * 10).round / 10.toDouble
-            println(ii.neutralLosses.size)
+            val mz = precision(ii.ion.peaks.head.mz,100)
+            val rt = precision(ii.ion.rt,10)
+           // (ii.daughterIons.foreach(print(_)))
          //   (mz, rt, ii.daughterIons.keys.mkString(","))
-            (mz, rt)
+            (idxF,mz, rt)
           }
         )
       }
     }.distinct
 
-/*
     res.foreach(
-      row => println(row._1,row._2)
-    )*/
+      row => println(f"${row._2}%4.2f \t ${row._3}%3.2f\t${row._1}")
+    )
     println("original size:"+r.map {
       case (idxFile, v) => v._1.size
     })
