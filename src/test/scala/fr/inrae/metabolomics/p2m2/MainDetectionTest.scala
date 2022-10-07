@@ -5,7 +5,7 @@ import utest.{TestSuite, Tests, test}
 import java.io.File
 import scala.util.{Failure, Success, Try}
 
-object MainTest extends TestSuite {
+object MainDetectionTest extends TestSuite {
 
   val tests: Tests = Tests {
 
@@ -19,7 +19,7 @@ object MainTest extends TestSuite {
 
 
     test("Main") {
-      Try(fr.inrae.metabolomics.p2m2.Main.main(Array(
+      Try(fr.inrae.metabolomics.p2m2.MainDetection.main(Array(
         "-s","1.0",
         "-e","1.5",
         "-i","1000",
@@ -35,7 +35,7 @@ object MainTest extends TestSuite {
     }
 
     test("Main 2") {
-      Try(fr.inrae.metabolomics.p2m2.Main.main(Array(
+      Try(fr.inrae.metabolomics.p2m2.MainDetection.main(Array(
         "-j",getClass.getResource("/default.json").getPath,
         "-s", "1.0",
         "-e", "1.5",

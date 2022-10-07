@@ -9,7 +9,7 @@ import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 import java.io.File
 import scala.io.Source
 
-object Main extends App {
+object MainDetection extends App {
 
   import scopt.OParser
 
@@ -32,8 +32,8 @@ object Main extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("mzxml-glucosinolates-phenolics-analyser"),
-      head("mzxml-glucosinolates-phenolics-analyser", "1.0"),
+      programName("detection-analyser"),
+      head("detection-analyser", "1.0"),
       opt[File]('j', "jsonFamilyMetabolitesDetection")
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
