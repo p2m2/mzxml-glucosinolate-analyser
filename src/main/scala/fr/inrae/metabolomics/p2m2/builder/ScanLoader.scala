@@ -52,8 +52,9 @@ case object ScanLoader {
                               idxIsotope0: Int,
                               idxIsotope1: Option[Int],
                               idxIsotope2: Option[Int],
+                              idxIsotope3: Option[Int],
                             ) : PeakIdentification = {
-    val lIdxPeaks = Seq(Some(idxIsotope0),idxIsotope1,idxIsotope2)
+    val lIdxPeaks = Seq(Some(idxIsotope0),idxIsotope1,idxIsotope2,idxIsotope3)
     PeakIdentification(
       scan.getNum,
       lIdxPeaks.flatten,
@@ -160,22 +161,28 @@ case object ScanLoader {
           mzValues
             .zipWithIndex
             .filter { case (_, idx) => (spectrum.getIntensities()(idx)/scan.getBasePeakIntensity)>thresholdAbundanceM0Filter   }
-            .map { case (mz, idx1) =>
-              val mz_ms_p2 = mz + deltaMOM2
+            .map { case (mz0, idx0) =>
+              val mz_ms_p2 = mz0 + deltaMOM2
               val idx2 = spectrum.findClosestMzIdx(mz_ms_p2)
               val mz_p2 = spectrum.getMZs()(idx2)
-              (mz,idx1,mz_p2,idx2)
+              (mz0,idx0,mz_p2,idx2)
             }
             .filter { case (_,_,_,idx2) => spectrum.getIntensities()(idx2) > intensityFilter  }
             /* filtering on presence of souffer is too restrictive....*/
-            .filter { case (_,idx1,_,_) => (spectrum.getIntensities()(idx1)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
+            .filter { case (_,idx0,_,_) => (spectrum.getIntensities()(idx0)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
             /* abundance filter */
         /*    .filter { case (_,idx1,_,idx2) =>
               (spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2))/scan.getBasePeakIntensity > 0.1  }*/
             .filter { case (mz, idx1,mz_p2,idx2) => {
               ((mz - mz_p2).abs - 1.99).abs < precision
             }}
-            .map { case (_, idx1,_,idx2) => fillPeakIdentification(scan,spectrum,idx1,None,Some(idx2))
+            .map {
+              case (mz0, idx0  ,mz2 ,idx2 ) =>
+                val idx1 = spectrum.findClosestMzIdx(mz0+1.0)
+                val idx3 = spectrum.findClosestMzIdx(mz0+3.0)
+                (mz0, idx0  ,mz2 ,idx2, idx1, idx3 )
+            }
+            .map { case (_, idx0,_,idx2, idx1, idx3) => fillPeakIdentification(scan,spectrum,idx0,Some(idx1),Some(idx2),Some(idx3))
               //PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }
         }}.toSeq

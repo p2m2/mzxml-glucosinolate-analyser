@@ -1,7 +1,7 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.database.{BraChemDb, Chebi}
+import fr.inrae.metabolomics.p2m2.database.Chebi
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
@@ -12,17 +12,21 @@ case object CsvIonsIdentificationFile {
             familyMetabolite : String,
             configJson : ConfigReader, out: File) : Unit = {
     if ( list.nonEmpty ) {
-      val size =  2
+
       val neutralLosses = configJson.neutralLoss(familyMetabolite).keys
       val daughterIons = configJson.daughterIons(familyMetabolite).keys
 
       val bw = new BufferedWriter(new FileWriter(out))
 
       /* Header */
+      val size =  4
+      0.until(size).foreach(
+        i=> bw.write(s"ms+$i;intensity+$i;abundance+$i;")
+      )
 
-      bw.write(s"ms+0;intensity+0;abundance+0;ms+2;intensity+2;abundance+2;")
+     // bw.write(s"ms+0;intensity+0;abundance+0;ms+1;intensity+1;abundance+1;ms+1;intensity+2;abundance+2;ms+3;intensity+3;abundance+3;")
       bw.write(s"CHEBI;")
-      bw.write(s"BRACHEMDB;")
+      //bw.write(s"BRACHEMDB;")
       bw.write(s"BRASSICA;")
       bw.write("RT;")
       bw.write("mz threshold;")
@@ -47,11 +51,11 @@ case object CsvIonsIdentificationFile {
             Chebi.getEntries(
               metabolitesIdentificationId.ion.peaks.head.mz).map( entry => entry("ID")).mkString(",")
               +";")
-
+/*
           bw.write(
             BraChemDb.getEntries(
               metabolitesIdentificationId.ion.peaks.head.mz).mkString(",") + ";")
-
+*/
           bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz).mkString(",")+";")
           bw.write(s"${metabolitesIdentificationId.ion.rt};")
 
