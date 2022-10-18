@@ -182,6 +182,14 @@ case object ScanLoader {
                 val idx3 = spectrum.findClosestMzIdx(mz0+3.0)
                 (mz0, idx0  ,mz2 ,idx2, idx1, idx3 )
             }
+            /* Gestion d'une abondance minimum a deporter dans les critere de resultats */
+            .filter { /* M+1   min abundance */
+              case (_, idx0  ,_ ,_, idx1,_ ) =>
+                (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) >= 0.09) &&
+                  (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) <= 0.3312)
+            }
+
+            /* --- fin critere abondance*/
             .map { case (_, idx0,_,idx2, idx1, idx3) => fillPeakIdentification(scan,spectrum,idx0,Some(idx1),Some(idx2),Some(idx3))
               //PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }

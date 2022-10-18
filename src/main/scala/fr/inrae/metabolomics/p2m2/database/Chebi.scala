@@ -41,7 +41,7 @@ case object Chebi {
   def getEntries(monoIsotopicMassSearch : Double, tolerance : Double = 0.005): Seq[Map[String,String]] = {
     entries.filter {
       entry =>
-        val m : Double = entry("MONOISOTOPIC MASS").toDouble - ChemicalConstance.massProton
+        val m : Double = entry("MONOISOTOPIC MASS").toDouble - ChemicalUtils.massProton
         (monoIsotopicMassSearch > (m-tolerance)) && (monoIsotopicMassSearch < (m+tolerance))
     }
   }

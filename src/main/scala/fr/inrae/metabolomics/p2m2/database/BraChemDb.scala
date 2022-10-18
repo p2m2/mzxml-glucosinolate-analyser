@@ -1,7 +1,5 @@
 package fr.inrae.metabolomics.p2m2.database
 
-import fr.inrae.metabolomics.p2m2.database.Chebi.getClass
-
 import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
 
@@ -29,7 +27,7 @@ case object BraChemDb {
   def getEntries(monoIsotopicMassSearch: Double, tolerance: Double = 0.002): Seq[String] = {
     entries.filter {
       entry =>
-        val m: Double = entry._2.toDouble - ChemicalConstance.massProton
+        val m: Double = entry._2.toDouble - ChemicalUtils.massProton
         (monoIsotopicMassSearch > (m - tolerance)) && (monoIsotopicMassSearch < (m + tolerance))
     }.keys.toSeq
   }
