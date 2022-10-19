@@ -1,7 +1,7 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
-import fr.inrae.metabolomics.p2m2.database.Chebi
+import fr.inrae.metabolomics.p2m2.database.{Chebi, ChemicalUtils}
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
@@ -47,16 +47,30 @@ case object CsvIonsIdentificationFile {
               s"${metabolitesIdentificationId.ion.peaks(i).abundance};")
           )
 
-          bw.write(
-            Chebi.getEntries(
-              metabolitesIdentificationId.ion.peaks.head.mz).map( entry => entry("ID")).mkString(",")
-              +";")
+          val metabolitesDBChebi = Chebi.getEntries(
+            metabolitesIdentificationId.ion.peaks.head.mz) map {
+            m =>
+              m("ID") + "[R=" + ChemicalUtils.correlation(m("FORMULA"), metabolitesIdentificationId.ion.peaks.map(p => p.abundance)) + "]"
+          }
+
+          bw.write(metabolitesDBChebi.mkString(",") +";")
 /*
           bw.write(
             BraChemDb.getEntries(
               metabolitesIdentificationId.ion.peaks.head.mz).mkString(",") + ";")
 */
-          bw.write(configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz).mkString(",")+";")
+          val metabolitesDB = configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz)
+
+          /* metabolites name from database and R computed with isotopic distribution (formula) and experimental abundance */
+          val namesAndR : Seq[String] = metabolitesDB map {
+            m =>
+              (m.name match {
+                case Some(n) => n
+                case _ => m.id
+              }) + "[R="+ ChemicalUtils.correlation(m.formula,metabolitesIdentificationId.ion.peaks.map( p=> p.abundance)) + "]"
+          }
+
+          bw.write(namesAndR.mkString(",")+";")
           bw.write(s"${metabolitesIdentificationId.ion.rt};")
 
           if ( metabolitesIdentificationId.ion.peaks.head.mz < configJson.minMzCoreStructure(familyMetabolite) ) {

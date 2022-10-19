@@ -1,6 +1,7 @@
 package fr.inrae.metabolomics.p2m2.config
 
-import fr.inrae.metabolomics.p2m2.config.ConfigReader.Params
+import fr.inrae.metabolomics.p2m2.config.ConfigReader.{Metabolite, Params}
+import fr.inrae.metabolomics.p2m2.database.ChemicalUtils
 import upickle.default._
 
 case object ConfigReader {
@@ -14,6 +15,11 @@ case object ConfigReader {
     minMzCoreStructure
      = Value
   }
+
+  case object Metabolite {
+    implicit val rw: ReadWriter[Metabolite] = macroRW
+  }
+  case class Metabolite(id: String, name: Option[String], formula: String)
 
   def read(config : String) : ConfigReader = {
     val u = ujson.read(config)
@@ -35,8 +41,10 @@ case object ConfigReader {
     ).toMap
 
     /* Reference database */
-    val baseRef : Map[String,Map[String,Double]] = u.obj.map(
-      k => k._1 -> k._2("databaseReference").obj.map { case (key, value) => key -> value.value.toString.toDouble }.toMap
+    val baseRef : Map[String,Seq[Metabolite]] = u.obj.map(
+      k => k._1 -> k._2("databaseReference").obj.map {
+        case (key, value) => Metabolite(key,value.obj.get("name").strOpt,value.obj("formula").toString())
+      }.toSeq
     ).toMap
 
     ConfigReader(metabolites,nl,di,baseRef)
@@ -48,7 +56,7 @@ case class ConfigReader(
                          metabolitesMap: Map[String, Map[Params.Value, String]],
                          nl : Map[String,Map[String,Double]],
                          di:Map[String,Map[String,Double]],
-                         baseRef:Map[String,Map[String,Double]]) {
+                         baseRef:Map[String,Seq[Metabolite]]) {
 
   def metabolites : Seq[String] = metabolitesMap.keys.toSeq
   def deltaMp0Mp2(m: String) : Double = metabolitesMap(m)(Params.deltaMp0Mp2).toString.toDouble
@@ -56,11 +64,11 @@ case class ConfigReader(
   def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble
   def neutralLoss(m: String) : Map[String,Double] = nl(m)
   def daughterIons(m: String) : Map[String,Double] = di(m)
-  def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[String] = {
+  def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[Metabolite] = {
     baseRef(m).filter {
       entry =>
-        val m = entry._2
+        val m = ChemicalUtils.composition(entry.formula).monoIsotopicMass - ChemicalUtils.massProton
         (monoIsotopicMassSearch > (m - tolerance)) && (monoIsotopicMassSearch < (m + tolerance))
-    }.keys.toSeq
+    }
   }
 }

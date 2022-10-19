@@ -1,6 +1,6 @@
 package fr.inrae.metabolomics.p2m2
 
-import fr.inrae.metabolomics.p2m2.`export`.{CsvIonsIdentificationFile, IonsIdentificationFile}
+import fr.inrae.metabolomics.p2m2.`export`.{CandidateResume, CsvIonsIdentificationFile, IonsIdentificationFile}
 import fr.inrae.metabolomics.p2m2.builder.{IonsIdentificationBuilder, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
@@ -110,7 +110,7 @@ object MainDetection extends App {
 
     confJson.metabolites.foreach(
       family => {
-        config.mzfiles.foreach {
+        val allSelectedIons : Seq[(Double, Seq[IonsIdentification])] = config.mzfiles.flatMap {
           mzFile =>
             val (source, index) = ScanLoader.read(mzFile)
 
@@ -119,7 +119,7 @@ object MainDetection extends App {
               case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
             }
 
-            val values = analyse_metabolite(
+            val values = ionsDetection(
               config,
               source,
               index,
@@ -140,13 +140,23 @@ object MainDetection extends App {
             val f2 = config.outfile.getOrElse(new File(s"${baseName}_$family"))
             IonsIdentificationFile.save(values, family, confJson, f2)
             println(s"========= check ${f.getPath},${f2.getPath} ===============")
-        }
 
+            val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.5).round
+            values.filter( _.scoreIdentification > t )
+        }
+          .groupBy{  (ion : IonsIdentification) =>
+            (ion.ion.peaks.head.mz*100).round/100.toDouble }
+          .toList
+          .sortBy(_._1)
+         // .map( v => (v._1,v._2.size))
+
+        CandidateResume.build(allSelectedIons,family,confJson,new File("resume.txt"))
+        //println(allSelectedIons)
       })
   }
 
 
-  def analyse_metabolite(
+  def ionsDetection(
                           config: Config,
                           source: MZXMLFile,
                           index: MZXMLIndex,

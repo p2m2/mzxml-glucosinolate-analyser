@@ -14,10 +14,6 @@ case class IonsIdentificationBuilder(
                                    ) {
   def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
-      val mz = p.peaks.map(p2 => (p2.mz*precisionMzh ).round / precisionMzh.toDouble )
-      val intensities = p.peaks.map(_.intensity)
-      val abundance = p.peaks.map(_.abundance)
-
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
           p,
