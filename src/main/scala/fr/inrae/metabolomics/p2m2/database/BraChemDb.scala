@@ -31,4 +31,5 @@ case object BraChemDb {
         (monoIsotopicMassSearch > (m - tolerance)) && (monoIsotopicMassSearch < (m + tolerance))
     }.keys.toSeq
   }
+
 }

@@ -110,8 +110,10 @@ object MainDetection extends App {
 
     confJson.metabolites.foreach(
       family => {
-        val allSelectedIons : Seq[(Double, Seq[IonsIdentification])] = config.mzfiles.flatMap {
+        val allSelectedIons : Seq[(Double, Seq[(IonsIdentification,String)])] = config.mzfiles.flatMap {
           mzFile =>
+
+
             val (source, index) = ScanLoader.read(mzFile)
 
             val intensityFilter = config.thresholdIntensityFilter match {
@@ -126,6 +128,8 @@ object MainDetection extends App {
               intensityFilter,
               confJson.deltaMp0Mp2(family),
               confJson.numberSulfurMin(family),
+              confJson.minAbundanceM1(family),
+              confJson.maxAbundanceM1(family),
               confJson.minMzCoreStructure(family),
               confJson.neutralLoss(family),
               confJson.daughterIons(family)
@@ -142,13 +146,13 @@ object MainDetection extends App {
             println(s"========= check ${f.getPath},${f2.getPath} ===============")
 
             val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.5).round
-            values.filter( _.scoreIdentification > t )
+            values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
         }
-          .groupBy{  (ion : IonsIdentification) =>
+          .groupBy{  case (ion : IonsIdentification,_: String) =>
             (ion.ion.peaks.head.mz*100).round/100.toDouble }
           .toList
-          .sortBy(_._1)
-         // .map( v => (v._1,v._2.size))
+          .sortBy { case (mz : Double , s: Seq[(IonsIdentification,String)]) => mz }
+      //    .sortBy(_._1)
 
         CandidateResume.build(allSelectedIons,family,confJson,new File("resume.txt"))
         //println(allSelectedIons)
@@ -163,6 +167,8 @@ object MainDetection extends App {
                           intensityFilter: Int,
                           deltaMp0Mp2: Double,
                           numberSulfurMin: Double,
+                          minAbundanceM1: Double,
+                          maxAbundanceM1: Double,
                           mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
                           daughterIons: Map[String, Double]
@@ -178,6 +184,8 @@ object MainDetection extends App {
           config.thresholdAbundanceM0Filter,
           intensityFilter,
           filteringOnNbSulfur = numberSulfurMin.toInt,
+          minAbundanceM1,
+          maxAbundanceM1,
           config.toleranceMz,
           deltaMOM2 = deltaMp0Mp2)
 

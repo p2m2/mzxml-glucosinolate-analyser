@@ -8,23 +8,36 @@ import java.io.{BufferedWriter, File, FileWriter}
 import java.util.Calendar
 
 case object CandidateResume {
-  def build(list: Seq[(Double, Seq[IonsIdentification])],
+  def build(list: Seq[(Double, Seq[(IonsIdentification,String)])],
             familyMetabolite: String,
             configJson: ConfigReader, out: File): Unit = {
     val bw = new BufferedWriter(new FileWriter(out))
-
-    bw.write(s" ====== Resume $familyMetabolite : ${Calendar.getInstance().getTime} =======\n")
-    bw.write(s"Numb. Candidate : ${list.size}\n\n")
-
     val values = list.sortBy(_._2.size).reverse
 
-    for ( ( mz, lIons) <- values ) {
-      bw.write(s"========================== $mz m/z ======================\n")
-      bw.write(s"hit:${lIons.size}\n")
+    bw.write(s" ====== Resume $familyMetabolite : ${Calendar.getInstance().getTime} =======\n")
+
+    /** Most representative DI */
+    val m = configJson.di(familyMetabolite).map {
+      case (key, _) =>
+        key -> values.flatMap(v => v._2.flatMap(i => i._1.daughterIons.get(key)).flatten)
+    }.toSeq.sortBy(_._2.size).reverse.filter {
+      case (_, l) => l.nonEmpty
+    } map {
+      case (k, l) => k + s"(${l.size})"
+    }
+
+    bw.write("NB CANDIDATE     %20s%s\n".format(" ",list.size))
+    bw.write("NB DAUGHTER IONS %20s%s\n".format(" ",m.size))
+    bw.write("DAUGHTER IONS    %20s%s\n".format(" ",m.mkString(", ")))
+    bw.write("M/Z              %20s%s\n".format(" ",values.map(_._1).sorted.mkString(", ")))
+    bw.write("\n\n")
+
+
+    for ( ( mz, (lIonsAndFileName) ) <- values ) {
 
       val m = configJson.di(familyMetabolite).map {
         case (key, _ ) =>
-          key -> lIons.flatMap(i => i.daughterIons.get(key)).flatten
+          key -> lIonsAndFileName.flatMap(i => i._1.daughterIons.get(key)).flatten
 
       } filter {
         case (_,l) => l.nonEmpty
@@ -32,20 +45,9 @@ case object CandidateResume {
         case (k,l) => k+s"(${l.size})"
       }
 
-      val rts = lIons.map(
-        ion => ion.ion.rt
-      ).mkString(", ")
-
-      bw.write(s"= Retention time =\n$rts\n")
-
-
-    //  val m = lIons.map( i => i.daughterIons.keys )
-      bw.write(s"Numb. Daughter ions:${m.size}\n")
-      bw.write(s"=Daughter ions=\n${m.mkString(",")}\n")
-
       val m2 = configJson.nl(familyMetabolite).map {
         case (key, _) =>
-          key -> lIons.flatMap(i => i.neutralLosses.get(key)).flatten
+          key -> lIonsAndFileName.flatMap(i => i._1.neutralLosses.get(key)).flatten
 
       } filter {
         case (_, l) => l.nonEmpty
@@ -53,44 +55,37 @@ case object CandidateResume {
         case (k, l) => k + s"(${l.size})"
       }
 
-      //  val m = lIons.map( i => i.daughterIons.keys )
-      bw.write(s"Numb. Neutral losses:${m2.size}\n")
-      bw.write(s"=Neutral losses=\n${m2.mkString(",")}\n")
+      val rts = lIonsAndFileName.map(
+        ion => (ion._1.ion.rt*1000).round/1000.toDouble
+      ).mkString(", ")
 
-      val metabolitesDBChebi = lIons.flatMap( metabolitesIdentificationId => Chebi.getEntries(
-        metabolitesIdentificationId.ion.peaks.head.mz) map {
+      val metabolitesDBChebi = lIonsAndFileName.flatMap(metabolitesIdentificationId => Chebi.getEntries(
+        metabolitesIdentificationId._1.ion.peaks.head.mz) map {
         m =>
-          m("ID") + "[R=" + ChemicalUtils.correlation(m("FORMULA"), metabolitesIdentificationId.ion.peaks.map(p => p.abundance)) + "]"
-      }).mkString(", ")
-
-
-      bw.write(s"= candidate chebi =\n$metabolitesDBChebi\n")
-
-      val namesAndR =  lIons.flatMap ( metabolitesIdentificationId =>
-        configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz) map {
-        m =>
-          (m.name match {
-            case Some(n) => n
-            case _ => m.id
-          }) + "[R=" + ChemicalUtils.correlation(m.formula, metabolitesIdentificationId.ion.peaks.map(p => p.abundance)) + "]"
+          m("ID")
       }).distinct.mkString(", ")
-      bw.write(s"= candidate $familyMetabolite =\n$namesAndR\n")
+
+      val namesAndR = lIonsAndFileName.flatMap(metabolitesIdentificationId =>
+        configJson.getEntriesBaseRef(familyMetabolite, metabolitesIdentificationId._1.ion.peaks.head.mz) map {
+          m =>
+            (m.name match {
+              case Some(n) => n
+              case _ => m.id
+            })
+        }).distinct.mkString(", ")
+
+      bw.write(s"========================== $mz m/z ======================\n")
+      bw.write("HIT             %20s%s\n".format(" ",lIonsAndFileName.size))
+      bw.write("FILES           %20s%s\n".format(" ",lIonsAndFileName.map(_._2).distinct.mkString(", ")))
+      bw.write("RT              %20s%s\n".format(" ",rts))
+      bw.write("NB DI           %20s%s\n".format(" ",m.size))
+      bw.write("NB NL           %20s%s\n".format(" ",m2.size))
+      bw.write("DAUGHTER IONS   %20s%s\n".format(" ",m.mkString(",")))
+      bw.write("NEUTRAL LOSSES  %20s%s\n".format(" ",m2.mkString(",")))
+      bw.write("CANDIDATE CHEBI %20s%s\n".format(" ",metabolitesDBChebi))
+      bw.write("CANDIDATE %15s  %15s%s\n".format(familyMetabolite," ",namesAndR))
     }
 
-    bw.write(s"\n\n===================== TOTAL HIT =================================\n\n")
-
-    /** Most representative DI  */
-    val m = configJson.di(familyMetabolite).map {
-      case (key, _) =>
-        key -> values.flatMap( v => v._2.flatMap(i => i.daughterIons.get(key)).flatten )
-    }.toSeq.sortBy(_._2.size).reverse.filter {
-      case (_, l) => l.nonEmpty
-    } map {
-      case (k, l) => k + s"(${l.size})"
-    }
-
-    bw.write(s"Numb. Daughter ions:${m.size}\n")
-    bw.write(s"=Daughter ions =\n${m.mkString(",")}\n")
     bw.close()
   }
 }

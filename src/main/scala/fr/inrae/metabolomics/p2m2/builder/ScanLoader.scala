@@ -141,6 +141,8 @@ case object ScanLoader {
                                       thresholdAbundanceM0Filter : Double,
                                       intensityFilter : Int,
                                       filteringOnNbSulfur : Int = 0,
+                                      minAbundanceM1: Double,
+                                      maxAbundanceM1: Double,
                                       precision: Double = 0.01,
                                       deltaMOM2 : Double
                                     ): Seq[PeakIdentification] = {
@@ -185,10 +187,9 @@ case object ScanLoader {
             /* Gestion d'une abondance minimum a deporter dans les critere de resultats */
             .filter { /* M+1   min abundance */
               case (_, idx0  ,_ ,_, idx1,_ ) =>
-                (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) >= 0.09) &&
-                  (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) <= 0.3312)
+                (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) >= minAbundanceM1) &&
+                  (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) <= maxAbundanceM1)
             }
-
             /* --- fin critere abondance*/
             .map { case (_, idx0,_,idx2, idx1, idx3) => fillPeakIdentification(scan,spectrum,idx0,Some(idx1),Some(idx2),Some(idx3))
               //PeakIdentification(scan.getNum, Seq(idx1,idx2))
@@ -197,7 +198,7 @@ case object ScanLoader {
   }
 
   /**
-   * Merge all M/z in a short Windows RT and keep the Ions with the maximum abundance
+   * Merge all M/z in a short Windows RT (features) and keep the Ions with the maximum abundance
    * @param peaks
    * @return
    */

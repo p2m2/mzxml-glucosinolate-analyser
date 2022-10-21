@@ -12,7 +12,9 @@ case object ConfigReader {
     val
     deltaMp0Mp2,
     numberSulfurMin,
-    minMzCoreStructure
+    minMzCoreStructure,
+    minAbundanceM1,
+    maxAbundanceM1
      = Value
   }
 
@@ -28,7 +30,9 @@ case object ConfigReader {
       k => k._1 -> Map(
         Params.deltaMp0Mp2 -> k._2("deltaMp0Mp2").value.toString,
         Params.numberSulfurMin -> k._2("numberSulfurMin").value.toString,
-        Params.minMzCoreStructure -> k._2("minMzCoreStructure").value.toString
+        Params.minMzCoreStructure -> k._2("minMzCoreStructure").value.toString,
+        Params.minAbundanceM1 -> k._2("minAbundanceM1").value.toString,
+        Params.maxAbundanceM1 -> k._2("maxAbundanceM1").value.toString
       )
     ).toMap
 
@@ -62,6 +66,8 @@ case class ConfigReader(
   def deltaMp0Mp2(m: String) : Double = metabolitesMap(m)(Params.deltaMp0Mp2).toString.toDouble
   def numberSulfurMin(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
   def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble
+  def minAbundanceM1(m: String): Double = metabolitesMap(m)(Params.minAbundanceM1).toString.toDouble
+  def maxAbundanceM1(m: String): Double = metabolitesMap(m)(Params.maxAbundanceM1).toString.toDouble
   def neutralLoss(m: String) : Map[String,Double] = nl(m)
   def daughterIons(m: String) : Map[String,Double] = di(m)
   def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[Metabolite] = {
