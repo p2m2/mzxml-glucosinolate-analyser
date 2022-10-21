@@ -2,7 +2,7 @@
   "Glucosinolate" : {
     "deltaMp0Mp2" : 1.996,
     "numberSulfurMin" : 2,
-    "minAbundanceM1" : 0.03,
+    "minAbundanceM1" : 0.09,
     "maxAbundanceM1" : 0.4,
     "minMzCoreStructure" : 317.995896,
     "neutralLoss" : {

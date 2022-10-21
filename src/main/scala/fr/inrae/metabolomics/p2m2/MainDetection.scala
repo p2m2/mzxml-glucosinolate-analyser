@@ -145,7 +145,7 @@ object MainDetection extends App {
             IonsIdentificationFile.save(values, family, confJson, f2)
             println(s"========= check ${f.getPath},${f2.getPath} ===============")
 
-            val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.5).round
+            val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.3).round
             values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
         }
           .groupBy{  case (ion : IonsIdentification,_: String) =>

@@ -83,7 +83,7 @@ case object CandidateResume {
       bw.write("DAUGHTER IONS   %20s%s\n".format(" ",m.mkString(",")))
       bw.write("NEUTRAL LOSSES  %20s%s\n".format(" ",m2.mkString(",")))
       bw.write("CANDIDATE CHEBI %20s%s\n".format(" ",metabolitesDBChebi))
-      bw.write("CANDIDATE %15s  %15s%s\n".format(familyMetabolite," ",namesAndR))
+      bw.write("CANDIDATE %s15  %15s%s\n".format(familyMetabolite.toUpperCase," ",namesAndR))
     }
 
     bw.close()

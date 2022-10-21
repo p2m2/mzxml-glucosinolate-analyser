@@ -42,6 +42,7 @@ credentials += {
     Credentials(realm,host,login,pass)
   }
 }
+scalacOptions += "-opt:inline,simplify-jumps,compact-locals,nullness-tracking"
 
 publishTo := {
   if (isSnapshot.value)
