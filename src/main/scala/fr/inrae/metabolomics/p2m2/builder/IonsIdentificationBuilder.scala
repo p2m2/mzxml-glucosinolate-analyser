@@ -17,12 +17,14 @@ case class IonsIdentificationBuilder(
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
+          source.getPath,
           p,
           neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,noiseIntensity = noiseIntensity),
           daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(
+          source.getPath,
           p,
           neutralLosses = Map(),
           daughterIons = Map()

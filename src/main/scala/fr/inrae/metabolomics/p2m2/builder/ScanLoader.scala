@@ -33,8 +33,6 @@ case object ScanLoader {
         "Manufacturer:"+k.getManufacturer + " S/N:" + k.getSerialNumber
     ).mkString("\n\n") } ")
 
-
-
     (source,index)
     // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
   }
@@ -197,6 +195,39 @@ case object ScanLoader {
               //PeakIdentification(scan.getNum, Seq(idx1,idx2))
             }
         }}.toSeq
+  }
+
+  def getDeltaNeutralLossesFromPeak(
+                                          source: MZXMLFile,
+                                          index: MZXMLIndex,
+                                          peak :PeakIdentification,
+                                          intensityFilter: Int,
+                                          precision: Double = 0.02
+                                        ): Seq[Double] = {
+
+    val allScans = scansMs(source,index,Some(peak.rt-precision),Some(peak.rt+precision),2)
+    allScans.zipWithIndex.flatMap {
+      case (basicScan, i) => {
+        print(s"\r===>$i/${allScans.size}")
+        val scan = source.parseScan(basicScan.getNum, true)
+        val spectrum = scan.fetchSpectrum()
+        val mzValues = spectrum.getMZs
+
+        mzValues
+          .zipWithIndex
+          .filter { case (mz, _) => mz < peak.peaks.head.mz }
+          .filter { case (_, idx) => spectrum.getIntensities()(idx) > intensityFilter }
+          // mz ares now Ion Diag Frag
+          // check if dela is a Ion Diag Frag
+          .map { case (mz, idx) => (peak.peaks.head.mz - mz, idx) }
+          .filter {
+            case (delta, idx) =>
+              val idx1 = spectrum.findClosestMzIdx(delta)
+              spectrum.getIntensities()(idx1) <= intensityFilter
+          }
+          .map( _._1)
+      }
+    }
   }
 
   /**

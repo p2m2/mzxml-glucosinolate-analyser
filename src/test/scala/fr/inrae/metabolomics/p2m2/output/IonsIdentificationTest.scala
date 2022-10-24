@@ -11,7 +11,7 @@ object IonsIdentificationTest extends TestSuite {
 
   val tests: Tests = Tests {
     test("empty serialization") {
-      assert(Try(read[IonsIdentification](write(IonsIdentification(PeakIdentification(),Map(),Map())))).isSuccess)
+      assert(Try(read[IonsIdentification](write(IonsIdentification("",PeakIdentification(),Map(),Map())))).isSuccess)
     }
 
     test("serialization") {

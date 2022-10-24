@@ -23,6 +23,7 @@ object CsvIonsIdentificationFileTest extends TestSuite {
       CsvIonsIdentificationFile.build(
         Seq(
           IonsIdentification(
+            f.getAbsolutePath,
             PeakIdentification(),
             neutralLosses = Map(),
             daughterIons = Map()
