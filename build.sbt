@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "ujson" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
   "com.lihaoyi" %% "upickle" % "2.0.0",
- // "org.openscience.cdk" % "cdk-bundle" % "2.8",
+  "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
+    // "org.openscience.cdk" % "cdk-bundle" % "2.8",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
   "org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
 )

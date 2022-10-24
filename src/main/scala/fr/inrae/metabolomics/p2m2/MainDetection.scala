@@ -8,6 +8,8 @@ import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
 import scala.io.Source
+import scala.collection.parallel.CollectionConverters._
+import scala.collection.parallel.ParSeq
 
 object MainDetection extends App {
 
@@ -110,48 +112,48 @@ object MainDetection extends App {
 
     confJson.metabolites.foreach(
       family => {
-        val allSelectedIons : Seq[(Double, Seq[(IonsIdentification,String)])] = config.mzfiles.flatMap {
-          mzFile =>
+        val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
+          config.mzfiles.par
+            .flatMap {
+            mzFile =>
+              val (source, index) = ScanLoader.read(mzFile)
 
+              val intensityFilter = config.thresholdIntensityFilter match {
+                case Some(v) => v
+                case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+              }
 
-            val (source, index) = ScanLoader.read(mzFile)
+              val values = ionsDetection(
+                config,
+                source,
+                index,
+                intensityFilter,
+                confJson.deltaMp0Mp2(family),
+                confJson.numberSulfurMin(family),
+                confJson.minAbundanceM1(family),
+                confJson.maxAbundanceM1(family),
+                confJson.minMzCoreStructure(family),
+                confJson.neutralLoss(family),
+                confJson.daughterIons(family)
+              )
 
-            val intensityFilter = config.thresholdIntensityFilter match {
-              case Some(v) => v
-              case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
-            }
+              val baseName = mzFile.getName.split("\\.").dropRight(1).mkString(".")
 
-            val values = ionsDetection(
-              config,
-              source,
-              index,
-              intensityFilter,
-              confJson.deltaMp0Mp2(family),
-              confJson.numberSulfurMin(family),
-              confJson.minAbundanceM1(family),
-              confJson.maxAbundanceM1(family),
-              confJson.minMzCoreStructure(family),
-              confJson.neutralLoss(family),
-              confJson.daughterIons(family)
-            )
+              val f = config.outfile.getOrElse(new File(s"${baseName}_$family.csv"))
+              f.delete()
+              CsvIonsIdentificationFile.build(values, family, confJson, f)
 
-            val baseName = mzFile.getName.split("\\.").dropRight(1).mkString(".")
+              val f2 = config.outfile.getOrElse(new File(s"${baseName}_$family"))
+              IonsIdentificationFile.save(values, family, confJson, f2)
+              println(s"========= check ${f.getPath},${f2.getPath} ===============")
 
-            val f = config.outfile.getOrElse(new File(s"${baseName}_$family.csv"))
-            f.delete()
-            CsvIonsIdentificationFile.build(values, family, confJson, f)
-
-            val f2 = config.outfile.getOrElse(new File(s"${baseName}_$family"))
-            IonsIdentificationFile.save(values, family, confJson, f2)
-            println(s"========= check ${f.getPath},${f2.getPath} ===============")
-
-            val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.3).round
-            values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
+              val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.3).round
+              values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
         }
           .groupBy{  case (ion : IonsIdentification,_: String) =>
             (ion.ion.peaks.head.mz*100).round/100.toDouble }
           .toList
-          .sortBy { case (mz : Double , s: Seq[(IonsIdentification,String)]) => mz }
+          .sortBy { case (mz : Double , s: ParSeq[(IonsIdentification,String)]) => mz }
       //    .sortBy(_._1)
 
         CandidateResume.build(allSelectedIons,family,confJson,new File("resume.txt"))
