@@ -11,7 +11,7 @@ case class IonsIdentificationBuilder(
                                      peaks : Seq[PeakIdentification],
                                      nls : Seq[(String,Double)],
                                      dis : Seq[(String,Double)],
-                                     noiseIntensity : Double
+                                     noiseIntensity : Double = 0.0
                                    ) {
   def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>

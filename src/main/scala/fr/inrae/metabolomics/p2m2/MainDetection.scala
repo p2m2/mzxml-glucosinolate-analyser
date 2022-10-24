@@ -8,6 +8,7 @@ import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
 import scala.collection.parallel.CollectionConverters._
+import scala.collection.parallel.ParSeq
 import scala.io.Source
 
 object MainDetection extends App {
@@ -111,8 +112,8 @@ object MainDetection extends App {
 
     confJson.metabolites.foreach(
       family => {
-        val allSelectedIons : Seq[(Double, Seq[(IonsIdentification,String)])] =
-          config.mzfiles
+        val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
+          config.mzfiles.par
             .flatMap {
             mzFile =>
               val (source, index) = ScanLoader.read(mzFile)

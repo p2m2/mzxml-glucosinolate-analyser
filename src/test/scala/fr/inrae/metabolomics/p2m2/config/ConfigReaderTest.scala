@@ -11,6 +11,8 @@ object ConfigReaderTest extends TestSuite {
         |    "deltaMp0Mp2" : 1.996,
         |    "numberSulfurMin" : 2,
         |    "minMzCoreStructure" : 0,
+        |    "minAbundanceM1" : 0.09,
+        |    "maxAbundanceM1" : 0.4,
         |    "neutralLoss" :
         |      {
         |        "gluconolactone" : 178.0

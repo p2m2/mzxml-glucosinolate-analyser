@@ -6,9 +6,10 @@ import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 
 import java.io.{BufferedWriter, File, FileWriter}
 import java.util.Calendar
+import scala.collection.parallel.ParSeq
 
 case object CandidateResume {
-  def build(list: Seq[(Double, Seq[(IonsIdentification,String)])],
+  def build(list: Seq[(Double, ParSeq[(IonsIdentification,String)])],
             familyMetabolite: String,
             configJson: ConfigReader, out: File): Unit = {
 

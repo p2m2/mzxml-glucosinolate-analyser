@@ -10,11 +10,11 @@ object IonsIdentificationBuilderTest extends TestSuite {
 
   val tests: Tests = Tests {
     test("instance") {
-      IonsIdentificationBuilder(v._1,v._2,None,None,Seq(),Seq(),Seq())
+      IonsIdentificationBuilder(v._1,v._2,None,None,Seq(),Seq(),Seq(),0)
     }
 
     test("getInfo") {
-      IonsIdentificationBuilder(v._1,v._2,None,None,Seq(),Seq(),Seq()).getInfo(PeakIdentification(0,Seq(1501),Seq(),0.0),1,0.0)
+      IonsIdentificationBuilder(v._1,v._2,None,None,Seq(),Seq(),Seq(),0).getInfo(PeakIdentification(0,Seq(1501),Seq(),0.0),1,0.0)
     }
 
     test("getInfo 2") {
