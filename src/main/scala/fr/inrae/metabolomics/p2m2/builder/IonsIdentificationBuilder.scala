@@ -10,15 +10,16 @@ case class IonsIdentificationBuilder(
                                      end: Option[Double],
                                      peaks : Seq[PeakIdentification],
                                      nls : Seq[(String,Double)],
-                                     dis : Seq[(String,Double)]
+                                     dis : Seq[(String,Double)],
+                                     noiseIntensity : Double
                                    ) {
   def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
           p,
-          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls),
-          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis)
+          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,noiseIntensity = noiseIntensity),
+          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(

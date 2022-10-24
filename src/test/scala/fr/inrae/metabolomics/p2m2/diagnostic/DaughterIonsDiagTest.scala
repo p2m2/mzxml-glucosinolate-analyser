@@ -15,7 +15,9 @@ object DaughterIonsDiagTest extends TestSuite {
         Some(2.0), // RT start
         Some(2.2), // RT end
         thresholdAbundanceM0Filter = 0.1, intensityFilter = 0,
-        precision = 0.01,
+        0,
+        0.0,
+        1.0,
         deltaMOM2 = 1.996
       ))
     }

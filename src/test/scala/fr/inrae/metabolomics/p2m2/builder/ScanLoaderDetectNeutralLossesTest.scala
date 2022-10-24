@@ -27,7 +27,12 @@ object ScanLoaderDetectNeutralLossesTest extends TestSuite {
 
     test("============ 2=================") {
       val IsotopesSulfur = ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(v._1,v._2,None,None,
-        thresholdAbundanceM0Filter=1000,intensityFilter = 10,deltaMOM2 = 1.996)
+        thresholdAbundanceM0Filter=1000,
+        intensityFilter = 10,
+        2,
+        0.0,
+        1.0,
+        deltaMOM2 = 1.996)
 
     }
 

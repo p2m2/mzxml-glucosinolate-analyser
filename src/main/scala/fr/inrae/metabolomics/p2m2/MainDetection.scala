@@ -7,9 +7,8 @@ import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
-import scala.io.Source
 import scala.collection.parallel.CollectionConverters._
-import scala.collection.parallel.ParSeq
+import scala.io.Source
 
 object MainDetection extends App {
 
@@ -112,15 +111,22 @@ object MainDetection extends App {
 
     confJson.metabolites.foreach(
       family => {
-        val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
-          config.mzfiles.par
+        val allSelectedIons : Seq[(Double, Seq[(IonsIdentification,String)])] =
+          config.mzfiles
             .flatMap {
             mzFile =>
               val (source, index) = ScanLoader.read(mzFile)
+              val noiseIntensity : Double =
+                ScanLoader.calculBackgroundNoisePeak(
+                  source,
+                  index,
+                  config.startRT,
+                  config.endRT,
+                  startDurationTime = 0.05)
 
               val intensityFilter = config.thresholdIntensityFilter match {
                 case Some(v) => v
-                case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+                case None => noiseIntensity
               }
 
               val values = ionsDetection(
@@ -134,7 +140,8 @@ object MainDetection extends App {
                 confJson.maxAbundanceM1(family),
                 confJson.minMzCoreStructure(family),
                 confJson.neutralLoss(family),
-                confJson.daughterIons(family)
+                confJson.daughterIons(family),
+                noiseIntensity
               )
 
               val baseName = mzFile.getName.split("\\.").dropRight(1).mkString(".")
@@ -147,13 +154,13 @@ object MainDetection extends App {
               IonsIdentificationFile.save(values, family, confJson, f2)
               println(s"========= check ${f.getPath},${f2.getPath} ===============")
 
-              val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.3).round
+              val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.1).round
               values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
         }
           .groupBy{  case (ion : IonsIdentification,_: String) =>
             (ion.ion.peaks.head.mz*100).round/100.toDouble }
           .toList
-          .sortBy { case (mz : Double , s: ParSeq[(IonsIdentification,String)]) => mz }
+          .sortBy { case (mz : Double , s: Seq[(IonsIdentification,String)]) => mz }
       //    .sortBy(_._1)
 
         CandidateResume.build(allSelectedIons,family,confJson,new File("resume.txt"))
@@ -166,14 +173,15 @@ object MainDetection extends App {
                           config: Config,
                           source: MZXMLFile,
                           index: MZXMLIndex,
-                          intensityFilter: Int,
+                          intensityFilter: Double,
                           deltaMp0Mp2: Double,
                           numberSulfurMin: Double,
                           minAbundanceM1: Double,
                           maxAbundanceM1: Double,
                           mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
-                          daughterIons: Map[String, Double]
+                          daughterIons: Map[String, Double],
+                          noiseIntensity : Double
                         ): Seq[IonsIdentification] = {
 
     val listSulfurMetabolites: Seq[PeakIdentification] =
@@ -184,7 +192,7 @@ object MainDetection extends App {
           config.startRT,
           config.endRT,
           config.thresholdAbundanceM0Filter,
-          intensityFilter,
+          intensityFilter.toInt,
           filteringOnNbSulfur = numberSulfurMin.toInt,
           minAbundanceM1,
           maxAbundanceM1,
@@ -214,7 +222,8 @@ object MainDetection extends App {
         intensityFilter,
         config.overrepresentedPeakFilter,
         neutralLoss.toSeq,
-        daughterIons.toSeq
+        daughterIons.toSeq,
+        noiseIntensity
       )
     m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
   }

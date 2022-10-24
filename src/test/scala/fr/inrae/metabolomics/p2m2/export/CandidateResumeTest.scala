@@ -7,6 +7,7 @@ import utest.{TestSuite, Tests, test}
 
 import java.io.File
 import scala.collection.immutable.HashMap
+import scala.collection.parallel.CollectionConverters._
 import scala.io.Source
 
 object CandidateResumeTest extends TestSuite {
@@ -71,7 +72,7 @@ object CandidateResumeTest extends TestSuite {
       val f = File.createTempFile("test", ".csv")
       println(f.getPath)
       CandidateResume.build(
-        l,
+        l.map { case (r,l2) => (r,l2.map((_,"")).par) },
         familyMetabolite = "Glucosinolate",
         configJson = confJson,
         out = f
