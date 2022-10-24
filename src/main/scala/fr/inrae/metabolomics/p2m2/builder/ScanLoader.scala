@@ -23,6 +23,7 @@ case object ScanLoader {
 
     val index : MZXMLIndex = source.fetchIndex()
     println("==========================================================")
+    println("FILE            : "+f.getAbsolutePath)
     println("MS1 size        : "+scansMs(source, index, None, None, 1).size)
     println("MS2 size        : "+scansMs(source, index, None, None, 2).size)
     println(s"Instruments    : \n${source.parseRunInfo().getInstruments.values().asScala.map(

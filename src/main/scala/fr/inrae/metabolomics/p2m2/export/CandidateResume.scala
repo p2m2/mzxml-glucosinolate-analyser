@@ -13,6 +13,8 @@ case object CandidateResume {
             familyMetabolite: String,
             configJson: ConfigReader, out: File): Unit = {
 
+    println(" => RESUME:"+out.getAbsolutePath)
+
     val bw = new BufferedWriter(new FileWriter(out))
     val values = list.sortBy(_._2.size).reverse
 
@@ -27,7 +29,8 @@ case object CandidateResume {
     } map {
       case (k, l) => k + s"(${l.size})"
     }
-
+    bw.write("NB FILES         %20s%s\n".format(" ",list.flatMap(_._2.map(_._2)).distinct.size))
+    bw.write("FILES            %20s%s\n".format(" ",list.flatMap(_._2.map(_._2)).distinct.mkString(", ")))
     bw.write("NB CANDIDATE     %20s%s\n".format(" ",list.size))
     bw.write("NB DAUGHTER IONS %20s%s\n".format(" ",m.size))
     bw.write("DAUGHTER IONS    %20s%s\n".format(" ",m.mkString(", ")))
