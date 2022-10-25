@@ -24,11 +24,13 @@ object ScanLoaderTest extends TestSuite {
           None,  // RT end
           thresholdAbundanceM0Filter=0.1,
           intensityFilter = 1000000000,
-          0,
+          50,
           0.0,
           1.0,
           deltaMOM2 = 1.996
         )
+
+      println(v2)
       assert(v2.isEmpty)
     }
 
@@ -77,9 +79,7 @@ object ScanLoaderTest extends TestSuite {
       val v = read
       ScanLoader.calculBackgroundNoisePeak(
         v._1,
-        v._2,
-        Some(1.0), // RT start
-        Some(1.3), // RT end
+        v._2
       )
     }
 
