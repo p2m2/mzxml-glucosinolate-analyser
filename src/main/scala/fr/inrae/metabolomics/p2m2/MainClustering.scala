@@ -44,7 +44,7 @@ object MainClustering extends App {
       case (f, idx) => (idx, IonsIdentificationFile.load(f))
     }
 
-    val N_FILTER=4
+    val N_FILTER=1
     println(s"=============== DI >$N_FILTER =================")
 
     /* Index file, Seq(IonsIdentification) */
@@ -62,7 +62,10 @@ object MainClustering extends App {
             val rt = precision(ii.ion.rt,10)
            // (ii.daughterIons.foreach(print(_)))
          //   (mz, rt, ii.daughterIons.keys.mkString(","))
-            (idxF,mz, rt)
+            val v = ScanLoader.read(new File(ii.pathFile))
+            val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1, v._2, ii.ion, 100)
+
+            (idxF,mz, rt,r2)
           }
         )
       }
@@ -70,16 +73,21 @@ object MainClustering extends App {
 
     res.foreach(
       row =>
-        println(f"${row._2}%4.2f \t ${row._3}%3.2f\t${row._1}")
+        println(f"${row._2}%4.2f \t ${row._3}%3.2f\t${row._1} \n\t${row._4}")
 
     )
-    val ion : IonsIdentification = r.head._2._1.head
 
-    val v = ScanLoader.read(new File(ion.pathFile))
-    val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1,v._2,ion.ion,100)
-    println("=======R2=================")
-    println(r2)
-    println("========================")
+//    println(r.head._2._1)
+
+    r.map( _._2._1.head) foreach {
+      case ion : IonsIdentification =>
+        val v = ScanLoader.read(new File(ion.pathFile))
+        val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1, v._2, ion.ion, 100)
+        println("=======R2=================",ion.ion)
+        println(r2)
+        println("========================")
+    }
+
 
     //ScanLoader.getDeltaNeutralLossesFromPeak()
 

@@ -17,7 +17,7 @@ case object CandidateResume {
 
     val bw = new BufferedWriter(new FileWriter(out))
     val values = list.sortBy(_._2.size).reverse
-
+    bw.write("===============================================================================\n")
     bw.write(s" ====== Resume $familyMetabolite : ${Calendar.getInstance().getTime} =======\n")
 
     /** Most representative DI */
@@ -35,7 +35,8 @@ case object CandidateResume {
     bw.write("NB DAUGHTER IONS %20s%s\n".format(" ",m.size))
     bw.write("DAUGHTER IONS    %20s%s\n".format(" ",m.mkString(", ")))
     bw.write("M/Z              %20s%s\n".format(" ",values.map(_._1).sorted.mkString(", ")))
-    bw.write("\n\n")
+    bw.write("===============================================================================\n")
+    bw.write("\n\n\n")
 
 
     for ( ( mz, (lIonsAndFileName) ) <- values ) {

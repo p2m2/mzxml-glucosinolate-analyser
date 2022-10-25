@@ -112,13 +112,10 @@ case object ScanLoader {
   def calculBackgroundNoisePeak(
                                  source: MZXMLFile,
                                  index: MZXMLIndex,
-                                 start: Option[Double],
-                                 end: Option[Double],
                                  startDurationTime : Double = 0.05
                                ): Double = {
     val allScans =
-      scansMs(source,index,start,end,1)
-        .filter( _.getRt<startDurationTime)
+      scansMs(source,index,Some(0),Some(startDurationTime),2)
         .map {
           scanMs1 =>
             val scan = source.parseScan(scanMs1.getNum, true)
@@ -171,6 +168,7 @@ case object ScanLoader {
             }
             .filter { case (_,_,_,idx2) => spectrum.getIntensities()(idx2) > intensityFilter  }
             /* filtering on presence of souffer is too restrictive....*/
+            /* a verifier 4.40 ===> */
             .filter { case (_,idx0,_,_) => (spectrum.getIntensities()(idx0)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
             /* abundance filter */
         /*    .filter { case (_,idx1,_,idx2) =>
@@ -212,7 +210,7 @@ case object ScanLoader {
         val scan = source.parseScan(basicScan.getNum, true)
         val spectrum = scan.fetchSpectrum()
         val mzValues = spectrum.getMZs
-
+        scan.getIm
         mzValues
           .zipWithIndex
           .filter { case (mz, _) => mz < peak.peaks.head.mz }

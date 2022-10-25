@@ -18,8 +18,10 @@ case object CsvIonsIdentificationFile {
 
       val bw = new BufferedWriter(new FileWriter(out))
 
+      bw.write("RT;")
       /* Header */
       val size =  4
+
       0.until(size).foreach(
         i=> bw.write(s"ms+$i;intensity+$i;abundance+$i;")
       )
@@ -28,7 +30,6 @@ case object CsvIonsIdentificationFile {
       bw.write(s"CHEBI;")
       //bw.write(s"BRACHEMDB;")
       bw.write(s"BRASSICA;")
-      bw.write("RT;")
       bw.write("mz threshold;")
       bw.write("Nb (NL+DI);")
 
@@ -41,6 +42,8 @@ case object CsvIonsIdentificationFile {
         .filter( _.ion.peaks.nonEmpty)
         .foreach(
         metabolitesIdentificationId => {
+          bw.write(s"${metabolitesIdentificationId.ion.rt};")
+
           0.until(size).foreach(
             i => bw.write(s"${metabolitesIdentificationId.ion.peaks(i).mz};"+
               s"${metabolitesIdentificationId.ion.peaks(i).intensity};"+
@@ -69,10 +72,7 @@ case object CsvIonsIdentificationFile {
                 case _ => m.id
               }) + "[R="+ ChemicalUtils.correlation(m.formula,metabolitesIdentificationId.ion.peaks.map( p=> p.abundance)) + "]"
           }
-
           bw.write(namesAndR.mkString(",")+";")
-          bw.write(s"${metabolitesIdentificationId.ion.rt};")
-
           if ( metabolitesIdentificationId.ion.peaks.head.mz < configJson.minMzCoreStructure(familyMetabolite) ) {
             bw.write("*;")
           } else
