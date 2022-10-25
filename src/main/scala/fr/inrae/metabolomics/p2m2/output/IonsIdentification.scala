@@ -5,8 +5,9 @@ import upickle.default._
 object IonsIdentification {
   implicit val rw: ReadWriter[IonsIdentification] = macroRW
 }
-case class IonsIdentification(ion : PeakIdentification,
-                              neutralLosses : Map[String,Option[Double]],
-                              daughterIons : Map[String,Option[Double]]) {
+case class IonsIdentification(pathFile : String,
+                              ion : PeakIdentification,
+                              neutralLosses : Map[String,Option[(Double,Double)]],
+                              daughterIons : Map[String,Option[(Double,Double)]]) {
   def scoreIdentification: Int = neutralLosses.values.flatten.size + daughterIons.values.flatten.size
 }

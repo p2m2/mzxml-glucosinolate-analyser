@@ -1,15 +1,18 @@
 package fr.inrae.metabolomics.p2m2
 
-import fr.inrae.metabolomics.p2m2.`export`.{CsvIonsIdentificationFile, IonsIdentificationFile}
+import fr.inrae.metabolomics.p2m2.`export`.{CandidateResume, CsvIonsIdentificationFile, IonsIdentificationFile}
 import fr.inrae.metabolomics.p2m2.builder.{IonsIdentificationBuilder, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 import java.io.File
+import scala.collection.parallel.CollectionConverters._
+import scala.collection.parallel.ParSeq
 import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
-object Main extends App {
+object MainDetection extends App {
 
   import scopt.OParser
 
@@ -32,8 +35,8 @@ object Main extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("mzxml-glucosinolates-phenolics-analyser"),
-      head("mzxml-glucosinolates-phenolics-analyser", "1.0"),
+      programName("detection-analyser"),
+      head("detection-analyser", "1.0"),
       opt[File]('j', "jsonFamilyMetabolitesDetection")
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
@@ -110,52 +113,95 @@ object Main extends App {
 
     confJson.metabolites.foreach(
       family => {
-        config.mzfiles.foreach {
-          mzFile =>
-            val (source, index) = ScanLoader.read(mzFile)
+        val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
+          config.mzfiles
+            .par
+            .flatMap {
+            mzFile =>
+              val baseName = getBaseName(mzFile.getName,family)
 
-            val intensityFilter = config.thresholdIntensityFilter match {
-              case Some(v) => v
-              case None => ScanLoader.calculBackgroundNoisePeak(source, index, config.startRT, config.endRT)
+              val values :  ParSeq[IonsIdentification] = {
+                (new File(s"$baseName").exists() && new File(s"$baseName.csv").exists())
+                match {
+                  case true =>
+                    Try(IonsIdentificationFile.load(new File(s"$baseName"))._1.par) match {
+                      case Success(v) => v
+                      case Failure(e) =>
+                        System.err.println("========== ===========")
+                        System.err.println(e.getMessage()) ;
+                        System.err.println(s"delete file : $baseName")
+                        ParSeq()
+
+                    }
+                  case false =>
+
+                    val (source, index) = ScanLoader.read(mzFile)
+                    val noiseIntensity: Double =
+                      ScanLoader.calculBackgroundNoisePeak(
+                        source,
+                        index,
+                        startDurationTime = 0.20)
+
+                    val intensityFilter = config.thresholdIntensityFilter match {
+                      case Some(v) => v
+                      case None => noiseIntensity
+                    }
+
+                    val values = ionsDetection(
+                      config,
+                      source,
+                      index,
+                      intensityFilter,
+                      confJson.deltaMp0Mp2(family),
+                      confJson.numberSulfurMin(family),
+                      confJson.minAbundanceM1(family),
+                      confJson.maxAbundanceM1(family),
+                      confJson.minMzCoreStructure(family),
+                      confJson.neutralLoss(family),
+                      confJson.daughterIons(family),
+                      noiseIntensity
+                    )
+
+                    val f = config.outfile.getOrElse(new File(s"${baseName}.csv"))
+                    f.delete()
+                    CsvIonsIdentificationFile.build(values, family, confJson, f)
+                    val f2 = config.outfile.getOrElse(new File(s"${baseName}"))
+                    IonsIdentificationFile.save(values, family, confJson, f2)
+                    println(s"========= check ${f.getPath},${f2.getPath} ===============")
+                    values.par
+                }
+                //
+              }
+              val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.1).round
+              values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
             }
+            .groupBy{  case (ion : IonsIdentification,_: String) =>
+            (ion.ion.peaks.head.mz*100).round/100.toDouble }
+            .toList
+            .sortBy { case (mz : Double , s: ParSeq[(IonsIdentification,String)]) => mz }
+      //    .sortBy(_._1)
 
-            val values = analyse_metabolite(
-              config,
-              source,
-              index,
-              intensityFilter,
-              confJson.deltaMp0Mp2(family),
-              confJson.numberSulfurMin(family),
-              confJson.minMzCoreStructure(family),
-              confJson.neutralLoss(family),
-              confJson.daughterIons(family)
-            )
-
-            val baseName = mzFile.getName.split("\\.").dropRight(1).mkString(".")
-
-            val f = config.outfile.getOrElse(new File(s"${baseName}_$family.csv"))
-            f.delete()
-            CsvIonsIdentificationFile.build(values, family, confJson, f)
-
-            val f2 = config.outfile.getOrElse(new File(s"${baseName}_$family"))
-            IonsIdentificationFile.save(values, family, confJson, f2)
-            println(s"========= check ${f.getPath},${f2.getPath} ===============")
-        }
-
+        CandidateResume.build(allSelectedIons,family,confJson,new File(s"resume_${family}.txt"))
       })
   }
 
+  def getBaseName(name : String,family : String) : String =
+    name.split("\\.").dropRight(1).mkString(".")+"_"+family
 
-  def analyse_metabolite(
+
+  def ionsDetection(
                           config: Config,
                           source: MZXMLFile,
                           index: MZXMLIndex,
-                          intensityFilter: Int,
+                          intensityFilter: Double,
                           deltaMp0Mp2: Double,
                           numberSulfurMin: Double,
+                          minAbundanceM1: Double,
+                          maxAbundanceM1: Double,
                           mzCoreStructure : Double,
                           neutralLoss: Map[String, Double],
-                          daughterIons: Map[String, Double]
+                          daughterIons: Map[String, Double],
+                          noiseIntensity : Double
                         ): Seq[IonsIdentification] = {
 
     val listSulfurMetabolites: Seq[PeakIdentification] =
@@ -166,8 +212,10 @@ object Main extends App {
           config.startRT,
           config.endRT,
           config.thresholdAbundanceM0Filter,
-          intensityFilter,
+          intensityFilter.toInt,
           filteringOnNbSulfur = numberSulfurMin.toInt,
+          minAbundanceM1,
+          maxAbundanceM1,
           config.toleranceMz,
           deltaMOM2 = deltaMp0Mp2)
 
@@ -194,7 +242,8 @@ object Main extends App {
         intensityFilter,
         config.overrepresentedPeakFilter,
         neutralLoss.toSeq,
-        daughterIons.toSeq
+        daughterIons.toSeq,
+        noiseIntensity
       )
     m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
   }

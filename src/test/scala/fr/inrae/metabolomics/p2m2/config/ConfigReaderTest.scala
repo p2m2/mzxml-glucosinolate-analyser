@@ -11,6 +11,8 @@ object ConfigReaderTest extends TestSuite {
         |    "deltaMp0Mp2" : 1.996,
         |    "numberSulfurMin" : 2,
         |    "minMzCoreStructure" : 0,
+        |    "minAbundanceM1" : 0.09,
+        |    "maxAbundanceM1" : 0.4,
         |    "neutralLoss" :
         |      {
         |        "gluconolactone" : 178.0
@@ -19,6 +21,13 @@ object ConfigReaderTest extends TestSuite {
         |      "C6H11O9S_259" : 259.0
         |    },
         |    "databaseReference" : {
+        |    "methyl" : {
+        |        "formula" : "C8H14O9S2N1",
+        |        "name" : "glucoapparin"
+        |      },
+        |      "n-pentyl" : {
+        |        "formula" : "C12H22O9S2N1"
+        |      }
         |    }
         |  }
         |}
@@ -30,6 +39,8 @@ object ConfigReaderTest extends TestSuite {
       assert(conf.numberSulfurMin("Glucosinolate") == 2.0)
       assert(conf.neutralLoss("Glucosinolate") == Map("gluconolactone" -> 178.0))
       assert(conf.daughterIons("Glucosinolate") == Map("C6H11O9S_259" -> 259.0))
+
+
     }
   }
 }

@@ -3,6 +3,8 @@ package fr.inrae.metabolomics.p2m2.builder
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
+import java.io.File
+
 case class IonsIdentificationBuilder(
                                      source : MZXMLFile,
                                      index : MZXMLIndex,
@@ -10,22 +12,23 @@ case class IonsIdentificationBuilder(
                                      end: Option[Double],
                                      peaks : Seq[PeakIdentification],
                                      nls : Seq[(String,Double)],
-                                     dis : Seq[(String,Double)]
+                                     dis : Seq[(String,Double)],
+                                     noiseIntensity : Double = 0.0
                                    ) {
+  def getRelativePath(source : MZXMLFile) : String =
+    new File(source.getPath).getCanonicalPath.replace(new File(".").getCanonicalPath,".")
   def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
-      val mz = p.peaks.map(p2 => (p2.mz*precisionMzh ).round / precisionMzh.toDouble )
-      val intensities = p.peaks.map(_.intensity)
-      val abundance = p.peaks.map(_.abundance)
-
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
+          getRelativePath(source),
           p,
-          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls),
-          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis)
+          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,noiseIntensity = noiseIntensity),
+          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(
+          getRelativePath(source),
           p,
           neutralLosses = Map(),
           daughterIons = Map()

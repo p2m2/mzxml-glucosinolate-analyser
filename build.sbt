@@ -23,6 +23,8 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "ujson" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
   "com.lihaoyi" %% "upickle" % "2.0.0",
+  "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
+    // "org.openscience.cdk" % "cdk-bundle" % "2.8",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
   "org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
 )
@@ -41,6 +43,7 @@ credentials += {
     Credentials(realm,host,login,pass)
   }
 }
+scalacOptions += "-opt:inline,simplify-jumps,compact-locals,nullness-tracking"
 
 publishTo := {
   if (isSnapshot.value)
@@ -56,11 +59,11 @@ publishMavenStyle := true
 // Coverage
 
 coverageMinimumStmtTotal := 70
-coverageMinimumBranchTotal := 70
+coverageMinimumBranchTotal := 20
 coverageMinimumStmtPerPackage := 70
-coverageMinimumBranchPerPackage := 70
+coverageMinimumBranchPerPackage := 20
 coverageMinimumStmtPerFile := 70
-coverageMinimumBranchPerFile := 70
+coverageMinimumBranchPerFile := 20
 coverageFailOnMinimum := true
 coverageHighlighting := true
 
