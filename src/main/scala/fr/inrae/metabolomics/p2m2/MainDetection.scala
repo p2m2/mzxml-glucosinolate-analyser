@@ -140,7 +140,7 @@ object MainDetection extends App {
                       ScanLoader.calculBackgroundNoisePeak(
                         source,
                         index,
-                        startDurationTime = 0.05)
+                        startDurationTime = 0.20)
 
                     val intensityFilter = config.thresholdIntensityFilter match {
                       case Some(v) => v
