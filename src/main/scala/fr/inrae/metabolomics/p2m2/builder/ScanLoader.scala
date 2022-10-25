@@ -203,7 +203,7 @@ case object ScanLoader {
                                           intensityFilter: Int,
                                           precision: Double = 0.02
                                         ): Seq[Double] = {
-
+    println("RT:",peak.rt)
     val allScans = scansMs(source,index,Some(peak.rt-precision),Some(peak.rt+precision),2)
     allScans.zipWithIndex.flatMap {
       case (basicScan, i) => {
@@ -211,20 +211,25 @@ case object ScanLoader {
         val scan = source.parseScan(basicScan.getNum, true)
         val spectrum = scan.fetchSpectrum()
         val mzValues = spectrum.getMZs
-        scan.getIm
+
         mzValues
           .zipWithIndex
           .filter { case (mz, _) => mz < peak.peaks.head.mz }
           .filter { case (_, idx) => spectrum.getIntensities()(idx) > intensityFilter }
           // mz ares now Ion Diag Frag
           // check if dela is a Ion Diag Frag
-          .map { case (mz, idx) => (peak.peaks.head.mz - mz, idx) }
+          .map { case (mz, idx) => ( peak.peaks.head.mz - mz, idx) }
           .filter {
-            case (delta, idx) =>
-              val idx1 = spectrum.findClosestMzIdx(delta)
-              spectrum.getIntensities()(idx1) <= intensityFilter
+            case (delta, i) =>
+              // if neg so none peak should be present !!!
+              (delta < 0 ) || {
+                val idx1 = spectrum.findClosestMzIdx(delta)
+                val mz = spectrum.getMZs()(idx1)
+                (mz-delta) <1.0 && (spectrum.getIntensities()(idx1) > intensityFilter)
+              }
           }
-          .map( _._1)
+          .map( _._1 )
+          .map( round100 )
       }
     }
   }
@@ -342,7 +347,7 @@ case object ScanLoader {
                          precisionPeakDetection: Double = 0.1,
                          precisionRtTime : Double = 0.02,
                          noiseIntensity : Double,
-                       ) : Map[String,Option[(Double,Double)]] = {
+                       ) : Map[String,Option[(String,Double,Double)]] = {
 
     val sc = source.parseScan(p.numScan, false)
     val scanMs2: Seq[IScan] = ScanLoader.scansMs(
@@ -355,7 +360,9 @@ case object ScanLoader {
 
     nls.map (
       nl => {
-        nl._1->searchIons(source,scanMs2,mz - nl._2,precisionPeakDetection,noiseIntensity)
+        nl._1->
+          searchIons(source,scanMs2,mz - nl._2,precisionPeakDetection,noiseIntensity)
+            .map( x => (nl._1,x._1,x._2) )
       }
     ).toMap
   }
@@ -373,7 +380,7 @@ case object ScanLoader {
                          precisionPeakDetection: Double = 0.1,
                          precisionRtTime: Double = 0.02,
                          noiseIntensity : Double,
-                       ): Map[String, Option[(Double,Double)]] = {
+                       ): Map[String, Option[(String,Double,Double)]] = {
 
     val sc = source.parseScan(p.numScan, false)
     val scanMs2: Seq[IScan] = ScanLoader.scansMs(
@@ -383,7 +390,9 @@ case object ScanLoader {
 
     dis.map(
       di => {
-        di._1->searchIons(source,scanMs2,di._2,precisionPeakDetection,noiseIntensity)
+        di._1->
+          searchIons(source,scanMs2,di._2,precisionPeakDetection,noiseIntensity)
+            .map( x => (di._1,x._1,x._2) )
       }
     ).toMap
   }
