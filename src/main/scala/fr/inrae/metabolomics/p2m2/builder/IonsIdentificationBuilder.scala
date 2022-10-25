@@ -3,6 +3,8 @@ package fr.inrae.metabolomics.p2m2.builder
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
 import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
+import java.io.File
+
 case class IonsIdentificationBuilder(
                                      source : MZXMLFile,
                                      index : MZXMLIndex,
@@ -13,18 +15,20 @@ case class IonsIdentificationBuilder(
                                      dis : Seq[(String,Double)],
                                      noiseIntensity : Double = 0.0
                                    ) {
+  def getRelativePath(source : MZXMLFile) : String =
+    new File(source.getPath).getCanonicalPath.replace(new File(".").getCanonicalPath,".")
   def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
-          source.getPath,
+          getRelativePath(source),
           p,
           neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,noiseIntensity = noiseIntensity),
           daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(
-          source.getPath,
+          getRelativePath(source),
           p,
           neutralLosses = Map(),
           daughterIons = Map()

@@ -10,6 +10,7 @@ import java.io.File
 import scala.collection.parallel.CollectionConverters._
 import scala.collection.parallel.ParSeq
 import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
 object MainDetection extends App {
 
@@ -120,10 +121,18 @@ object MainDetection extends App {
               val baseName = getBaseName(mzFile.getName,family)
 
               val values :  ParSeq[IonsIdentification] = {
-                (new File(s"${baseName}").exists() && new File(s"${baseName}.csv").exists())
+                (new File(s"$baseName").exists() && new File(s"$baseName.csv").exists())
                 match {
                   case true =>
-                    IonsIdentificationFile.load(new File(s"${baseName}"))._1.par
+                    Try(IonsIdentificationFile.load(new File(s"$baseName"))._1.par) match {
+                      case Success(v) => v
+                      case Failure(e) =>
+                        System.err.println("========== ===========")
+                        System.err.println(e.getMessage()) ;
+                        System.err.println(s"delete file : $baseName")
+                        ParSeq()
+
+                    }
                   case false =>
 
                     val (source, index) = ScanLoader.read(mzFile)
