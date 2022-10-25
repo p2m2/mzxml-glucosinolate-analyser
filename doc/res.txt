@@ -1,0 +1,463 @@
+"methyl" : { 
+"formula" : "C8H14O9S2N1",
+"name" : "glucoapparin"
+},
+"ethyl" : { 
+"formula" : "C9H16O9S2N1",
+"name" : "glucolepidiin"
+},
+"n-propyl" : { 
+"formula" : "C10H18O9S2N1"
+},
+"n-butyl" : { 
+"formula" : "C11H20O9S2N1"
+},
+"n-pentyl" : { 
+"formula" : "C12H22O9S2N1"
+},
+"n-hexyl" : { 
+"formula" : "C13H25O9S2N1"
+},
+"1-methylethyl" : { 
+"formula" : "C10H199S2N1",
+"name" : "glucoputranjivin"
+},
+"1-methylpropyl" : { 
+"formula" : "C11H21O9S2N1",
+"name" : "glucocochlearin"
+},
+"2-methylpropyl" : { 
+"formula" : "C11H21O9S2N1",
+"name" : "isobutyl"
+},
+"1-methylbutyl" : { 
+"formula" : "C12H23O9S2N1"
+},
+"2-methylbutyl" : { 
+"formula" : "C12H23O9S2N1"
+},
+"3-methylbutyl" : { 
+"formula" : "C12H23O9S2N1"
+},
+"3-methylpentyl" : { 
+"formula" : "C13H24O9S2N1"
+},
+"4-methylpentyl" : { 
+"formula" : "C13H24O9S2N1"
+},
+"2-propenyl" : { 
+"formula" : "C10H17O9S2N1",
+"name" : "sinigrin"
+},
+"3-butenyl" : { 
+"formula" : "C11H19O9S2N1",
+"name" : "gluconapin"
+},
+"1-pentenyl" : { 
+"formula" : "C12H20O9S2N1"
+},
+"4-pentenyl" : { 
+"formula" : "C12H21O9S2N1",
+"name" : "glucobrassicanapin"
+},
+"5-hexenyl" : { 
+"formula" : "C13H23O9S2N1"
+},
+"6-heptenyl" : { 
+"formula" : "C14H24O9S2N1"
+},
+"2-methyl-2-propenyl" : { 
+"formula" : "C11H18O9S2N1"
+},
+"3-methyl-3-butenyl" : { 
+"formula" : "C12H20O9S2N1"
+},
+"2(R)-hydroxy-3-butenyl" : { 
+"formula" : "C11H19O10S2N1",
+"name" : "progoitrin"
+},
+"2(S)-hydroxy-3-butenyl" : { 
+"formula" : "C11H19O10S2N1",
+"name" : "epiprogroitrin"
+},
+"2-hydroxy-4-pentenyl" : { 
+"formula" : "C12H21O10S2N1",
+"name" : "gluconapoleiferin"
+},
+"2-hydroxyethyl" : { 
+"formula" : "C9H16O10S2N"
+},
+"3-hydroxypropyl" : { 
+"formula" : "C10H18O10S2N"
+},
+"4-hydroxybutyl" : { 
+"formula" : "C11H20O10S2N"
+},
+"2-hydroxypropyl" : { 
+"formula" : "C10H18O10S2N"
+},
+"1-methyl-2-hydroxyethyl" : { 
+"formula" : "C10H18O10S2N",
+"name" : "glucosisymbrin"
+},
+"1-hydroxymethyl-propyl" : { 
+"formula" : "C11H20O10S2N"
+},
+"1-ethyl-2-hydroxyethyl" : { 
+"formula" : "C11H20O10S2N"
+},
+"3-hydroxybutyl" : { 
+"formula" : "C11H20O10S2N"
+},
+"2-hydroxy-2-methylpropyl" : { 
+"formula" : "C11H21O10S2N",
+"name" : "glucoconnringiin"
+},
+"2-hydroxypentyl" : { 
+"formula" : "C12H22O10S2N"
+},
+"2-hydroxy-2-methylbutyl" : { 
+"formula" : "C12H23O10S2N",
+"name" : "glucocleomin"
+},
+"2-hydroxy-3-methylpentyl" : { 
+"formula" : "C13H23O10S2N"
+},
+"4,5,6,7-tetrahydroxydexyl" : { 
+"formula" : "C17H32O13S2N"
+},
+"4-oxopentyl" : { 
+"formula" : "C12H20O10S2N"
+},
+"4-oxohexyl" : { 
+"formula" : "C13H22O10S2N",
+"name" : "glucoapangulin"
+},
+"5-oxohexyl" : { 
+"formula" : "C13H22O10S2N",
+"name" : "gluconorcappasalin"
+},
+"5-oxoheptyl" : { 
+"formula" : "C14H24O10S2N",
+"name" : "glucoappasalin"
+},
+"2-(methylthio)ethyl" : { 
+"formula" : "C10H18O9S3N",
+"name" : "glucoviorylin"
+},
+"3-(methylthio)propyl" : { 
+"formula" : "C11H21O9S3N",
+"name" : "glucoiberverin"
+},
+"4-(methylthio)butyl" : { 
+"formula" : "C12H23O9S3N",
+"name" : "glucoerucin"
+},
+"4-methylthio-3-butenyl" : { 
+"formula" : "C12H22O9S3N",
+"name" : "dehydroerucin"
+},
+"5-(methylthio)pentyl" : { 
+"formula" : "C13H25O9S3N",
+"name" : "glucoberteroin"
+},
+"3-hydroxy-5-(methylthio)pentyl" : { 
+"formula" : "C13H24O10S3N"
+},
+"6-(methylthio)hexyl" : { 
+"formula" : "C14H27O9S3N",
+"name" : "glucolesquerellin"
+},
+"3-hydroxy-6-(methylthio)hexyl" : { 
+"formula" : "C14H26O10S2N"
+},
+"6-methylthio-3-oxohexyl" : { 
+"formula" : "C14H24O10S2N"
+},
+"7-(methylthio)heptyl" : { 
+"formula" : "C15H28O9S3N"
+},
+"7-methylthio-3-oxoheptyl" : { 
+"formula" : "C15H26O10S3N"
+},
+"8-(methylthio)octyl" : { 
+"formula" : "C16H31O9S3N"
+},
+"8-methylthio-oxooctyl" : { 
+"formula" : "C16H28O10S3N"
+},
+"9-(methylthio)nonyl" : { 
+"formula" : "C17H32O9S3N"
+},
+"10-(methylthio)decyl" : { 
+"formula" : "C18H34O9S3N"
+},
+"3-(methylsulfinyl)propyl" : { 
+"formula" : "C11H21O10S3N",
+"name" : "glucoiberin"
+},
+"4-(methylsulfinyl)butyl" : { 
+"formula" : "C12H23O10S3N",
+"name" : "glucoraphranin"
+},
+"4-methylsulfinyl-3-butenyl" : { 
+"formula" : "C12H21O10S3N",
+"name" : "glucoraphenin"
+},
+"5-(methylsulfinyl)pentyl" : { 
+"formula" : "C13H25O10S2N",
+"name" : "glucoalyssin"
+},
+"3-hydroxy-5-(methylsulfinyl)pentyl" : { 
+"formula" : "C13H24O11S3N"
+},
+"6-(methylsulfinyl)hexyl" : { 
+"formula" : "C14H27O10S3N",
+"name" : "glucohesperin"
+},
+"3-hydroxy-6-(methylsulfinyl)hexyl" : { 
+"formula" : "C14H26O11S3N"
+},
+"7-(methylsulfinyl)heptyl" : { 
+"formula" : "C15H29O10S3N",
+"name" : "glucoibarin"
+},
+"7-methylsulfinyl-3-oxoheptyl" : { 
+"formula" : "C15H26O11S3N"
+},
+"8-(methylsulfinyl)octyl" : { 
+"formula" : "C16H31O10S3N",
+"name" : "glucohirustin"
+},
+"8-methylsulfinyl-3-oxooctyl" : { 
+"formula" : "C16H28O11S3N"
+},
+"9-(methylsulfinyl)nonyl" : { 
+"formula" : "C17H33O10S3N",
+"name" : "glucoarabin"
+},
+"10-(methylsulfinyl)decyl" : { 
+"formula" : "C18H35O10S3N",
+"name" : "glucocamelinin"
+},
+"11-(methylsulfonyl)undecyl" : { 
+"formula" : "C19H37O10S3N",
+"name" : "gluconesiliapanuculatin"
+},
+"3-(methylsulfonyl)propyl" : { 
+"formula" : "C11H21O11S3N",
+"name" : "glucocheirolin"
+},
+"4-(methylsulfonyl)butyl" : { 
+"formula" : "C12H22O11S3N",
+"name" : "glucoerysolin"
+},
+"4-methylsulfonyl-3-butenyl" : { 
+"formula" : "C12H20O11S3N"
+},
+"5-(methylsulfonyl)pentyl" : { 
+"formula" : "C13H24O11S3N"
+},
+"3-hydroxy-5-(methylsulfonyl)pentyl" : { 
+"formula" : "C13H24O12S3N"
+},
+"6-(methylsulfonyl)hexyl" : { 
+"formula" : "C14H26O11S3N"
+},
+"3-hydroxy-6-(methylsulfonyl)hexyl" : { 
+"formula" : "C14H26O12S3N"
+},
+"8-(methylsulfonyl)octyl" : { 
+"formula" : "C16H30O11S3N"
+},
+"9-(methylsulfonyl)nonyl" : { 
+"formula" : "C17H32O11S3N"
+},
+"10-(methylsulfonyl)decyl" : { 
+"formula" : "C18H34O11S3N"
+},
+"Phenyl" : { 
+"formula" : "C14H19O9S2N",
+"name" : "Glucotropaeolin"
+},
+"Benzyl" : { 
+"formula" : "C14H19O9S2N",
+"name" : "idem "
+},
+"2-Hydroxybenzyl" : { 
+"formula" : "C14H19O10S2N"
+},
+"3-Hydroxybenzyl" : { 
+"formula" : "C14H19O10S2N"
+},
+"4-Hydroxybenzyl" : { 
+"formula" : "C14H19O10S2N",
+"name" : "Sinalbin "
+},
+"3,4-Dihydroxybenzyl" : { 
+"formula" : "C14H18O11S2N",
+"name" : "Glucomatronalin"
+},
+"2-Methoxybenzyl" : { 
+"formula" : "C14H20O10S2N"
+},
+"3-Methoxybenzyl" : { 
+"formula" : "C15H21O10S2N",
+"name" : "Glucolimnanthin"
+},
+"4-Methoxybenzyl" : { 
+"formula" : "C15H21O10S2N",
+"name" : "Glucoaubrietin"
+},
+"3,4-Dimethoxybenzyl" : { 
+"formula" : "C16H22O11S2N"
+},
+"3,4,5-Trimethoxybenzyl" : { 
+"formula" : "C17H24O12S2N"
+},
+"2-Phenylethyl" : { 
+"formula" : "C15H21O9S2N",
+"name" : "Gluconasturtiin"
+},
+"2(R)-Hydroxy-2-phenylethyl" : { 
+"formula" : "C15H20O10S2N",
+"name" : "Glucobarbarin"
+},
+"2-hydroxy-2-(4-methoxyphenyl)ethyl" : { 
+"formula" : "C16H22O10S2N"
+},
+"3-Phenylpropyl" : { 
+"formula" : "C16H22O9S2N"
+},
+"4-Phenylbutyl" : { 
+"formula" : "C17H24O9S2N"
+},
+"2,2-dimethyl-2-(4-methoxyphenyl)ethyl" : { 
+"formula" : "C18H26O10S2N"
+},
+"Benzoyloxymethyl" : { 
+"formula" : "C15H18O11S2N"
+},
+"2-(Benzoyloxy)ethyl" : { 
+"formula" : "C16H20O11S2N"
+},
+"2-Benzoyloxy-1-methylethyl" : { 
+"formula" : "C17H22O11S2N",
+"name" : "Glucobenzosisymbrin"
+},
+"2-Benzoyloxy-1-ethylethyl" : { 
+"formula" : "C19H24O11S2N",
+"name" : "Glucobenzsisaustricin"
+},
+"3-(Benzoyloxy)propyl" : { 
+"formula" : "C14H22O11S2N",
+"name" : "Glucomalcomiin"
+},
+"4-(Benzoyloxy)butyl" : { 
+"formula" : "C18H25O11S2N"
+},
+"5-(Benzoyloxy)pentyl" : { 
+"formula" : "C19H27O11S2N"
+},
+"6-(Benzoyloxy)hexyl" : { 
+"formula" : "C20H28O11S2N"
+},
+"Indol-3-ylmethyl" : { 
+"formula" : "C16H20O9S2N2",
+"name" : "Glucobrassicin"
+},
+"4-Hydroxyindol-3-ylmethyl" : { 
+"formula" : "C16H20O10S2N2",
+"name" : "4-Hydroxyglucobrassicin"
+},
+"1-Methoxyindol-3-ylmethyl" : { 
+"formula" : "C17H22O10S2N2",
+"name" : "Neoglucobrassicin"
+},
+"4-Methoxyindol-3-ylmethyl" : { 
+"formula" : "C17H22O10S2N2",
+"name" : "4-Methoxyglucobrassicin"
+},
+"1-Acetyl-indol-3-ylmethyl" : { 
+"formula" : "C18H21O10S2N2",
+"name" : "1-Acetyl-glucobrassicin"
+},
+"1-Sulfo-indol-3-ylmethyl" : { 
+"formula" : "C16H18O13S3N2",
+"name" : "Glucobrassicin-1-sulfate"
+},
+"3-Methoxycarbonylpropyl" : { 
+"formula" : "C12H20O11S2N",
+"name" : "Glucoerypestrin"
+},
+"2-(α-l-Rhamnopyranosyloxy)benzyl" : { 
+"formula" : "C20H29O14S2N"
+},
+"4-(α-l-Rhamnopyranosyloxy)benzyl" : { 
+"formula" : "C10H29O14S2N"
+},
+"4-(4'-O-Acetyl-α-l-rhamnopyranosyloxy)benzyl" : { 
+"formula" : "C21H30O15S2N"
+},
+"2-(α-l-Arabinopyranosyloxy)-2-phenylethyl" : { 
+"formula" : "C20H28O14S2N"
+},
+"6-Sinapoyl-β-D-1-thioglucoside of 4-methylsulfnylbut-3-enyl" : { 
+"formula" : "C22H30O14S2N"
+},
+"2-amino-4-(methylthio)butyrate" : { 
+"formula" : "C5H10O2SN",
+"name" : "methionine"
+},
+"2-amino-5-(methylthio)pentanoate" : { 
+"formula" : "C6H12O2SN",
+"name" : "homomethionine"
+},
+"2-amino-6-(methylthio)hexanoate" : { 
+"formula" : "C7H14O2SN",
+"name" : "dihomomethionine"
+},
+"2-amino-7-(methylthio)heptanoate" : { 
+"formula" : "C8H16O2SN",
+"name" : "trihomomethionine"
+},
+"2-amino-8-(methylthio)octanoate" : { 
+"formula" : "C9H18O2SN",
+"name" : "tetrahomomethionine"
+},
+"2-amino-9-(methylthio)nonanoate" : { 
+"formula" : "C10H20O2SN",
+"name" : "pentahomomethionine"
+},
+"2-amino-10-(methylthio)decanoate" : { 
+"formula" : "C11H22O2SN",
+"name" : "hexahomomethionine"
+},
+"2-oxo-4-(methylthio)butyrate" : { 
+"formula" : "C5H9O3S",
+"name" : "α-oxo-methionine"
+},
+"2-oxo-5-(methylthio)pentanoate" : { 
+"formula" : "C6H11O3S",
+"name" : "α-oxo-homomethionine"
+},
+"2-oxo-6-(methylthio)hexanoate" : { 
+"formula" : "C7H13O3S",
+"name" : "α-oxo-dihomomethionine"
+},
+"2-oxo-7-(methylthio)heptanoate" : { 
+"formula" : "C8H15O3S",
+"name" : "α-oxo-trihomomethionine"
+},
+"2-oxo-8-(methylthio)octanoate" : { 
+"formula" : "C9H17O3S",
+"name" : "α-oxo-tetrahomomethionine"
+},
+"2-oxo-9-(methylthio)nonanoate" : { 
+"formula" : "C10H19O3S",
+"name" : "α-oxo-pentahomomethionine"
+},
+"2-oxo-10-(methylthio)decanoate" : { 
+"formula" : "C11H21O3S",
+"name" : "α-oxo-hexahomomethionine"
+},
