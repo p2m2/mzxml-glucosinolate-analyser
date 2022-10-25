@@ -81,10 +81,12 @@ case object CsvIonsIdentificationFile {
           bw.write(s"${metabolitesIdentificationId.scoreIdentification};")
 
           neutralLosses
-            .map( name => metabolitesIdentificationId.neutralLosses.getOrElse(name,None).getOrElse(""))
-            .foreach {  value => bw.write(s"$value;")}
+            .map( name => metabolitesIdentificationId.neutralLosses
+              .getOrElse(name,None).map(x => x._1+"("+x._2+")").getOrElse(""))
+            .foreach {  value => bw.write(s"${value};")}
           daughterIons
-            .map( name => metabolitesIdentificationId.daughterIons.getOrElse(name,None).getOrElse(""))
+            .map( name => metabolitesIdentificationId.daughterIons.getOrElse(name,None)
+              .map(x => x._1+"("+x._2+")").getOrElse(""))
             .foreach {  value => bw.write(s"$value;")}
           bw.write("\n")
         }
