@@ -18,7 +18,7 @@ object ScanLoaderTest extends TestSuite {
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining - nbCarbonMax=0 should find 0 ions >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+        ScanLoader.selectEligibleIons(
           v._1,
           v._2,
           None,  // RT start
@@ -36,7 +36,7 @@ object ScanLoaderTest extends TestSuite {
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining - nbSulfurMax=0 should find 0 ions >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+        ScanLoader.selectEligibleIons(
           v._1,
           v._2,
           None, // RT start
@@ -54,7 +54,7 @@ object ScanLoaderTest extends TestSuite {
     test("getScanIdxAndSpectrum3IsotopesSulfurContaining - nbSulfurMin>nbSulfurMax should find 0 ions >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+        ScanLoader.selectEligibleIons(
           v._1,
           v._2,
           None, // RT start
@@ -73,7 +73,7 @@ object ScanLoaderTest extends TestSuite {
       "should find a ions list not empty >>>") {
       val v = read
       val v2 =
-        ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+        ScanLoader.selectEligibleIons(
           v._1,
           v._2,
           None, // RT start
@@ -90,7 +90,7 @@ object ScanLoaderTest extends TestSuite {
 
     test("calculBackgroundNoisePeak") {
       val v = read
-      val v2 = ScanLoader.calculBackgroundNoisePeak(
+      val v2 = ScanLoader.calcBackgroundNoisePeak(
         v._1,
         v._2
       )

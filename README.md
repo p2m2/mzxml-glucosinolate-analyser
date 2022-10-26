@@ -5,11 +5,9 @@
 
 Detection of Ions/Metabolites for Glucosinolates and Phenolics (organism Brassica napus).
 
-
 [Identification and Quantification of Glucosinolates and Phenolics in a Large Panel of Brassica napus Highlight Valuable Genetic Resources for Chemical Ecology and Breeding](https://pubs.acs.org/doi/10.1021/acs.jafc.1c08118)
 
 ## Installation
-
 
 ### assembly
 

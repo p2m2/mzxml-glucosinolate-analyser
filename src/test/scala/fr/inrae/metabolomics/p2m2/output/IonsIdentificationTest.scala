@@ -18,7 +18,7 @@ object IonsIdentificationTest extends TestSuite {
       val v = ScanLoader.read(new File(getClass.getResource("/20181018-037.mzXML").getPath))
 
       for (elem <- ScanLoader.
-          getScanIdxAndSpectrumM0M2WithDelta(
+          selectEligibleIons(
             v._1,
             v._2,
             Some(10.0),

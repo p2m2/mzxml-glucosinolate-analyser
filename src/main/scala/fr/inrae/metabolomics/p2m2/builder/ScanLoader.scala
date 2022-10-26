@@ -6,6 +6,7 @@ import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml._
 
 import java.io.File
+import scala.Double.NaN
 import scala.jdk.CollectionConverters._
 import scala.math.sqrt
 import scala.util.{Success, Try}
@@ -36,6 +37,42 @@ case object ScanLoader {
 
     (source,index)
     // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
+  }
+
+  /**
+   * Get Scan according MS Type.
+   * Spectrum are not loaded.
+   *
+   * @param source : source of MZXML
+   * @param index  : index of MZXML
+   * @param ms     :1 or 2 MS Type
+   * @return available scans
+   */
+  def scansMs(
+               source: MZXMLFile,
+               index: MZXMLIndex,
+               start: Option[Double],
+               end: Option[Double],
+               ms: Integer
+             ): Seq[IScan] = {
+    index
+      .getMapByRawNum
+      .keySet() // The second parameter asks the parser to parse the spectrum along
+      .asScala
+      // .filter( _ == 3569)
+      .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, false)) match {
+        case Success(scan) => Some(scan)
+        case _ => None
+      })
+      .filter(_.getMsLevel == ms).toSeq
+      .filter(scan => start match {
+        case Some(v) => v <= scan.getRt
+        case None => true
+      })
+      .filter(scan => end match {
+        case Some(v) => v >= scan.getRt
+        case None => true
+      })
   }
 
   /**
@@ -75,63 +112,44 @@ case object ScanLoader {
 
   }
 
-  /**
-   * Get Scan according MS Type.
-   * Spectrum are not loaded.
-   * @param source   : source of MZXML
-   * @param index    : index of MZXML
-   * @param ms       :1 or 2 MS Type
-   * @return available scans
-   */
-  def scansMs(
-               source: MZXMLFile,
-               index: MZXMLIndex,
-               start: Option[Double],
-               end: Option[Double],
-               ms : Integer
-             ) : Seq[IScan] = {
-    index
-      .getMapByRawNum
-      .keySet() // The second parameter asks the parser to parse the spectrum along
-      .asScala
-      // .filter( _ == 3569)
-      .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, false)) match {
-        case Success(scan) => Some(scan)
-        case _ => None
-      })
-      .filter(_.getMsLevel == ms).toSeq
-      .filter(scan => start match {
-        case Some(v) => v <= scan.getRt
-        case None => true
-      })
-      .filter(scan => end match {
-        case Some(v) => v >= scan.getRt
-        case None => true
-      })
-  }
 
-  def calculBackgroundNoisePeak(
+  def calcBackgroundNoisePeak(
                                  source: MZXMLFile,
                                  index: MZXMLIndex,
-                                 startDurationTime : Double = 0.20
+                                 startDurationTime : Double
                                ): Double = {
     val allScans =
       scansMs(source,index,Some(0),Some(startDurationTime),2)
         .map {
-          scanMs1 =>
-            val scan = source.parseScan(scanMs1.getNum, true)
-            val spectrum = scan.fetchSpectrum()
-
-            spectrum.getSumInt/spectrum.getIntensities.length
+          scanMs2 =>source.parseScan(scanMs2.getNum, true)
         }
-    val mean = allScans.sum/allScans.size
+        .filter {
+          scanObj => scanObj != null
+        }
+        .map {
+          scanObj => scanObj.fetchSpectrum()
+        }
+        .filter {
+          spectrum => spectrum !=  null
+        }
+        .map {
+          spectrum => spectrum.getSumInt/spectrum.getIntensities.length
+        }
+
+    val mean = allScans.size match {
+      case _ if allScans.nonEmpty=> allScans.sum/allScans.size
+      case _ => 0
+    }
     val std = sqrt(allScans.map( v => (v - mean)*(v - mean) ).sum / allScans.size)
     println(" ======= BackgroundNoisePeak ==========")
     println(s"=====   mean = $mean std = $std =========")
+    if (mean != mean) {
+      throw new Exception("Can not compute Mean with durationTime (seconds):"+startDurationTime)
+    }
     mean
   }
 
-  def getScanIdxAndSpectrumM0M2WithDelta(
+  def selectEligibleIons(
                                           source: MZXMLFile,
                                           index: MZXMLIndex,
                                           start : Option[Double] = None,

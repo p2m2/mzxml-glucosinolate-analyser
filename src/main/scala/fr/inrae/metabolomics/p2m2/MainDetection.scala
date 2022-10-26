@@ -17,14 +17,15 @@ object MainDetection extends App {
   import scopt.OParser
 
   case class Config(
-                     mzfiles: Seq[File] = Seq(),
+                     mzFiles: Seq[File] = Seq(),
                      jsonFamilyMetabolitesDetection: Option[File] = None,
-                     noiseIntensityFilter: Option[Double] = None,
-                     overrepresentedPeakFilter: Int = 800,
+                     noiseIntensity: Option[Double] = None,
                      startRT: Option[Double] = None,
                      endRT: Option[Double] = None,
+                     overrepresentedPeak: Int = 800,
                      precisionMzh: Int = 1000,
                      toleranceMz: Double = 0.01,
+                     warmup: Double = 0.50, // (30 sec)
                      outfile: Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
@@ -40,14 +41,14 @@ object MainDetection extends App {
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
         .text(s"json configuration to detect metabolite family."),
-      opt[Double]('i', "noiseIntensityFilter")
+      opt[Double]('i', "noiseIntensity")
         .optional()
-        .action((x, c) => c.copy(noiseIntensityFilter = Some(x)))
+        .action((x, c) => c.copy(noiseIntensity = Some(x)))
         .text(s"Keep ions above a x intensity (calculation on start-up time)"),
-      opt[Int]('p', "overrepresentedPeakFilter")
+      opt[Int]('p', "overrepresentedPeak")
         .optional()
-        .action((x, c) => c.copy(overrepresentedPeakFilter = x))
-        .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
+        .action((x, c) => c.copy(overrepresentedPeak = x))
+        .text(s"filter about over represented peaks. default ${Config().overrepresentedPeak}"),
       opt[Double]('s', "startRT")
         .optional()
         .action((x, c) => c.copy(startRT = Some(x)))
@@ -56,6 +57,10 @@ object MainDetection extends App {
         .optional()
         .action((x, c) => c.copy(endRT = Some(x)))
         .text(s"start RT"),
+      opt[Double]('w', "warm-up time to compute noise")
+        .optional()
+        .action((x, c) => c.copy(warmup = x))
+        .text(s"warmup time"),
       opt[Int]('m', "precisionMzh")
         .optional()
         .action((x, c) => c.copy(precisionMzh = x))
@@ -79,7 +84,7 @@ object MainDetection extends App {
 
       arg[File]("<file>...")
         .unbounded()
-        .action((x, c) => c.copy(mzfiles = c.mzfiles :+ x)),
+        .action((x, c) => c.copy(mzFiles = c.mzFiles :+ x)),
       help("help").text("prints this usage text"),
       note("some notes." + sys.props("line.separator")),
       checkConfig(_ => success)
@@ -113,7 +118,7 @@ object MainDetection extends App {
     confJson.metabolites.foreach(
       family => {
         val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
-          config.mzfiles
+          config.mzFiles
             .par
             .flatMap {
             mzFile =>
@@ -139,9 +144,9 @@ object MainDetection extends App {
                     /**
                      * intensity noise is computed with the warm up time or give by the user .
                      */
-                    val noiseIntensity : Double = config.noiseIntensityFilter match {
+                    val noiseIntensity : Double = config.noiseIntensity match {
                       case Some(v) => v
-                      case None => ScanLoader.calculBackgroundNoisePeak(source, index, startDurationTime = 0.20)
+                      case None => ScanLoader.calcBackgroundNoisePeak(source, index, startDurationTime = config.warmup)
                     }
 
                     val values =
@@ -187,7 +192,7 @@ object MainDetection extends App {
      */
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
-        getScanIdxAndSpectrumM0M2WithDelta(
+        selectEligibleIons(
           source,
           index,
           config.startRT,
@@ -215,7 +220,7 @@ object MainDetection extends App {
         index,
         listSulfurMetabolitesSelected,
         noiseIntensity,
-        config.overrepresentedPeakFilter,
+        config.overrepresentedPeak,
         confJson.neutralLoss(family).toSeq,
         confJson.daughterIons(family).toSeq
       )
