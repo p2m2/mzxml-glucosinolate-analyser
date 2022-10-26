@@ -11,10 +11,11 @@ case object ConfigReader {
     private type Params = Value
     val
     deltaMp0Mp2,
+    numberCarbonMin,
+    numberCarbonMax,
     numberSulfurMin,
-    minMzCoreStructure,
-    minAbundanceM1,
-    maxAbundanceM1
+    numberSulfurMax,
+    minMzCoreStructure
      = Value
   }
 
@@ -29,10 +30,11 @@ case object ConfigReader {
     val metabolites: Map[String, Map[Params.Value, String]] = u.obj.map(
       k => k._1 -> Map(
         Params.deltaMp0Mp2 -> k._2("deltaMp0Mp2").value.toString,
+        Params.numberCarbonMin -> k._2("numberCarbonMin").value.toString,
+        Params.numberCarbonMax -> k._2("numberCarbonMax").value.toString,
         Params.numberSulfurMin -> k._2("numberSulfurMin").value.toString,
+        Params.numberSulfurMax -> k._2("numberSulfurMax").value.toString,
         Params.minMzCoreStructure -> k._2("minMzCoreStructure").value.toString,
-        Params.minAbundanceM1 -> k._2("minAbundanceM1").value.toString,
-        Params.maxAbundanceM1 -> k._2("maxAbundanceM1").value.toString
       )
     ).toMap
 
@@ -64,10 +66,13 @@ case class ConfigReader(
 
   def metabolites : Seq[String] = metabolitesMap.keys.toSeq
   def deltaMp0Mp2(m: String) : Double = metabolitesMap(m)(Params.deltaMp0Mp2).toString.toDouble
+
+  def numberCarbonMin(m: String): Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
+
+  def numberCarbonMax(m: String): Double = metabolitesMap(m)(Params.numberSulfurMax).toString.toDouble
   def numberSulfurMin(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
+  def numberSulfurMax(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMax).toString.toDouble
   def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble
-  def minAbundanceM1(m: String): Double = metabolitesMap(m)(Params.minAbundanceM1).toString.toDouble
-  def maxAbundanceM1(m: String): Double = metabolitesMap(m)(Params.maxAbundanceM1).toString.toDouble
   def neutralLoss(m: String) : Map[String,Double] = nl(m)
   def daughterIons(m: String) : Map[String,Double] = di(m)
   def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[Metabolite] = {

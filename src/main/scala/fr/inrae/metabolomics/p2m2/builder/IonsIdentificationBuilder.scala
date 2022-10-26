@@ -8,8 +8,6 @@ import java.io.File
 case class IonsIdentificationBuilder(
                                      source : MZXMLFile,
                                      index : MZXMLIndex,
-                                     start: Option[Double],
-                                     end: Option[Double],
                                      peaks : Seq[PeakIdentification],
                                      nls : Seq[(String,Double)],
                                      dis : Seq[(String,Double)],
@@ -17,14 +15,14 @@ case class IonsIdentificationBuilder(
                                    ) {
   def getRelativePath(source : MZXMLFile) : String =
     new File(source.getPath).getCanonicalPath.replace(new File(".").getCanonicalPath,".")
-  def getInfo( p :PeakIdentification,precisionMzh : Int, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
+  def getInfo( p :PeakIdentification,tolMzh : Double, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
           getRelativePath(source),
           p,
-          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,noiseIntensity = noiseIntensity),
-          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,noiseIntensity = noiseIntensity)
+          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,tolMzh=tolMzh,noiseIntensity = noiseIntensity),
+          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,tolMzh=tolMzh,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(
@@ -42,14 +40,14 @@ case class IonsIdentificationBuilder(
    * @param mzCoreStructure minimum size of a metabolite according param family
    * @return
    */
-  def findDiagnosticIonsAndNeutralLosses(precisionMzh : Int, mzCoreStructure : Double): Seq[IonsIdentification] = {
+  def findDiagnosticIonsAndNeutralLosses(tolMzh : Double, mzCoreStructure : Double): Seq[IonsIdentification] = {
     println("\n== detectNeutralLoss/detectDaughterIons == ")
 
     peaks.zipWithIndex
       . flatMap {
      case (x,idx) =>
        print(s"\r===>$idx/${peaks.size}")
-       getInfo(x,precisionMzh,mzCoreStructure)
+       getInfo(x,tolMzh,mzCoreStructure)
     }
       .sortBy( x => (x.ion.rt,x.ion.peaks.head.mz) )
   }

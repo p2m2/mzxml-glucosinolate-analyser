@@ -24,11 +24,10 @@ object IonsIdentificationTest extends TestSuite {
             Some(10.0),
             Some(12.8),
             0.1,
-            10,
-            filteringOnNbSulfur = 2,
-            0,
-            0.0,
-            1.0,
+            nbCarbonMin = 4,
+            nbCarbonMax = 20,
+            nbSulfurMin = 2,
+            nbSulfurMax = 5,
             deltaMOM2 = 1.996,
             )) {
           assert(Try(read[PeakIdentification](write(elem))).isSuccess)
