@@ -92,9 +92,10 @@ object ScanLoaderTest extends TestSuite {
       val v = read
       val v2 = ScanLoader.calcBackgroundNoisePeak(
         v._1,
-        v._2
+        v._2,
+        0.2
       )
-      assert(v2 != NaN)
+      assert(v2 == v2)
     }
 
     test("keepSimilarMzWithMaxAbundance") {
