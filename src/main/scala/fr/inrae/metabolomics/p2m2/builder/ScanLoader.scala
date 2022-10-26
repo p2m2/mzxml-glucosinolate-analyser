@@ -1,5 +1,6 @@
 package fr.inrae.metabolomics.p2m2.builder
 
+import fr.inrae.metabolomics.p2m2.database.ChemicalUtils
 import fr.inrae.metabolomics.p2m2.diagnostic.DaughterIonsDiag
 import umich.ms.datatypes.scan.IScan
 import umich.ms.datatypes.spectrum.ISpectrum
@@ -132,17 +133,17 @@ case object ScanLoader {
   }
 
   def getScanIdxAndSpectrumM0M2WithDelta(
-                                      source: MZXMLFile,
-                                      index: MZXMLIndex,
-                                      start : Option[Double] = None,
-                                      end : Option[Double] = None,
-                                      thresholdAbundanceM0Filter : Double,
-                                      intensityFilter : Int,
-                                      filteringOnNbSulfur : Int = 0,
-                                      minAbundanceM1: Double,
-                                      maxAbundanceM1: Double,
-                                      precision: Double = 0.01,
-                                      deltaMOM2 : Double
+                                          source: MZXMLFile,
+                                          index: MZXMLIndex,
+                                          start : Option[Double] = None,
+                                          end : Option[Double] = None,
+                                          noiseIntensity : Double,
+                                          nbCarbonMin: Double,
+                                          nbCarbonMax: Double,
+                                          nbSulfurMin : Double,
+                                          nbSulfurMax : Double,
+                                          precision: Double = 0.01,
+                                          deltaMOM2 : Double
                                     ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
     // the file using those numbers. We need the raw scan numbers (the numbers
@@ -160,41 +161,49 @@ case object ScanLoader {
           // remove the first one to compute Delta M
           mzValues
             .zipWithIndex
-            .filter { case (_, idx) => (spectrum.getIntensities()(idx)/scan.getBasePeakIntensity)>thresholdAbundanceM0Filter   }
+            .filter { case (_, idx) =>
+              spectrum.getIntensities()(idx)>noiseIntensity
+            }
             .map { case (mz0, idx0) =>
               val mz_ms_p2 = mz0 + deltaMOM2
               val idx2 = spectrum.findClosestMzIdx(mz_ms_p2)
               val mz_p2 = spectrum.getMZs()(idx2)
-              (mz0,idx0,mz_p2,idx2)
+              val idx1 = spectrum.findClosestMzIdx(mz0+1.0)
+              val mz1 = spectrum.getMZs()(idx1)
+              (mz0,idx0,mz1,idx1,mz_p2,idx2)
             }
-            .filter { case (_,idx0,_,idx2) =>
-              spectrum.getIntensities()(idx2) >= spectrum.getIntensities()(idx0) * 0.044 * filteringOnNbSulfur.toDouble  }
+            .filter { case (mz,idx0, mz1, idx1, mz2, idx2) =>
+              ((mz - mz2).abs - deltaMOM2).abs < precision
+            }
+            /* criteria M1 of Isotope C are present at 1.1 and S are present 4.4 % */
+            .filter { case (_, idx0,_, idx1, _, _) =>
 
-              //(spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*100/4.4 >= filteringOnNbSulfur.toDouble  }
-            /* filtering on presence of souffer is too restrictive....*/
-            /* a verifier 4.40 ===> */
-        //    .filter { case (_,idx0,_,_) => (spectrum.getIntensities()(idx0)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
-            /* abundance filter */
-        /*    .filter { case (_,idx1,_,idx2) =>
-              (spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2))/scan.getBasePeakIntensity > 0.1  }*/
-            .filter { case (mz, idx1,mz_p2,idx2) => {
-              ((mz - mz_p2).abs - 1.99).abs < precision
-            }}
+              spectrum.getIntensities()(idx1) >= spectrum.getIntensities()(idx0) *
+                (ChemicalUtils.abundanceIsotope("C")(1) * nbCarbonMin +
+                  ChemicalUtils.abundanceIsotope("S")(1) * nbSulfurMin)
+            }
+            .filter { case (_, idx0,_, idx1, _, _) =>
+              spectrum.getIntensities()(idx1) <
+                spectrum.getIntensities()(idx0) *
+                  (ChemicalUtils.abundanceIsotope("C")(1) * nbCarbonMax +
+                    ChemicalUtils.abundanceIsotope("S")(1) * nbSulfurMax)
+            }
+            /* criteria M2 of Isotope S are present 4.4 % */
+            .filter { case (_,idx0,_, _ ,_,idx2) =>
+              spectrum.getIntensities()(idx2) >= spectrum.getIntensities()(idx0) *
+                ChemicalUtils.abundanceIsotope("S")(2) * nbSulfurMin
+            }
+            .filter { case (_, idx0,_, _ , _, idx2) =>
+              spectrum.getIntensities()(idx2) < spectrum.getIntensities()(idx0) *
+                ChemicalUtils.abundanceIsotope("S")(2) * nbSulfurMax
+            }
             .map {
-              case (mz0, idx0  ,mz2 ,idx2 ) =>
-                val idx1 = spectrum.findClosestMzIdx(mz0+1.0)
+              case (mz0, idx0, mz1, idx1, mz2 ,idx2 ) =>
                 val idx3 = spectrum.findClosestMzIdx(mz0+3.0)
-                (mz0, idx0  ,mz2 ,idx2, idx1, idx3 )
+                ( mz0, idx0  ,mz2 ,idx2, idx1, idx3 )
             }
-            /* Gestion d'une abondance minimum a deporter dans les critere de resultats */
-            .filter { /* M+1   min abundance */
-              case (_, idx0  ,_ ,_, idx1,_ ) =>
-                (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) >= minAbundanceM1) &&
-                  (spectrum.getIntensities()(idx1) / spectrum.getIntensities()(idx0) <= maxAbundanceM1)
-            }
-            /* --- fin critere abondance*/
-            .map { case (_, idx0,_,idx2, idx1, idx3) => fillPeakIdentification(scan,spectrum,idx0,Some(idx1),Some(idx2),Some(idx3))
-              //PeakIdentification(scan.getNum, Seq(idx1,idx2))
+            .map { case (_, idx0,_,idx2, idx1, idx3) =>
+              fillPeakIdentification(scan,spectrum,idx0,Some(idx1),Some(idx2),Some(idx3))
             }
         }}.toSeq
   }

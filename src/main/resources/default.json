@@ -1,9 +1,10 @@
 {
   "Glucosinolate" : {
     "deltaMp0Mp2" : 1.996,
+    "numberCarbonMin" : 3,
+    "numberCarbonMax" : 35,
     "numberSulfurMin" : 1.5,
-    "minAbundanceM1" : 0.09,
-    "maxAbundanceM1" : 0.4,
+    "numberSulfurMax" : 5,
     "minMzCoreStructure" : 317.995896,
     "neutralLoss" : {
         "thioglucose_s03" : 242.0,
