@@ -12,12 +12,13 @@ object DaughterIonsDiagTest extends TestSuite {
       (ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
         v._1,
         v._2,
-        Some(2.0), // RT start
-        Some(2.2), // RT end
-        thresholdAbundanceM0Filter = 0.1, intensityFilter = 0,
-        0,
-        0.0,
-        1.0,
+        Some(11.5), // RT start
+        Some(12.0), // RT end
+        noiseIntensity = 0.1,
+        nbCarbonMin = 4.0,
+        nbCarbonMax = 20.0,
+        nbSulfurMin = 2.0,
+        nbSulfurMax = 5.0,
         deltaMOM2 = 1.996
       ))
     }
