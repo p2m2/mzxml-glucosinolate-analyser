@@ -167,7 +167,10 @@ case object ScanLoader {
               val mz_p2 = spectrum.getMZs()(idx2)
               (mz0,idx0,mz_p2,idx2)
             }
-            .filter { case (_,_,_,idx2) => (spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*100/4.4 >= filteringOnNbSulfur.toDouble  }
+            .filter { case (_,idx0,_,idx2) =>
+              spectrum.getIntensities()(idx2) >= spectrum.getIntensities()(idx0) * 0.044 * filteringOnNbSulfur.toDouble  }
+
+              //(spectrum.getIntensities()(idx2)/scan.getBasePeakIntensity)*100/4.4 >= filteringOnNbSulfur.toDouble  }
             /* filtering on presence of souffer is too restrictive....*/
             /* a verifier 4.40 ===> */
         //    .filter { case (_,idx0,_,_) => (spectrum.getIntensities()(idx0)/scan.getBasePeakIntensity)*(25.0) > filteringOnNbSulfur.toDouble  }
