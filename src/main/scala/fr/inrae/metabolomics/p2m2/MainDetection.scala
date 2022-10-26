@@ -17,15 +17,15 @@ object MainDetection extends App {
   import scopt.OParser
 
   case class Config(
-                     mzfiles: Seq[File] = Seq(),
+                     mzFiles: Seq[File] = Seq(),
                      jsonFamilyMetabolitesDetection: Option[File] = None,
-                     thresholdIntensityFilter: Option[Int] = None,
-                     thresholdAbundanceM0Filter: Double = 0.1,
-                     overrepresentedPeakFilter: Int = 800,
+                     noiseIntensity: Option[Double] = None,
                      startRT: Option[Double] = None,
                      endRT: Option[Double] = None,
+                     overrepresentedPeak: Int = 800,
                      precisionMzh: Int = 1000,
                      toleranceMz: Double = 0.01,
+                     warmup: Double = 0.50, // (30 sec)
                      outfile: Option[File] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
@@ -41,14 +41,14 @@ object MainDetection extends App {
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
         .text(s"json configuration to detect metabolite family."),
-      opt[Int]('i', "thresholdIntensityFilter")
+      opt[Double]('i', "noiseIntensity")
         .optional()
-        .action((x, c) => c.copy(thresholdIntensityFilter = Some(x)))
+        .action((x, c) => c.copy(noiseIntensity = Some(x)))
         .text(s"Keep ions above a x intensity (calculation on start-up time)"),
-      opt[Int]('p', "overrepresentedPeakFilter")
+      opt[Int]('p', "overrepresentedPeak")
         .optional()
-        .action((x, c) => c.copy(overrepresentedPeakFilter = x))
-        .text(s"filter about over represented peaks. default ${Config().overrepresentedPeakFilter}"),
+        .action((x, c) => c.copy(overrepresentedPeak = x))
+        .text(s"filter about over represented peaks. default ${Config().overrepresentedPeak}"),
       opt[Double]('s', "startRT")
         .optional()
         .action((x, c) => c.copy(startRT = Some(x)))
@@ -57,6 +57,10 @@ object MainDetection extends App {
         .optional()
         .action((x, c) => c.copy(endRT = Some(x)))
         .text(s"start RT"),
+      opt[Double]('w', "warm-up time to compute noise")
+        .optional()
+        .action((x, c) => c.copy(warmup = x))
+        .text(s"warmup time"),
       opt[Int]('m', "precisionMzh")
         .optional()
         .action((x, c) => c.copy(precisionMzh = x))
@@ -80,7 +84,7 @@ object MainDetection extends App {
 
       arg[File]("<file>...")
         .unbounded()
-        .action((x, c) => c.copy(mzfiles = c.mzfiles :+ x)),
+        .action((x, c) => c.copy(mzFiles = c.mzFiles :+ x)),
       help("help").text("prints this usage text"),
       note("some notes." + sys.props("line.separator")),
       checkConfig(_ => success)
@@ -114,7 +118,7 @@ object MainDetection extends App {
     confJson.metabolites.foreach(
       family => {
         val allSelectedIons : Seq[(Double, ParSeq[(IonsIdentification,String)])] =
-          config.mzfiles
+          config.mzFiles
             .par
             .flatMap {
             mzFile =>
@@ -136,31 +140,17 @@ object MainDetection extends App {
                   case false =>
 
                     val (source, index) = ScanLoader.read(mzFile)
-                    val noiseIntensity: Double =
-                      ScanLoader.calculBackgroundNoisePeak(
-                        source,
-                        index,
-                        startDurationTime = 0.20)
 
-                    val intensityFilter = config.thresholdIntensityFilter match {
+                    /**
+                     * intensity noise is computed with the warm up time or give by the user .
+                     */
+                    val noiseIntensity : Double = config.noiseIntensity match {
                       case Some(v) => v
-                      case None => noiseIntensity
+                      case None => ScanLoader.calcBackgroundNoisePeak(source, index, startDurationTime = config.warmup)
                     }
 
-                    val values = ionsDetection(
-                      config,
-                      source,
-                      index,
-                      intensityFilter,
-                      confJson.deltaMp0Mp2(family),
-                      confJson.numberSulfurMin(family),
-                      confJson.minAbundanceM1(family),
-                      confJson.maxAbundanceM1(family),
-                      confJson.minMzCoreStructure(family),
-                      confJson.neutralLoss(family),
-                      confJson.daughterIons(family),
-                      noiseIntensity
-                    )
+                    val values =
+                      ionsDetection(family,config,confJson, source, index,noiseIntensity)
 
                     val f = config.outfile.getOrElse(new File(s"${baseName}.csv"))
                     f.delete()
@@ -190,61 +180,54 @@ object MainDetection extends App {
 
 
   def ionsDetection(
-                          config: Config,
-                          source: MZXMLFile,
-                          index: MZXMLIndex,
-                          intensityFilter: Double,
-                          deltaMp0Mp2: Double,
-                          numberSulfurMin: Double,
-                          minAbundanceM1: Double,
-                          maxAbundanceM1: Double,
-                          mzCoreStructure : Double,
-                          neutralLoss: Map[String, Double],
-                          daughterIons: Map[String, Double],
-                          noiseIntensity : Double
-                        ): Seq[IonsIdentification] = {
+                     family : String,
+                     config: Config,
+                     confJson : ConfigReader,
+                     source: MZXMLFile,
+                     index: MZXMLIndex,
+                     noiseIntensity : Double): Seq[IonsIdentification] = {
 
+    /**
+     * Get Peaks with criteria DeltaM0M2, number of carbon min/max,Max, number of sulfur min/max
+     */
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
-        getScanIdxAndSpectrumM0M2WithDelta(
+        selectEligibleIons(
           source,
           index,
           config.startRT,
           config.endRT,
-          config.thresholdAbundanceM0Filter,
-          intensityFilter.toInt,
-          filteringOnNbSulfur = numberSulfurMin.toInt,
-          minAbundanceM1,
-          maxAbundanceM1,
+          noiseIntensity,
+          nbCarbonMin = confJson.numberCarbonMin(family),
+          nbCarbonMax = confJson.numberCarbonMax(family),
+          nbSulfurMin = confJson.numberSulfurMin(family),
+          nbSulfurMax = confJson.numberSulfurMax(family),
           config.toleranceMz,
-          deltaMOM2 = deltaMp0Mp2)
+          deltaMOM2 = confJson.deltaMp0Mp2(family))
 
-    /* Diagnostics : Ions frequency on selected Scan peak detected ! */
-
-    val frequencyOfMz: Seq[(Int, Int)] = Seq() // DaughterIonsDiag.IonsFrequencyOnSelectedScanPeakDetected(source,index,listSulfurMetabolites)
-    println(frequencyOfMz)
-    /* Attention c est lent..... peut etre a faire en option !!*/
-    println("\n\n\n==============   Twenty Ions frequency on selected Scan peak detected =========================")
-    println(frequencyOfMz.reverse.slice(1, 20).map {
-      case (mz, freq) => (mz.toString + " m/z -> " + freq)
-    }.mkString(" , "))
-
-    val listSulfurMetabolitesSelected: Seq[PeakIdentification] = // listSulfurMetabolites
+    /**
+     * Merge All features (Ion/RT) that looks like !
+     */
+    val listSulfurMetabolitesSelected: Seq[PeakIdentification] =
       ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
 
+    /**
+     * remove over represented peaks
+     */
     val m: IonsIdentificationBuilder =
       ScanLoader.filterOverRepresentedPeak(
         source,
         index,
-        config.startRT,
-        config.endRT,
         listSulfurMetabolitesSelected,
-        intensityFilter,
-        config.overrepresentedPeakFilter,
-        neutralLoss.toSeq,
-        daughterIons.toSeq,
-        noiseIntensity
+        noiseIntensity,
+        config.overrepresentedPeak,
+        confJson.neutralLoss(family).toSeq,
+        confJson.daughterIons(family).toSeq
       )
-    m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,mzCoreStructure)
+
+    /**
+     * find Neutral loses and Diagnostic Ion
+     */
+    m.findDiagnosticIonsAndNeutralLosses(0.1,confJson.minMzCoreStructure(family))
   }
 }

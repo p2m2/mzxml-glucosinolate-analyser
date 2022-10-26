@@ -32,9 +32,8 @@ case object CsvIonsIdentificationFile {
       bw.write(s"BRASSICA;")
       bw.write("mz threshold;")
       bw.write("Nb (NL+DI);")
-
-      neutralLosses.foreach {  name => bw.write(s"NL_$name;")}
-      daughterIons.foreach {  name => bw.write(s"DI_$name;")}
+      bw.write(s"NL;")
+      bw.write(s"DI;")
 
       bw.write("\n")
 
@@ -82,12 +81,13 @@ case object CsvIonsIdentificationFile {
 
           neutralLosses
             .map( name => metabolitesIdentificationId.neutralLosses
-              .getOrElse(name,None).map(x => x._1+"("+x._2+")").getOrElse(""))
-            .foreach {  value => bw.write(s"${value};")}
+              .getOrElse(name,None).map(x => x._1+"["+x._2+"]("+x._3+")").getOrElse(""))
+            .foreach {  value => bw.write(s"$value ")}
+          bw.write(";")
           daughterIons
             .map( name => metabolitesIdentificationId.daughterIons.getOrElse(name,None)
-              .map(x => x._1+"("+x._2+")").getOrElse(""))
-            .foreach {  value => bw.write(s"$value;")}
+              .map(x => x._1+"["+x._2+"]("+x._3+")").getOrElse(""))
+            .foreach {  value => bw.write(s"$value ")}
           bw.write("\n")
         }
       )

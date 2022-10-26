@@ -24,17 +24,5 @@ object ScanLoaderDetectNeutralLossesTest extends TestSuite {
      // val r = (ScanLoader.getScanIdxAndSpectrum3IsotopesSulfurContaining(v._1,v._2))
      // println(r)
     }
-
-    test("============ 2=================") {
-      val IsotopesSulfur = ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(v._1,v._2,None,None,
-        thresholdAbundanceM0Filter=1000,
-        intensityFilter = 10,
-        2,
-        0.0,
-        1.0,
-        deltaMOM2 = 1.996)
-
-    }
-
   }
 }
