@@ -11,7 +11,7 @@ import scala.io.Source
 object CsvIonsIdentificationFileTest extends TestSuite {
   val v: (MZXMLFile, MZXMLIndex) = ScanLoader.read(new File(getClass.getResource("/20181018-037.mzXML").getPath))
   val v2: Seq[PeakIdentification] =
-    ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+    ScanLoader.selectEligibleIons(
       v._1,
       v._2,
       Some(6.6), // RT start

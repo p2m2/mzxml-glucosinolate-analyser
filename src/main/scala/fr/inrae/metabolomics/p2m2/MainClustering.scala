@@ -65,7 +65,7 @@ object MainClustering extends App {
             val v = ScanLoader.read(new File(ii.pathFile))
             val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1, v._2, ii.ion, 100)
 
-            (idxF,mz, rt,r2)
+            (idxF,mz, rt,r2.sorted)
           }
         )
       }
@@ -73,23 +73,9 @@ object MainClustering extends App {
 
     res.foreach(
       row =>
-        println(f"${row._2}%4.2f \t ${row._3}%3.2f\t${row._1} \n\t${row._4}")
+        println(f"\n${row._2} \t ${row._3}%3.2f\t${row._1} \n\t${row._4}")
 
     )
-
-//    println(r.head._2._1)
-
-    r.map( _._2._1.head) foreach {
-      case ion : IonsIdentification =>
-        val v = ScanLoader.read(new File(ion.pathFile))
-        val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1, v._2, ion.ion, 100)
-        println("=======R2=================",ion.ion)
-        println(r2)
-        println("========================")
-    }
-
-
-    //ScanLoader.getDeltaNeutralLossesFromPeak()
 
     println("original size:"+r.map {
       case (idxFile, v) => v._1.size

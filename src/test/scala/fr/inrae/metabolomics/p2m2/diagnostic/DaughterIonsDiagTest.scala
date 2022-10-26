@@ -9,7 +9,7 @@ object DaughterIonsDiagTest extends TestSuite {
   val tests : Tests = Tests {
     val v = ScanLoader.read(new File(getClass.getResource("/20181018-037.mzXML").getPath))
     val v2 = {
-      (ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
+      (ScanLoader.selectEligibleIons(
         v._1,
         v._2,
         Some(11.5), // RT start
