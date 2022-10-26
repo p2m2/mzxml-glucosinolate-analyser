@@ -213,19 +213,16 @@ object MainDetection extends App {
       ScanLoader.filterOverRepresentedPeak(
         source,
         index,
-        config.startRT,
-        config.endRT,
         listSulfurMetabolitesSelected,
         noiseIntensity,
         config.overrepresentedPeakFilter,
         confJson.neutralLoss(family).toSeq,
-        confJson.daughterIons(family).toSeq,
-        noiseIntensity
+        confJson.daughterIons(family).toSeq
       )
 
     /**
      * find Neutral loses and Diagnostic Ion
      */
-    m.findDiagnosticIonsAndNeutralLosses(config.precisionMzh,confJson.minMzCoreStructure(family))
+    m.findDiagnosticIonsAndNeutralLosses(0.1,confJson.minMzCoreStructure(family))
   }
 }

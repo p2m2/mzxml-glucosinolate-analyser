@@ -12,8 +12,8 @@ object DaughterIonsDiagTest extends TestSuite {
       (ScanLoader.getScanIdxAndSpectrumM0M2WithDelta(
         v._1,
         v._2,
-        Some(2.0), // RT start
-        Some(2.2), // RT end
+        Some(11.5), // RT start
+        Some(12.0), // RT end
         noiseIntensity = 0.1,
         nbCarbonMin = 4.0,
         nbCarbonMax = 20.0,
