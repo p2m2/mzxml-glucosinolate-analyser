@@ -64,12 +64,11 @@ object MainRdfGenerator extends App {
     r.map {
       case (idxFile, v) => (idxFile, v._1)
     }.foreach {
-      case (idxFile, v: Seq[IonsIdentification]) =>
+      case (_, v: Seq[IonsIdentification]) =>
         v
           .filter(x => x.daughterIons.nonEmpty || x.neutralLosses.nonEmpty )
           .foreach(
             ii => {
-              println(ii.ion.peaks.head)
               val ion = Values.bnode
               builder
                // .subject(s"${ii.pathFile}")  // mettre le chemin absolue !!
@@ -87,14 +86,28 @@ object MainRdfGenerator extends App {
                 .add("p2m2:score",Values.literal(ii.scoreIdentification))
 
               ii.daughterIons.foreach {
-                case (_, Some((name,mz,abundance))) => println(name,mz,abundance)
+                case (_, Some((name,mz,abundance))) =>
                   val d = Values.bnode()
                   builder
                     .subject(d)
                     .add(RDF.TYPE, "sio:SIO_000396")
-                    .add(RDFS.LABEL,name)
+                    .add(RDFS.LABEL,s"DI_$name")
                     .add("p2m2:mz",Values.literal(mz))
                     .add("p2m2:abundance",Values.literal(abundance))
+                    .add("p2m2:target",s"p2m2:DL_$name")
+                case _ =>
+              }
+
+              ii.neutralLosses.foreach {
+                case (_, Some((name, mz, abundance))) =>
+                  val d = Values.bnode()
+                  builder
+                    .subject(d)
+                    .add(RDF.TYPE, "sio:SIO_000396")
+                    .add(RDFS.LABEL, s"NL_$name")
+                    .add("p2m2:mz", Values.literal(mz))
+                    .add("p2m2:abundance", Values.literal(abundance))
+                    .add("p2m2:target",s"p2m2:NL_$name")
                 case _ =>
               }
 
