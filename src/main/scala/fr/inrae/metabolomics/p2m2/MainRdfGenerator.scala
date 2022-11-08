@@ -2,8 +2,11 @@ package fr.inrae.metabolomics.p2m2
 
 import fr.inrae.metabolomics.p2m2.`export`.IonsIdentificationFile
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
+import org.eclipse.rdf4j.model.util.{ModelBuilder, Values}
+import org.eclipse.rdf4j.model.vocabulary.{RDF, RDFS, XSD}
+import org.eclipse.rdf4j.rio.{RDFFormat, Rio, WriterConfig}
 
-import java.io.File
+import java.io.{File, StringWriter}
 
 object MainRdfGenerator extends App {
 
@@ -41,25 +44,65 @@ object MainRdfGenerator extends App {
       case (f, idx) => (idx, IonsIdentificationFile.load(f))
     }
 
-    val N_FILTER = 1
-    println(s"=============== DI >$N_FILTER =================")
+    val mapPrefix = Map(
+      "rdfs" -> "http://www.w3.org/2000/01/rdf-schema#",
+      "rdf" -> "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "xsd" -> "http://www.w3.org/2000/10/XMLSchema#",
+      "owl" -> "http://www.w3.org/2002/07/owl#",
+      "prov" -> "http://www.w3.org/ns/prov#",
+      "p2m2" -> "https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#",
+      "sio" -> " http://semanticscience.org/resource/"
+    )
+
+    val builder : ModelBuilder = new ModelBuilder()
+
+    mapPrefix map { case (k, v) =>
+      builder.setNamespace(k, v)
+    }
 
     /* Index file, Seq(IonsIdentification) */
-    val res = r.map {
+    r.map {
       case (idxFile, v) => (idxFile, v._1)
-    }.flatMap {
-      case (idxF, v: Seq[IonsIdentification]) => {
+    }.foreach {
+      case (idxFile, v: Seq[IonsIdentification]) =>
         v
-          .filter(_.daughterIons.nonEmpty)
-          .filter(x => x.daughterIons.values.flatten.size > N_FILTER)
-          .map(
+          .filter(x => x.daughterIons.nonEmpty || x.neutralLosses.nonEmpty )
+          .foreach(
             ii => {
+              println(ii.ion.peaks.head)
+              val ion = Values.bnode
+              builder
+               // .subject(s"${ii.pathFile}")  // mettre le chemin absolue !!
+                .subject(Values.bnode())
+                .add(RDF.TYPE, "sio:SIO_000396")
+                .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
+                .add("p2m2:has_eligible_ions",ion)
 
-             ii.daughterIons
+              builder
+                .subject(ion)
+                .add(RDF.TYPE, "sio:SIO_000396")
+                .add("p2m2:mz",Values.literal(ii.ion.peaks.head.mz))
+                .add("p2m2:abundance",Values.literal(ii.ion.peaks.head.abundance))
+                .add("p2m2:rt",Values.literal(ii.ion.rt))
+                .add("p2m2:score",Values.literal(ii.scoreIdentification))
+
+              ii.daughterIons.foreach {
+                case (_, Some((name,mz,abundance))) => println(name,mz,abundance)
+                  val d = Values.bnode()
+                  builder
+                    .subject(d)
+                    .add(RDF.TYPE, "sio:SIO_000396")
+                    .add(RDFS.LABEL,name)
+                    .add("p2m2:mz",Values.literal(mz))
+                    .add("p2m2:abundance",Values.literal(abundance))
+                case _ =>
+              }
+
+             //ii.daughterIons
             }
           )
-      }
-    }.distinct
+    }
+    println(getStringFromModelBuilder(builder))
 
     /*
       p2m2 : https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#
@@ -67,6 +110,12 @@ object MainRdfGenerator extends App {
 
       <file mzxml> p2m2:has_elligible_ions <anion>
       <anion> is a <http://purl.obolibrary.org/obo/CHEBI_22563>
+
+      <anion> prov:wasGeneratedBy <https://github.com/p2m2/mzxml-glucosinolate-analyser>
+
+      ......     <http://purl.obolibrary.org/obo/CHEBI_24279> (Glucosinolate)
+
+
       <anion> p2m2:has_daughter_ion <v>
       <v> rdfs:label "some"
       <anion> p2m2:has_neutral_loss <v2>
@@ -75,16 +124,26 @@ object MainRdfGenerator extends App {
       <anion> oboInOwl:hasDbXRef <some>
 
      */
-
-    res.foreach(
-      row =>
-        println(row)
-
-    )
-
-    println("original size:" + r.map {
-      case (idxFile, v) => v._1.size
-    })
-    println("size:" + res.length)
   }
+
+  def getStringFromModelBuilder(builder: ModelBuilder, extension: String = "ttl"): String = {
+    val config: WriterConfig = new WriterConfig()
+    // config.set(BasicWriterSettings.PRETTY_PRINT, true)
+
+    val stringWriter = new StringWriter()
+
+    val format: RDFFormat = extension match {
+      case "jsonld" => RDFFormat.JSONLD
+      case "ttl" => RDFFormat.TURTLE
+      case "trig" => RDFFormat.TRIG
+      case "nt" => RDFFormat.NTRIPLES
+      case "n3" => RDFFormat.N3
+      case "rdf" => RDFFormat.RDFXML
+      case _ => throw new IllegalArgumentException(s"Unknown extension : $extension ")
+    }
+
+    Rio.write(builder.build(), stringWriter, format, config)
+    stringWriter.toString
+  }
+
 }
