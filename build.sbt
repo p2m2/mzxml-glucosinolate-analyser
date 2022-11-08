@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
   "org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.0",
     // "org.openscience.cdk" % "cdk-bundle" % "2.8",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
-  "org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
+  //"org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
 )
 
 credentials += {
@@ -72,12 +72,9 @@ coverageHighlighting := true
 testFrameworks += new TestFramework("utest.runner.Framework")
 assembly / target := file("assembly")
 assembly / assemblyJarName := "pack.jar"
-assembly / assemblyMergeStrategy := {
-  //case PathList("META-INF", xs @ _*) => MergeStrategy.last
-  case "module-info.class"  => MergeStrategy.first
-  case x =>
-    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
-    oldStrategy(x)
-}
 
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
 Global / onChangedBuildSource := ReloadOnSourceChanges

@@ -69,10 +69,10 @@ object MainRdfGenerator extends App {
           .filter(x => x.daughterIons.nonEmpty || x.neutralLosses.nonEmpty )
           .foreach(
             ii => {
+              println(ii.pathFile)
               val ion = Values.bnode
               builder
-               // .subject(s"${ii.pathFile}")  // mettre le chemin absolue !!
-                .subject(Values.bnode())
+                .subject((s"file:${ii.pathFile}"))
                 .add(RDF.TYPE, "sio:SIO_000396")
                 .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
                 .add("p2m2:has_eligible_ions",ion)

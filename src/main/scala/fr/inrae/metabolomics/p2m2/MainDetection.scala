@@ -26,7 +26,7 @@ object MainDetection extends App {
                      precisionMzh: Int = 1000,
                      toleranceMz: Double = 0.01,
                      warmup: Double = 0.50, // (30 sec)
-                     outfile: Option[File] = None,
+                     outfile: Option[String] = None,
                      verbose: Boolean = false,
                      debug: Boolean = false
                    )
@@ -69,7 +69,7 @@ object MainDetection extends App {
         .optional()
         .action((x, c) => c.copy(toleranceMz = x))
         .text(s"tolerance accepted. ${Config().toleranceMz}"),
-      opt[File]('o', "outputFile")
+      opt[String]('o', "outputFile")
         .optional()
         .action((x, c) => c.copy(outfile = Some(x)))
         .text(s"output path file."),
@@ -125,7 +125,11 @@ object MainDetection extends App {
               val baseName = getBaseName(mzFile.getName,family)
 
               val values :  ParSeq[IonsIdentification] = {
-                (new File(s"$baseName").exists() && new File(s"$baseName.csv").exists())
+
+                val dumpFile = new File(config.outfile.getOrElse(baseName))
+                val csvFile = new File(config.outfile.getOrElse(baseName)+".csv")
+
+                (dumpFile.exists() && csvFile.exists())
                 match {
                   case true =>
                     Try(IonsIdentificationFile.load(new File(s"$baseName"))._1.par) match {
@@ -152,12 +156,12 @@ object MainDetection extends App {
                     val values =
                       ionsDetection(family,config,confJson, source, index,noiseIntensity)
 
-                    val f = config.outfile.getOrElse(new File(s"${baseName}.csv"))
-                    f.delete()
-                    CsvIonsIdentificationFile.build(values, family, confJson, f)
-                    val f2 = config.outfile.getOrElse(new File(s"${baseName}"))
-                    IonsIdentificationFile.save(values, family, confJson, f2)
-                    println(s"========= check ${f.getPath},${f2.getPath} ===============")
+
+                    csvFile.delete()
+                    CsvIonsIdentificationFile.build(values, family, confJson, csvFile)
+
+                    IonsIdentificationFile.save(values, family, confJson, dumpFile)
+                    println(s"========= check ${csvFile.getPath},${dumpFile.getPath} ===============")
                     values.par
                 }
                 //
