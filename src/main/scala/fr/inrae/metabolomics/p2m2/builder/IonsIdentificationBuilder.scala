@@ -13,20 +13,20 @@ case class IonsIdentificationBuilder(
                                      dis : Seq[(String,Double)],
                                      noiseIntensity : Double = 0.0
                                    ) {
-  def getRelativePath(source : MZXMLFile) : String =
-    new File(source.getPath).getCanonicalPath.replace(new File(".").getCanonicalPath,".")
+  def getPath(source : MZXMLFile) : String =
+    new File(source.getPath).getCanonicalPath //.replace(new File(".").getCanonicalPath,".")
   def getInfo( p :PeakIdentification,tolMzh : Double, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
         Some(IonsIdentification(
-          getRelativePath(source),
+          getPath(source),
           p,
           neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,tolMzh=tolMzh,noiseIntensity = noiseIntensity),
           daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,tolMzh=tolMzh,noiseIntensity = noiseIntensity)
         ))
       else
         Some(IonsIdentification(
-          getRelativePath(source),
+          getPath(source),
           p,
           neutralLosses = Map(),
           daughterIons = Map()

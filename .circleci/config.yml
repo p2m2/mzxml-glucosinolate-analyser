@@ -60,7 +60,7 @@ executors:
   openjdk:
     working_directory: ~/repo
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: cimg/openjdk:11.0.17
         auth:
           username: ${DOCKER_USER}
           password: ${DOCKER_PASS}

@@ -7,7 +7,8 @@ object IonsIdentification {
 }
 case class IonsIdentification(pathFile : String,
                               ion : PeakIdentification,
-                              neutralLosses : Map[String,Option[(String,Double,Double)]],
-                              daughterIons : Map[String,Option[(String,Double,Double)]]) {
+                              neutralLosses : Map[String,Option[(String,Double,Double)]], // mz,abundance
+                              daughterIons : Map[String,Option[(String,Double,Double)]] // mz,abundance
+                             ) {
   def scoreIdentification: Int = neutralLosses.values.flatten.size + daughterIons.values.flatten.size
 }
