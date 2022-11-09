@@ -54,7 +54,7 @@ object MainRdfGeneratorTest extends TestSuite {
         "-o", "./test.toto",
         "./test",
       ))).isFailure)
-
+/*
       new File("./test").delete()
       new File("./test.ttl").delete()
       new File("./test.jsonld").delete()
@@ -62,6 +62,7 @@ object MainRdfGeneratorTest extends TestSuite {
       new File("./test.nt").delete()
       new File("./test.rdf").delete()
       new File("./test.n3").delete()
+ */
     }
   }
 
