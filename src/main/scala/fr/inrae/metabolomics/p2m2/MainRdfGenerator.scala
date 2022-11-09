@@ -68,6 +68,7 @@ object MainRdfGenerator extends App {
     mapPrefix map { case (k, v) =>
       builder.setNamespace(k, v)
     }
+  //  val analyzer = "https://github.com/p2m2/mzxml-glucosinolate-analyser"
 
     /* Index file, Seq(IonsIdentification) */
     config.mzFiles.zipWithIndex.map {
@@ -80,12 +81,21 @@ object MainRdfGenerator extends App {
           .filter(x => x.scoreIdentification > config.minScoreThreshold )
           .foreach(
             ii => {
-              val ion = Values.bnode
+              val analyze = Values.bnode
+
               builder
                 .subject((s"file:${ii.pathFile}"))
-                .add(RDF.TYPE, "sio:SIO_000396")
-                .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
+              //  .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
+                .add("p2m2:has_in_silico_analyze",analyze)
+
+              val ion = Values.bnode
+
+              builder
+                .subject(analyze)
+                .add(RDF.TYPE, "p2m2:ResultsTools")
+                .add("p2m2:has_repository","https://github.com/p2m2/mzxml-glucosinolate-analyser")
                 .add("p2m2:has_eligible_ions",ion)
+                .add("p2m2:configMinScoreThreshold",config.minScoreThreshold)
 
               builder
                 .subject(ion)
@@ -95,7 +105,6 @@ object MainRdfGenerator extends App {
                 .add("p2m2:abundance",Values.literal(ii.ion.peaks.head.abundance))
                 .add("p2m2:rt",Values.literal(ii.ion.rt))
                 .add("p2m2:score",Values.literal(ii.scoreIdentification))
-                .add("p2m2:configMinScoreThreshold",config.minScoreThreshold)
 
               ii.daughterIons.foreach {
                 case (_, Some((name,mz,abundance))) =>
@@ -119,7 +128,7 @@ object MainRdfGenerator extends App {
                   val d = Values.bnode()
                   builder
                     .subject(d)
-                    .add(RDF.TYPE, "p2m2:NeutralLos")
+                    .add(RDF.TYPE, "p2m2:NeutralLoss")
                     .add(RDFS.LABEL, s"NL_$name")
                     .add("p2m2:mz", Values.literal(mz))
                     .add("p2m2:abundance", Values.literal(abundance))
