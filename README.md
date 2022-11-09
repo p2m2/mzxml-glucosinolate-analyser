@@ -40,10 +40,12 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainClustering 20181018-
 
 ## RDF
 
+check [model](https://github.com/p2m2/igepp-metabolomics-rdf) .
+
+Generation of Eligible Ion targeting Glucosinolate with Daughter Ion and Neutral Loss
+
 ```shell
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfGenerator 20181018-037_Glucosinolate 20181018-038_Glucosinolate
 ```
 
-https://isa-tools.org/linkedISA/
-https://github.com/ISA-tools/linkedISA
-https://github.com/ISA-tools/linkedISA-ontologies
+

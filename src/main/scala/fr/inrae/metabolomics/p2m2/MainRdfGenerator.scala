@@ -52,9 +52,6 @@ object MainRdfGenerator extends App {
   }
 
   def process(config: Config) = {
-    val r = config.mzFiles.zipWithIndex.map {
-      case (f, idx) => (idx, IonsIdentificationFile.load(f))
-    }
 
     val mapPrefix = Map(
       "rdfs" -> "http://www.w3.org/2000/01/rdf-schema#",
@@ -73,7 +70,9 @@ object MainRdfGenerator extends App {
     }
 
     /* Index file, Seq(IonsIdentification) */
-    r.map {
+    config.mzFiles.zipWithIndex.map {
+      case (f, idx) => (idx, IonsIdentificationFile.load(f))
+    }.map {
       case (idxFile, v) => (idxFile, v._1)
     }.foreach {
       case (_, v: Seq[IonsIdentification]) =>
