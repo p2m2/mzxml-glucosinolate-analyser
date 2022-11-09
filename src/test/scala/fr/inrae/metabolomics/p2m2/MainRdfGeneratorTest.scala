@@ -2,6 +2,8 @@ package fr.inrae.metabolomics.p2m2
 
 import utest.{TestSuite, Tests, test}
 
+import java.io.File
+
 object MainRdfGeneratorTest extends TestSuite {
 
   val tests: Tests = Tests {
@@ -19,6 +21,8 @@ object MainRdfGeneratorTest extends TestSuite {
       fr.inrae.metabolomics.p2m2.MainRdfGenerator.main(Array(
         "./test",
       ))
+
+      new File("./test").delete()
     }
   }
 

@@ -24,10 +24,18 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
   "com.lihaoyi" %% "upickle" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
-  "org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.0",
-    // "org.openscience.cdk" % "cdk-bundle" % "2.8",
+  ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.0")
+    .exclude("io.netty","*")
+    .exclude("commons-codec","commons-codec")
+    .exclude("jakarta.xml.bind","jakarta.xml.bind-api")
+    .exclude("com.fasterxml.jackson.core","*")
+    .exclude("org.glassfish.jaxb","*")
+    .exclude("org.lwjgl","*")
+    .exclude("org.slf4j","*"),
+  ("org.eclipse.rdf4j" % "rdf4j-rio" % "4.2.0"),
+  "org.slf4j" % "slf4j-simple" % "2.0.3",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
-  //"org.slf4j" % "slf4j-simple" % "2.0.3" % Test,
+
 )
 
 credentials += {
@@ -73,8 +81,14 @@ testFrameworks += new TestFramework("utest.runner.Framework")
 assembly / target := file("assembly")
 assembly / assemblyJarName := "pack.jar"
 
+
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
+  case x if x.endsWith("module-info.class") => MergeStrategy.discard
+  //case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy ).value
+    oldStrategy(x)
 }
+
+
 Global / onChangedBuildSource := ReloadOnSourceChanges

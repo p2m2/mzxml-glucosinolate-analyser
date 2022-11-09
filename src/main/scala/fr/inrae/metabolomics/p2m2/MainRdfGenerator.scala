@@ -6,14 +6,18 @@ import org.eclipse.rdf4j.model.util.{ModelBuilder, Values}
 import org.eclipse.rdf4j.model.vocabulary.{RDF, RDFS, XSD}
 import org.eclipse.rdf4j.rio.{RDFFormat, Rio, WriterConfig}
 
-import java.io.{File, StringWriter}
+import java.io.{BufferedWriter, File, FileOutputStream, FileWriter, StringWriter}
+import scala.util.{Failure, Success, Try}
 
 object MainRdfGenerator extends App {
 
   import scopt.OParser
 
   case class Config(
-                     mzFiles: Seq[File] = Seq()
+                     mzFiles: Seq[File] = Seq(),
+                     minScoreThreshold : Int = 4,
+                     outfile : String = "export.ttl"
+
                    )
 
   val builder = OParser.builder[Config]
@@ -25,6 +29,14 @@ object MainRdfGenerator extends App {
       arg[File]("<file>...")
         .unbounded()
         .action((x, c) => c.copy(mzFiles = c.mzFiles :+ x)),
+      opt[String]('o', "outputFile")
+        .optional()
+        .action((x, c) => c.copy(outfile = x))
+        .text(s"output path file."),
+      opt[Int]('m', "minScoreThreshold")
+        .optional()
+        .action((x, c) => c.copy(minScoreThreshold = x))
+        .text(s"minimal score threshold to build RDF file default=${Config().minScoreThreshold}"),
       help("help").text("prints this usage text"),
       note("some notes." + sys.props("line.separator")),
       checkConfig(_ => success)
@@ -66,10 +78,9 @@ object MainRdfGenerator extends App {
     }.foreach {
       case (_, v: Seq[IonsIdentification]) =>
         v
-          .filter(x => x.daughterIons.nonEmpty || x.neutralLosses.nonEmpty )
+          .filter(x => x.scoreIdentification > config.minScoreThreshold )
           .foreach(
             ii => {
-              println(ii.pathFile)
               val ion = Values.bnode
               builder
                 .subject((s"file:${ii.pathFile}"))
@@ -79,22 +90,28 @@ object MainRdfGenerator extends App {
 
               builder
                 .subject(ion)
+                .add(RDF.TYPE, "p2m2:Anion")
                 .add(RDF.TYPE, "sio:SIO_000396")
                 .add("p2m2:mz",Values.literal(ii.ion.peaks.head.mz))
                 .add("p2m2:abundance",Values.literal(ii.ion.peaks.head.abundance))
                 .add("p2m2:rt",Values.literal(ii.ion.rt))
                 .add("p2m2:score",Values.literal(ii.scoreIdentification))
+                .add("p2m2:configMinScoreThreshold",config.minScoreThreshold)
 
               ii.daughterIons.foreach {
                 case (_, Some((name,mz,abundance))) =>
                   val d = Values.bnode()
                   builder
                     .subject(d)
-                    .add(RDF.TYPE, "sio:SIO_000396")
+                    .add(RDF.TYPE, "p2m2:DaughterIon")
                     .add(RDFS.LABEL,s"DI_$name")
                     .add("p2m2:mz",Values.literal(mz))
                     .add("p2m2:abundance",Values.literal(abundance))
-                    .add("p2m2:target",s"p2m2:DL_$name")
+
+                  builder
+                    .subject(ion)
+                    .add("p2m2:has_daughterIon",d)
+
                 case _ =>
               }
 
@@ -103,11 +120,13 @@ object MainRdfGenerator extends App {
                   val d = Values.bnode()
                   builder
                     .subject(d)
-                    .add(RDF.TYPE, "sio:SIO_000396")
+                    .add(RDF.TYPE, "p2m2:NeutralLos")
                     .add(RDFS.LABEL, s"NL_$name")
                     .add("p2m2:mz", Values.literal(mz))
                     .add("p2m2:abundance", Values.literal(abundance))
-                    .add("p2m2:target",s"p2m2:NL_$name")
+                  builder
+                    .subject(ion)
+                    .add("p2m2:has_neutralLoss", d)
                 case _ =>
               }
 
@@ -115,7 +134,10 @@ object MainRdfGenerator extends App {
             }
           )
     }
-    println(getStringFromModelBuilder(builder))
+    /* delete file if exist */
+    new File(config.outfile).delete()
+    getStringFromModelBuilder(builder,config.outfile)
+
 
     /*
       p2m2 : https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#
@@ -139,11 +161,10 @@ object MainRdfGenerator extends App {
      */
   }
 
-  def getStringFromModelBuilder(builder: ModelBuilder, extension: String = "ttl"): String = {
-    val config: WriterConfig = new WriterConfig()
-    // config.set(BasicWriterSettings.PRETTY_PRINT, true)
+  def getStringFromModelBuilder(builder: ModelBuilder, fileName: String): Unit = {
 
-    val stringWriter = new StringWriter()
+    val extension: String = fileName.split("\\.").last
+    val out : FileOutputStream = new FileOutputStream(fileName)
 
     val format: RDFFormat = extension match {
       case "jsonld" => RDFFormat.JSONLD
@@ -155,8 +176,11 @@ object MainRdfGenerator extends App {
       case _ => throw new IllegalArgumentException(s"Unknown extension : $extension ")
     }
 
-    Rio.write(builder.build(), stringWriter, format, config)
-    stringWriter.toString
+    Try(Rio.write(builder.build(), out, format)) match {
+      case Success(_) => out.close()
+      case Failure(exception) => out.close();System.err.println(exception)
+    }
+
   }
 
 }

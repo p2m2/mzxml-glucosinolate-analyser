@@ -22,7 +22,7 @@ sbt assembly
 mzXML should contains MS1/MS2 spectrum (Data Independent Acquisition)
 
 ```shell
-java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test/resources/20181018-037.mzXML
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
 ```
 
 ## Clustering
@@ -39,6 +39,10 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainClustering 20181018-
 =>ChEBI_Results.tsv
 
 ## RDF
+
+```shell
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfGenerator 20181018-037_Glucosinolate 20181018-038_Glucosinolate
+```
 
 https://isa-tools.org/linkedISA/
 https://github.com/ISA-tools/linkedISA
