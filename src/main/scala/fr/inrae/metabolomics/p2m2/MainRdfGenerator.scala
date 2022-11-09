@@ -11,6 +11,8 @@ import scala.util.{Failure, Success, Try}
 
 object MainRdfGenerator extends App {
 
+  val repository : String = "https://github.com/p2m2/mzxml-glucosinolate-analyser"
+
   import scopt.OParser
 
   case class Config(
@@ -68,7 +70,12 @@ object MainRdfGenerator extends App {
     mapPrefix map { case (k, v) =>
       builder.setNamespace(k, v)
     }
-  //  val analyzer = "https://github.com/p2m2/mzxml-glucosinolate-analyser"
+    builder
+      .subject(repository)
+      .add(RDF.TYPE,"p2m2:SoftwareRepository")
+      .add(RDFS.LABEL,"p2m2/mzxml-glucosinolate-analyser")
+
+  //  val analyzer =
 
     /* Index file, Seq(IonsIdentification) */
     config.mzFiles.zipWithIndex.map {
@@ -93,13 +100,15 @@ object MainRdfGenerator extends App {
               builder
                 .subject(analyze)
                 .add(RDF.TYPE, "p2m2:ResultsTools")
-                .add("p2m2:has_repository","https://github.com/p2m2/mzxml-glucosinolate-analyser")
-                .add("p2m2:has_eligible_ions",ion)
+                .add(RDFS.LABEL,s"Glucosinolate Ion detection")
+                .add("p2m2:has_repository",Values.iri(repository))
+                .add("p2m2:has_eligible_ion",ion)
                 .add("p2m2:configMinScoreThreshold",config.minScoreThreshold)
 
               builder
                 .subject(ion)
                 .add(RDF.TYPE, "p2m2:Anion")
+                .add(RDFS.LABEL,s"Anion (${ii.ion.peaks.head.mz})")
                 .add(RDF.TYPE, "sio:SIO_000396")
                 .add("p2m2:mz",Values.literal(ii.ion.peaks.head.mz))
                 .add("p2m2:abundance",Values.literal(ii.ion.peaks.head.abundance))
