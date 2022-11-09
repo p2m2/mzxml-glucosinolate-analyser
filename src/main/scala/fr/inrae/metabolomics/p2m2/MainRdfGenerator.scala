@@ -91,8 +91,7 @@ object MainRdfGenerator extends App {
               val analyze = Values.bnode
 
               builder
-                .subject((s"file:${ii.pathFile}"))
-              //  .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
+                .subject((s"file:/${ii.pathFile}"))
                 .add("p2m2:has_in_silico_analyze",analyze)
 
               val ion = Values.bnode
