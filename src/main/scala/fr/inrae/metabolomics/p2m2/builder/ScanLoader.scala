@@ -262,13 +262,14 @@ case object ScanLoader {
    * @param peaks peak list to analyse and merge features
    * @return
    */
-  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification],precisionMzh : Int): Seq[PeakIdentification] = {
+  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification], precisionMzh : Int, precisionRt : Double =0.5): Seq[PeakIdentification] = {
     peaks.map {
       p =>
         val mz = (p.peaks.head.mz * precisionMzh).round / precisionMzh.toDouble
-        val rt =  (p.rt * 3).round / 3.toDouble // windows 0.6 sec ... to check
+        val rt =  (p.rt / precisionRt).round
+        println(rt,mz)
         (mz, rt, p)
-    }.foldLeft(Map[(Double,Double), Seq[PeakIdentification]]()) {
+    }.foldLeft(Map[(Double,Long), Seq[PeakIdentification]]()) {
       case (acc, (mz, rt, p)) if acc.contains( (mz,rt) ) => acc + ( (mz,rt) -> (acc( (mz,rt) ) ++ Seq(p)))
       case (acc, (mz, rt, p)) => acc + ( (mz,rt) -> Seq(p))
 
