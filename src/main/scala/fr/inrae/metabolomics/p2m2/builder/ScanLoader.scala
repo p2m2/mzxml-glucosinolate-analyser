@@ -6,7 +6,6 @@ import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml._
 
 import java.io.File
-import scala.Double.NaN
 import scala.jdk.CollectionConverters._
 import scala.math.sqrt
 import scala.util.{Success, Try}
@@ -150,17 +149,18 @@ case object ScanLoader {
   }
 
   def selectEligibleIons(
-                                          source: MZXMLFile,
-                                          index: MZXMLIndex,
-                                          start : Option[Double] = None,
-                                          end : Option[Double] = None,
-                                          noiseIntensity : Double,
-                                          nbCarbonMin: Double,
-                                          nbCarbonMax: Double,
-                                          nbSulfurMin : Double,
-                                          nbSulfurMax : Double,
-                                          precision: Double = 0.01,
-                                          deltaMOM2 : Double
+                          source: MZXMLFile,
+                          index: MZXMLIndex,
+                          start : Option[Double] = None,
+                          end : Option[Double] = None,
+                          noiseIntensity : Double,
+                          nbCarbonMin: Double,
+                          nbCarbonMax: Double,
+                          nbSulfurMin : Double,
+                          nbSulfurMax : Double,
+                          minMzCoreStructure : Double,
+                          precisionDeltaM0M2: Double,
+                          deltaMOM2 : Double
                                         ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
     // the file using those numbers. We need the raw scan numbers (the numbers
@@ -178,8 +178,8 @@ case object ScanLoader {
         // remove the first one to compute Delta M
         mzValues
           .zipWithIndex
-          .filter { case (_, idx) =>
-            spectrum.getIntensities()(idx) > noiseIntensity
+          .filter { case (mz0, idx) =>
+            (spectrum.getIntensities()(idx) > noiseIntensity) && (mz0>minMzCoreStructure)
           }
           .map { case (mz0, idx0) =>
             val mz_ms_p2 = mz0 + deltaMOM2
@@ -190,7 +190,7 @@ case object ScanLoader {
             (mz0, idx0, mz1, idx1, mz_p2, idx2)
           }
           .filter { case (mz, _, _, _, mz2, _) =>
-            ((mz - mz2).abs - deltaMOM2).abs < precision
+            ((mz - mz2).abs - deltaMOM2).abs < precisionDeltaM0M2
           }
           /* criteria M1 of Isotope C are present at 1.1 and S are present 4.4 % */
           .filter { case (_, idx0, _, idx1, _, _) =>
