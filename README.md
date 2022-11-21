@@ -25,6 +25,18 @@ mzXML should contains MS1/MS2 spectrum (Data Independent Acquisition)
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
 ```
 
+#### Selected features
+
+##### files test.features
+###### RT;M/Z
+``` 
+13.30;463.047
+```
+
+```shell
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f test.features ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
+```
+
 ## Clustering
 
 ```shell
