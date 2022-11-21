@@ -21,6 +21,8 @@ object CsvIonsIdentificationFileTest extends TestSuite {
       nbCarbonMax = 20.0,
       nbSulfurMin = 2.0,
       nbSulfurMax = 5.0,
+      minMzCoreStructure = 0.01,
+      precisionDeltaM0M2 = 0.001,
       deltaMOM2 = 1.996
     )
 

@@ -28,6 +28,8 @@ object IonsIdentificationTest extends TestSuite {
             nbCarbonMax = 20,
             nbSulfurMin = 2,
             nbSulfurMax = 5,
+            minMzCoreStructure = 0.01,
+            precisionDeltaM0M2 = 0.001,
             deltaMOM2 = 1.996,
             )) {
           assert(Try(read[PeakIdentification](write(elem))).isSuccess)
