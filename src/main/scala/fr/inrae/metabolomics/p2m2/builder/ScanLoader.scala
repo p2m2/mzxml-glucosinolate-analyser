@@ -153,7 +153,7 @@ case object ScanLoader {
                           index: MZXMLIndex,
                           start : Option[Double] = None,
                           end : Option[Double] = None,
-                          noiseIntensity : Double,
+                          minM0Abundance : Double,
                           nbCarbonMin: Double,
                           nbCarbonMax: Double,
                           nbSulfurMin : Double,
@@ -179,7 +179,7 @@ case object ScanLoader {
         mzValues
           .zipWithIndex
           .filter { case (mz0, idx) =>
-            (spectrum.getIntensities()(idx) > noiseIntensity) && (mz0>minMzCoreStructure)
+            (spectrum.getIntensities()(idx) > minM0Abundance*scan.getBasePeakIntensity) && (mz0>minMzCoreStructure)
           }
           .map { case (mz0, idx0) =>
             val mz_ms_p2 = mz0 + deltaMOM2

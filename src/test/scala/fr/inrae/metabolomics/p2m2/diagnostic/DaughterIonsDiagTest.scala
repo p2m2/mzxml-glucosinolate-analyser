@@ -14,7 +14,7 @@ object DaughterIonsDiagTest extends TestSuite {
         v._2,
         Some(11.5), // RT start
         Some(12.0), // RT end
-        noiseIntensity = 0.1,
+        minM0Abundance = 0.1,
         nbCarbonMin = 4.0,
         nbCarbonMax = 20.0,
         nbSulfurMin = 2.0,

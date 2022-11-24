@@ -22,7 +22,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None,  // RT start
           None,  // RT end
-          noiseIntensity=0.1,
+          minM0Abundance=0.1,
           5.0,
           nbCarbonMax=0.0,
           2.0,
@@ -42,7 +42,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,
@@ -62,7 +62,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,
@@ -83,7 +83,7 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,

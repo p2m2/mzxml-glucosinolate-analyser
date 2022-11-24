@@ -15,7 +15,8 @@ case object ConfigReader {
     numberCarbonMax,
     numberSulfurMin,
     numberSulfurMax,
-    minMzCoreStructure
+    minMzCoreStructure,
+    minM0Abundance
      = Value
   }
 
@@ -35,6 +36,7 @@ case object ConfigReader {
         Params.numberSulfurMin -> k._2("numberSulfurMin").value.toString,
         Params.numberSulfurMax -> k._2("numberSulfurMax").value.toString,
         Params.minMzCoreStructure -> k._2("minMzCoreStructure").value.toString,
+        Params.minM0Abundance -> k._2("minM0Abundance").value.toString
       )
     ).toMap
 
@@ -73,6 +75,7 @@ case class ConfigReader(
   def numberSulfurMin(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
   def numberSulfurMax(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMax).toString.toDouble
   def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble
+  def minM0Abundance(m: String) : Double = metabolitesMap(m)(Params.minM0Abundance).toString.toDouble
   def neutralLoss(m: String) : Map[String,Double] = nl(m)
   def daughterIons(m: String) : Map[String,Double] = di(m)
   def getEntriesBaseRef(m: String,monoIsotopicMassSearch: Double, tolerance: Double = 0.01): Seq[Metabolite] = {

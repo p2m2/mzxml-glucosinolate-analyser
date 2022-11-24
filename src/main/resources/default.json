@@ -6,6 +6,7 @@
     "numberSulfurMin" : 1.5,
     "numberSulfurMax" : 3,
     "minMzCoreStructure" : 317.995896,
+    "minM0Abundance" : 0.2,
     "neutralLoss" : {
         "thioglucose_s03" : 242.0,
         "glucosinolate_223" : 223.0,

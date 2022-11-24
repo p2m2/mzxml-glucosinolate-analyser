@@ -209,7 +209,7 @@ object MainDetection extends App {
               index,
               config.startRT,
               config.endRT,
-              noiseIntensity,
+              minM0Abundance = confJson.minM0Abundance(family),
               nbCarbonMin = confJson.numberCarbonMin(family),
               nbCarbonMax = confJson.numberCarbonMax(family),
               nbSulfurMin = confJson.numberSulfurMin(family),
