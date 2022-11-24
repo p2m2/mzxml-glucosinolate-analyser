@@ -26,16 +26,13 @@ object CsvIonsIdentificationFileTest extends TestSuite {
       deltaMOM2 = 1.996
     )
 
-    val m: IonsIdentificationBuilder =
+    val l: Seq[PeakIdentification] =
       ScanLoader.filterOverRepresentedPeak(
         v._1,
         v._2,
         v2,
         noiseIntensity = 100.0,
         800,
-        Seq(),
-        Seq(),
-
       )
 
     val tests: Tests = Tests {
@@ -46,9 +43,14 @@ object CsvIonsIdentificationFileTest extends TestSuite {
               .openStream()).getLines().mkString)
 
         val f = File.createTempFile("test", ".csv")
+        val m = IonsIdentificationBuilder(
+          v._1,
+          v._2,
+          l, confJson.neutralLoss("Glucosinolate").toSeq, confJson.daughterIons("Glucosinolate").toSeq,
+          noiseIntensity = 100)
 
         CsvIonsIdentificationFile.build(
-          m.findDiagnosticIonsAndNeutralLosses(0.1, 200),
+          m.findDiagnosticIonsAndNeutralLosses(0.1),
           familyMetabolite = "Glucosinolate",
           configJson = confJson,
           out = f

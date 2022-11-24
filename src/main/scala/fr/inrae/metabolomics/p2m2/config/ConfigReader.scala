@@ -67,9 +67,9 @@ case class ConfigReader(
   def metabolites : Seq[String] = metabolitesMap.keys.toSeq
   def deltaMp0Mp2(m: String) : Double = metabolitesMap(m)(Params.deltaMp0Mp2).toString.toDouble
 
-  def numberCarbonMin(m: String): Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
+  def numberCarbonMin(m: String): Double = metabolitesMap(m)(Params.numberCarbonMin).toString.toDouble
 
-  def numberCarbonMax(m: String): Double = metabolitesMap(m)(Params.numberSulfurMax).toString.toDouble
+  def numberCarbonMax(m: String): Double = metabolitesMap(m)(Params.numberCarbonMax).toString.toDouble
   def numberSulfurMin(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMin).toString.toDouble
   def numberSulfurMax(m: String) : Double = metabolitesMap(m)(Params.numberSulfurMax).toString.toDouble
   def minMzCoreStructure(m: String) : Double = metabolitesMap(m)(Params.minMzCoreStructure).toString.toDouble

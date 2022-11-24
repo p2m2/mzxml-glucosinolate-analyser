@@ -201,10 +201,6 @@ case object ScanLoader {
           }
 
           .filter { case (_, idx0, _, idx1, _, _) =>
-/*
-* On n arrive pas a detecter le 13.30;463.047 à cause de ce test...
-* si on enleve on est trop stringeant....
-* */
             spectrum.getIntensities()(idx1) <
               spectrum.getIntensities()(idx0) *
                 (ChemicalUtils.abundanceIsotope("C")(1) * nbCarbonMax +
@@ -219,6 +215,11 @@ case object ScanLoader {
           .filter { case (_, idx0, _, _, _, idx2) =>
             spectrum.getIntensities()(idx2) < spectrum.getIntensities()(idx0) *
               ChemicalUtils.abundanceIsotope("S")(2) * nbSulfurMax
+          }
+          /* peak mz+1 is smaller thar mz0 */
+          .filter { case (mz0, idx0, _, _, _, idx2) =>
+            val idxM1 = spectrum.findClosestMzIdx(mz0 - 1.0)
+            spectrum.getIntensities()(idxM1) < spectrum.getIntensities()(idx0)
           }
           .map {
             case (mz0, idx0, _, idx1, _, idx2) =>
