@@ -14,29 +14,29 @@ object IonsIdentificationBuilderTest extends TestSuite {
     }
 
     test("getInfo") {
-      IonsIdentificationBuilder(v._1,v._2,Seq(),Seq(),Seq()).getInfo(PeakIdentification(0,Seq(1501),Seq()),1,0.0)
+      IonsIdentificationBuilder(v._1,v._2,Seq(),Seq(),Seq()).getInfo(PeakIdentification(0,Seq(1501),Seq()),0.1)
     }
 
     test("getInfo") {
       IonsIdentificationBuilder(v._1, v._2, Seq(), Seq(), Seq())
-        .getInfo(PeakIdentification(0, Seq(1501), Seq()), 1, 2000.0)
+        .getInfo(PeakIdentification(0, Seq(1501), Seq()), 0.1)
     }
 
     test("getInfo 2") {
       IonsIdentificationBuilder(v._1, v._2, Seq(), Seq(), Seq()).getInfo(
         PeakIdentification(3569, Seq(1501),
-        Seq(Peak(0,0.0,0,0))), 1,0.0)
+        Seq(Peak(0,0.0,0,0))),0.1)
     }
 
     test("getInfos") {
-      IonsIdentificationBuilder(v._1, v._2,Seq(), Seq(), Seq()).findDiagnosticIonsAndNeutralLosses(1,0.0)
+      IonsIdentificationBuilder(v._1, v._2,Seq(), Seq(), Seq()).findDiagnosticIonsAndNeutralLosses(0.1)
     }
 
     test("getInfos 2") {
       IonsIdentificationBuilder(v._1, v._2,
         Seq(PeakIdentification(3569, Seq(1501), Seq(Peak(0, 0.0, 0, 0)))),
         Seq(), Seq())
-        .findDiagnosticIonsAndNeutralLosses(1,0.0)
+        .findDiagnosticIonsAndNeutralLosses(0.1)
     }
 
   }

@@ -18,12 +18,13 @@ object MainDetection extends App {
 
   case class Config(
                      mzFiles: Seq[File] = Seq(),
+                     featuresList : Option[File] = None,
                      jsonFamilyMetabolitesDetection: Option[File] = None,
                      noiseIntensity: Option[Double] = None,
                      startRT: Option[Double] = None,
                      endRT: Option[Double] = None,
                      overrepresentedPeak: Int = 800,
-                     precisionMzh: Int = 1000,
+                     precisionMzh: Int = 100,
                      toleranceMz: Double = 0.005,
                      warmup: Double = 0.50, // (30 sec)
                      outfile: Option[String] = None,
@@ -37,6 +38,10 @@ object MainDetection extends App {
     OParser.sequence(
       programName("detection-analyser"),
       head("detection-analyser", "1.0"),
+      opt[File]('f', "featuresListfeaturesList")
+        .optional()
+        .action((x, c) => c.copy(featuresList = Some(x)))
+        .text(s"Apply detection only on the features list (Two column => RT;M/Z. without header, ';' separator"),
       opt[File]('j', "jsonFamilyMetabolitesDetection")
         .optional()
         .action((x, c) => c.copy(jsonFamilyMetabolitesDetection = Some(x)))
@@ -191,48 +196,73 @@ object MainDetection extends App {
                      index: MZXMLIndex,
                      noiseIntensity : Double): Seq[IonsIdentification] = {
 
-    /**
-     * Get Peaks with criteria DeltaM0M2, number of carbon min/max,Max, number of sulfur min/max
-     */
-    val listSulfurMetabolites: Seq[PeakIdentification] =
-      ScanLoader.
-        selectEligibleIons(
+    val listPeakIdentification: Seq[PeakIdentification] = config.featuresList match {
+      case None =>
+
+        /**
+         * Get Peaks with criteria DeltaM0M2, number of carbon min/max,Max, number of sulfur min/max
+         */
+        val listSulfurMetabolites: Seq[PeakIdentification] =
+          ScanLoader.
+            selectEligibleIons(
+              source,
+              index,
+              config.startRT,
+              config.endRT,
+              minM0Abundance = confJson.minM0Abundance(family),
+              nbCarbonMin = confJson.numberCarbonMin(family),
+              nbCarbonMax = confJson.numberCarbonMax(family),
+              nbSulfurMin = confJson.numberSulfurMin(family),
+              nbSulfurMax = confJson.numberSulfurMax(family),
+              minMzCoreStructure = confJson.minMzCoreStructure(family),
+              precisionDeltaM0M2 = config.toleranceMz,
+              deltaMOM2 = confJson.deltaMp0Mp2(family))
+
+        /**
+         * Merge All features (Ion/RT) that looks like !
+         */
+
+        val listSulfurMetabolitesSelected: Seq[PeakIdentification] = ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
+        /**
+         * remove over represented peaks
+         */
+        ScanLoader.filterOverRepresentedPeak(
+            source,
+            index,
+            listSulfurMetabolitesSelected,
+            noiseIntensity,
+            config.overrepresentedPeak
+          )
+
+      case Some(f) =>
+        val buf = Source.fromFile(f)
+        println("***************************************")
+        val features = buf.getLines()
+          .filter(
+            l => l.trim.nonEmpty
+          )
+          .map(
+          l => l.split(";")
+        ) map {
+          v => (v(0).toDouble,v(1).toDouble)
+        }
+
+        ScanLoader.selectIons(
           source,
           index,
-          config.startRT,
-          config.endRT,
           noiseIntensity,
-          nbCarbonMin = confJson.numberCarbonMin(family),
-          nbCarbonMax = confJson.numberCarbonMax(family),
-          nbSulfurMin = confJson.numberSulfurMin(family),
-          nbSulfurMax = confJson.numberSulfurMax(family),
-          minMzCoreStructure = confJson.minMzCoreStructure(family),
-          precisionDeltaM0M2 = config.toleranceMz,
-          deltaMOM2 = confJson.deltaMp0Mp2(family))
-
-    /**
-     * Merge All features (Ion/RT) that looks like !
-     */
-    val listSulfurMetabolitesSelected: Seq[PeakIdentification] =
-      ScanLoader.keepSimilarMzWithMaxAbundance(listSulfurMetabolites, config.precisionMzh)
-
-    /**
-     * remove over represented peaks
-     */
-    val m: IonsIdentificationBuilder =
-      ScanLoader.filterOverRepresentedPeak(
-        source,
-        index,
-        listSulfurMetabolitesSelected,
-        noiseIntensity,
-        config.overrepresentedPeak,
-        confJson.neutralLoss(family).toSeq,
-        confJson.daughterIons(family).toSeq
-      )
+          features.toSeq
+        )
+    }
 
     /**
      * find Neutral loses and Diagnostic Ion
      */
-    m.findDiagnosticIonsAndNeutralLosses(0.1,confJson.minMzCoreStructure(family))
+    val m = IonsIdentificationBuilder(
+      source, index,
+      listPeakIdentification, confJson.neutralLoss(family).toSeq, confJson.daughterIons(family).toSeq,
+      noiseIntensity = noiseIntensity)
+
+    m.findDiagnosticIonsAndNeutralLosses(0.1)
   }
 }
