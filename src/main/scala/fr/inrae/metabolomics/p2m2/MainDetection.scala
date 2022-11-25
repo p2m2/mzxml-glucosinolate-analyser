@@ -241,10 +241,8 @@ object MainDetection extends App {
           .filter(
             l => l.trim.nonEmpty
           )
-          .map(
-          l => l.split(";")
-        ) map {
-          v => (v(0).toDouble,v(1).toDouble)
+        .map {
+          v => v.trim.toDouble
         }
 
         ScanLoader.selectIons(
