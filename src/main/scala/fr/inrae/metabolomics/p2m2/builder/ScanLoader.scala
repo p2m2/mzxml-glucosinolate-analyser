@@ -301,11 +301,12 @@ case object ScanLoader {
    * @param peaks peak list to analyse and merge features
    * @return
    */
-  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification], precisionMzh : Int, precisionRt : Double =0.7): Seq[PeakIdentification] = {
+  def keepSimilarMzWithMaxAbundance(peaks: Seq[PeakIdentification], precisionMzh : Int, precisionRt : Double =5.0): Seq[PeakIdentification] = {
     peaks.map {
       p =>
         val mz = (p.peaks.head.mz * precisionMzh).round
-        val rt =  (p.rt / precisionRt).round
+        val rt =  (p.rt *precisionRt.toInt).round
+     //   println(mz, rt,p)
         (mz, rt, p)
     }.foldLeft(Map[(Long,Long), Seq[PeakIdentification]]()) {
       case (acc, (mz, rt, p)) if acc.contains( (mz,rt) ) => acc + ( (mz,rt) -> (acc( (mz,rt) ) ++ Seq(p)))
