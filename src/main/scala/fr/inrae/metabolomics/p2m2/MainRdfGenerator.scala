@@ -1,7 +1,9 @@
 package fr.inrae.metabolomics.p2m2
 
 import fr.inrae.metabolomics.p2m2.`export`.IonsIdentificationFile
+import fr.inrae.metabolomics.p2m2.database.{BraChemDb, Chebi}
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
+import org.eclipse.rdf4j.model.IRI
 import org.eclipse.rdf4j.model.util.{ModelBuilder, Values}
 import org.eclipse.rdf4j.model.vocabulary.{RDF, RDFS, XSD}
 import org.eclipse.rdf4j.rio.{RDFFormat, Rio, WriterConfig}
@@ -62,7 +64,8 @@ object MainRdfGenerator extends App {
       "owl" -> "http://www.w3.org/2002/07/owl#",
       "prov" -> "http://www.w3.org/ns/prov#",
       "p2m2" -> "https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#",
-      "sio" -> " http://semanticscience.org/resource/"
+      "sio" -> "http://semanticscience.org/resource/",
+      "oboInOwl" -> "http://www.geneontology.org/formats/oboInOwl#"
     )
 
     val builder : ModelBuilder = new ModelBuilder()
@@ -104,15 +107,41 @@ object MainRdfGenerator extends App {
                 .add("p2m2:has_eligible_ion",ion)
                 .add("p2m2:configMinScoreThreshold",config.minScoreThreshold)
 
+
+              val mzApprox= (ii.ion.peaks.head.mz*1000).round/1000.toDouble
+              val rtsApprox =  (ii.ion.rt*1000).round/1000.toDouble
+
+
               builder
                 .subject(ion)
                 .add(RDF.TYPE, "p2m2:Anion")
-                .add(RDFS.LABEL,s"Anion (${ii.ion.peaks.head.mz})")
+                .add(RDFS.LABEL,s"Anion ($mzApprox)")
                 .add(RDF.TYPE, "sio:SIO_000396")
                 .add("p2m2:mz",Values.literal(ii.ion.peaks.head.mz))
                 .add("p2m2:abundance",Values.literal(ii.ion.peaks.head.abundance))
                 .add("p2m2:rt",Values.literal(ii.ion.rt))
                 .add("p2m2:score",Values.literal(ii.scoreIdentification))
+
+              Chebi.getEntries(mzApprox) foreach {
+                m =>
+                  val chebiId = Values.iri("https://identifiers.org/" + m("ID"))
+                  builder
+                  .subject(ion)
+                  .add("p2m2:mzSimilarity",chebiId)
+
+                  builder
+                    .subject(chebiId)
+                    .add(RDF.TYPE, "p2m2:AnnotationDatabase")
+                    .add(RDFS.LABEL,m("NAME"))
+              }
+
+              BraChemDb.getEntries(mzApprox) foreach {
+                name =>
+                  val id = "p2m2:"+name
+                  builder
+                    .subject(ion)
+                    .add("p2m2:mzSimilarity", id)
+              }
 
               ii.daughterIons.foreach {
                 case (_, Some((name,mz,abundance))) =>
@@ -153,28 +182,6 @@ object MainRdfGenerator extends App {
     /* delete file if exist */
     new File(config.outfile).delete()
     getStringFromModelBuilder(builder,config.outfile)
-
-
-    /*
-      p2m2 : https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#
-      <file mzxml> is a http://semanticscience.org/resource/SIO_000396 / p2m2:MassSpectrometerOutputFile
-
-      <file mzxml> p2m2:has_elligible_ions <anion>
-      <anion> is a <http://purl.obolibrary.org/obo/CHEBI_22563>
-
-      <anion> prov:wasGeneratedBy <https://github.com/p2m2/mzxml-glucosinolate-analyser>
-
-      ......     <http://purl.obolibrary.org/obo/CHEBI_24279> (Glucosinolate)
-
-
-      <anion> p2m2:has_daughter_ion <v>
-      <v> rdfs:label "some"
-      <anion> p2m2:has_neutral_loss <v2>
-      <v2> rdfs:label "some"
-      <v2> p2m2:mz "..."
-      <anion> oboInOwl:hasDbXRef <some>
-
-     */
   }
 
   def getStringFromModelBuilder(builder: ModelBuilder, fileName: String): Unit = {

@@ -60,6 +60,10 @@ Generation of Eligible Ion targeting Glucosinolate with Daughter Ion and Neutral
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfGenerator 20181018-037_Glucosinolate 20181018-038_Glucosinolate
 ```
 
+```shell
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfBrachemDb
+```
+
 ### GenOuest
 
 ```shell
