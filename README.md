@@ -43,6 +43,17 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f test.fe
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainClustering 20181018-037_Glucosinolate 20181018-038_Glucosinolate
 ```
 
+## Build MGF
+
+#### todo
+
+les peaks sont ordonnés par RT. on garde le premier de la liste. On devraitplutot garder le peak le plus intense.
+
+```shell
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainMgfBuilder src/test/resources/20181018-038.mzXML
+```
+
+
 
 ## Chebi Glucosinolate
 
