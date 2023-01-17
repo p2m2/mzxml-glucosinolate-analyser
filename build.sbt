@@ -28,6 +28,9 @@ libraryDependencies ++= Seq(
     .exclude("commons-codec","commons-codec")
     .exclude("org.glassfish.jaxb","*")
     .exclude("jakarta.xml.bind","jakarta.xml.bind-api"),
+  ("org.apache.poi" % "poi-ooxml" % "5.2.2")
+    .exclude("commons-codec","commons-codec")
+  ,
   ("org.eclipse.rdf4j" % "rdf4j-rio" % "4.2.0"),
   "org.slf4j" % "slf4j-simple" % "2.0.3",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
