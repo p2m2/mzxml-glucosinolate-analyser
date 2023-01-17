@@ -236,27 +236,28 @@ case object ScanLoader {
                           source: MZXMLFile,
                           index: MZXMLIndex,
                           noiseIntensity : Double,
-                          features : Seq[(Double,Double)],
+                          mzList : Seq[Double],
                           precisionRt: Double = 0.4
                         ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
     // the file using those numbers. We need the raw scan numbers (the numbers
     // as they're used in the file). The internal scan numbering scheme always
     // renumbers all scans starting from 1 and increasing by 1 consecutively.
-    features flatMap {
-      case (rt, mz) =>
-        val scans = scansMs(source, index, Some(rt - precisionRt), Some(rt + precisionRt), 1)
-        scans.flatMap {
-          basicScan =>
-            val scan = source.parseScan(basicScan.getNum, true)
-            val spectrum = scan.fetchSpectrum()
-
+    val scans = scansMs(source,index,None,None,1)
+    scans.flatMap {
+      basicScan =>
+        val scan = source.parseScan(basicScan.getNum, true)
+        val spectrum = scan.fetchSpectrum()
+        mzList flatMap {
+          case mz : Double =>
             val idx0 = spectrum.findClosestMzIdx(mz)
             val idx1 = spectrum.findClosestMzIdx(mz + 1.0)
             val idx2 = spectrum.findClosestMzIdx(mz + 2.0)
             val idx3 = spectrum.findClosestMzIdx(mz + 3.0)
 
-            if ( spectrum.getIntensities()(idx0) + spectrum.getIntensities()(idx1) + spectrum.getIntensities()(idx2) >0)
+            if ((spectrum.getIntensities()(idx0)> noiseIntensity ) &&
+              ( spectrum.getIntensities()(idx1) >noiseIntensity) &&
+                (spectrum.getIntensities()(idx2)> noiseIntensity ))
               Some(fillPeakIdentification(scan, spectrum, idx0, Some(idx1), Some(idx2), Some(idx3)))
             else
               None
