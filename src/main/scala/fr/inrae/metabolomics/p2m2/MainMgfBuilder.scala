@@ -90,7 +90,7 @@ object MainMgfBuilder extends App {
         val start: Option[Double] = Some(0.5)
         val end: Option[Double] = None
 
-        val features = ScanLoader
+        val peaksMS1 = ScanLoader
           .scansMs(source, index, start, end, 1)
           .flatMap {
           case (basicScan) =>
@@ -122,8 +122,8 @@ object MainMgfBuilder extends App {
         }.groupBy( x  => {
           (x._1,x._2)
           })
-           // .filter(_._1._1>421.01)
-           // .filter(_._1._1<422.032)
+        //    .filter(_._1._1>421.01)
+        //    .filter(_._1._1<422.032)
             .map( f => (f._1,f._2.map(_._3).sortBy( (x : Peak)  => x.rt) ))
 
         // R contains (Mz , => List Of [Mz, RT (ms), Intensity]
@@ -133,6 +133,9 @@ object MainMgfBuilder extends App {
               (feature,rt,listPeakDetection.reduceLeft((x,y) => if (x.intensity > y.intensity) x else y))
             }
           }
+
+        val features =
+          peaksMS1
           .zipWithIndex
           .map {
             case ((feature,rt, peak: Peak), idx) =>
