@@ -10,12 +10,14 @@ object MainMgfBuilder extends App {
 
   case class Config(
                      mzFile: Option[File] = None,
-                     noiseIntensityMS1 : Double = 1000.0,
-                     noiseIntensityMS2 : Double = 100.0,
-                     diffTime : Double = 5000, //5 sec
-                     precision : Int = 2,
-                     lowerBoundRtWindowsMS2 : Double = 0.01,
-                     upperBoundRtWindowsMS2 : Double = 0.00
+                     noiseIntensityMS1 : Double = 5000.0,
+                     percentKeepMs2Fragment : Double = 0.1,
+                     diffTime : Double = 10000, //5 sec
+                     precisionMz : Int = 3,
+                     precisionMzFragment : Int = 2,
+                     precisionIntensityFragment : Int = 1,
+                     lowerBoundRtWindowsMS2 : Double = 0.1,
+                     upperBoundRtWindowsMS2 : Double = 0.1,
                    )
 
   val builder = OParser.builder[Config]
@@ -28,10 +30,10 @@ object MainMgfBuilder extends App {
         .optional()
         .action((x, c) => c.copy(noiseIntensityMS1 = x))
         .text(s"tolerance accepted in MS1. ${Config().noiseIntensityMS1}"),
-      opt[Double]('m', "noiseIntensityMS2")
+      opt[Double]('m', "percentKeepMs2Fragment")
         .optional()
-        .action((x, c) => c.copy(noiseIntensityMS2 = x))
-        .text(s"tolerance accepted in MS2. ${Config().noiseIntensityMS2}"),
+        .action((x, c) => c.copy(percentKeepMs2Fragment = x))
+        .text(s"tolerance accepted in MS2. ${Config().percentKeepMs2Fragment}"),
       opt[Double]('d', "diffTime")
         .optional()
         .action((x, c) => c.copy(diffTime = x))
@@ -39,7 +41,7 @@ object MainMgfBuilder extends App {
       opt[Int]('p', "precision")
         .optional()
         .action((x, c) => c.copy(diffTime = x))
-        .text(s"MZ precision. ${Config().precision} "),
+        .text(s"MZ precision. ${Config().precisionMz} "),
       arg[File]("<file>...")
         .action((x, c) => c.copy(mzFile = Some(x))),
       help("help").text("prints this usage text"),
@@ -63,7 +65,7 @@ object MainMgfBuilder extends App {
   }
 
   def rtInMs(rt : Double) = rt*1000*60
-  case class Peak(mz:Double, rt : Double, intensity: Double,scanId: Int,polarity : String)
+  case class Peak(mz:Double, rt : Double, intensity: Double,scanId: Seq[Int],polarity : String)
 
   def process(config: Config): Unit = {
     println(
@@ -72,9 +74,9 @@ object MainMgfBuilder extends App {
         |Build MGF
         |Path file                         : ${config.mzFile.head.getPath}
         |Noise intensity  MS1              : ${config.noiseIntensityMS1}
-        |Noise intensity  MS2              : ${config.noiseIntensityMS2}
+        |percentKeepMs2Fragment            : ${config.percentKeepMs2Fragment}
         |Threshold for diff time in ms     : ${config.diffTime} ms
-        |Precision MZ                      : ${config.precision}
+        |Precision MZ                      : ${config.precisionMz}
         |Lower bound / Windows RT time MS2 : - ${config.lowerBoundRtWindowsMS2}
         |Upper bound / Windows RT time MS2 : - ${config.upperBoundRtWindowsMS2}
         |
@@ -85,13 +87,10 @@ object MainMgfBuilder extends App {
       case Some(f) => {
         val (source, index) = ScanLoader.read(f)
         val noiseIntensityMS1 = config.noiseIntensityMS1
-        val noiseIntensityMS2 = config.noiseIntensityMS2
         val start: Option[Double] = Some(0.5)
         val end: Option[Double] = None
 
-        val bw = new BufferedWriter(new FileWriter(new File(s"${f.getName}.mgf")))
-
-        ScanLoader
+        val features = ScanLoader
           .scansMs(source, index, start, end, 1)
           .flatMap {
           case (basicScan) =>
@@ -104,84 +103,99 @@ object MainMgfBuilder extends App {
               .filter { case (_, idx) =>
                 spectrum.getIntensities()(idx) > noiseIntensityMS1
               }
-              .map { case (mz, idx) => (round(mz,config.precision),
+              .map { case (mz, idx) =>
+                (
+                //1 arg : round MZ
+                round(mz,config.precisionMz),
+                //2 arg : round RT in ms
+                ((scan.getRt*60.0*1000.0).toInt / config.diffTime.toInt),
+                //3 arg Peak
                 Peak(
                   mz,
                   scan.getRt,
                   spectrum.getIntensities()(idx),
-                  scan.getNum,
+                  Seq(scan.getNum),
                   polarity=scan.getPolarity.toString
                 )
               ) }
               // RT : we working in ms !!!
         }.groupBy( x  => {
-          x._1
+          (x._1,x._2)
           })
-           // .filter(_._1>422.04)
-          //  .filter(_._1<422.06)
-            .map( f => (f._1,f._2.map(_._2).sortBy( (x : Peak)  => x.rt) ))
+           // .filter(_._1._1>410.01)
+           // .filter(_._1._1<422.032)
+            .map( f => (f._1,f._2.map(_._3).sortBy( (x : Peak)  => x.rt) ))
 
         // R contains (Mz , => List Of [Mz, RT (ms), Intensity]
          //mergin all windows that RT is in the same windows !
           .map {
-            case (feature, listPeakDetection) => {
-
-              val elapsedTimes =
-                listPeakDetection.dropRight(1) zip listPeakDetection.drop(1) map {
-                  case (peak1: Peak, peak2: Peak) => rtInMs(peak2.rt) - rtInMs(peak1.rt)
-                }
-
-              ((feature, listPeakDetection.head) +: (listPeakDetection.drop(1) zip elapsedTimes).filter {
-                case (_, diffTime: Double) => diffTime > config.diffTime
-              }.map {
-                case (peak: Peak, _: Double) => (feature, peak)
-              }).distinct
+            case ( (feature, rt),listPeakDetection) => {
+              (feature,rt,listPeakDetection.reduceLeft((x,y) => if (x.intensity > y.intensity) x else y))
             }
-
           }
-          .flatten
           .zipWithIndex
-          .foreach {
-            case ((feature, peak: Peak), idx) => {
-              println(feature,peak.rt)
-
-              bw.write("BEGIN IONS\n")
-              bw.write(s"FEATURE_ID=$idx\n")
-              bw.write(s"PEPMASS=$feature\n")
-              bw.write(s"SCANS=${peak.scanId}\n")
-              bw.write(s"RTINSECONDS=${peak.rt*60}\n")
-              bw.write(s"CHARGE=1${peak.polarity}\n")
-              bw.write(s"MSLEVEL=2\n")
-
-              ScanLoader
+          .map {
+            case ((feature,rt, peak: Peak), idx) =>
+              println(feature, peak.rt)
+              val ionsFragments = ScanLoader
                 .scansMs(source, index,
                   Some(peak.rt-config.lowerBoundRtWindowsMS2), Some(peak.rt+config.upperBoundRtWindowsMS2), 2)
+                .filter {
+                  case (basicScan) =>
+                    val scan = source.parseScan(basicScan.getNum, true)
+                    ((scan.getPrecursor.getMzTarget - feature).abs < 0.1) && (scan.fetchSpectrum() != null)
+                }
                 .flatMap {
                 case (basicScan) =>
                   val scan = source.parseScan(basicScan.getNum, true)
                   val spectrum = scan.fetchSpectrum()
                   val mzValues = spectrum.getMZs
-
                   mzValues
                     .zipWithIndex
-                    .filter { case (_, idx2) =>
-                      spectrum.getIntensities()(idx2) > noiseIntensityMS2
+                    .map {
+                      case (mz: Double, idx2: Int) =>
+                        (round(mz, config.precisionMzFragment), round(spectrum.getIntensities()(idx2), config.precisionIntensityFragment))
                     }
-                    .map{
-                      case (mz : Double,idx2 : Int) =>
-                        (round(mz,config.precision),round(spectrum.getIntensities()(idx2),5) )
-                    }
-                }.sortBy(_._1)
-                .foreach {
-                  case (mz, intensity) =>
-                    bw.write(s"${mz} ${intensity}\n")
+
                 }
+                .groupBy( _._1 )
+                .map( x => (x._1,x._2.reduceLeft((x,y) => if (x._2 > y._2) x else y)._2))
+                .toSeq
+                .sortBy( _._1 )
 
-              bw.write("END IONS\n\n")
-            }
+              val ionsFragments2 = if ( ionsFragments.nonEmpty ) {
+                val maxIntensity = ionsFragments.maxBy(_._2)._2
+                ionsFragments.filter( x => (x._2 / maxIntensity) > 0.1 )
+              } else
+                ionsFragments
+              ( feature,rt, peak, idx, ionsFragments2 )
           }
-        bw.close()
+          .filter {
+            case (_, _, _, _, ionsFragments) => (ionsFragments.nonEmpty)
+          }
 
+        val bw = new BufferedWriter(new FileWriter(new File(s"${f.getName}.mgf")))
+        features
+          .foreach {
+          case ( feature,rt, peak, idx, ionsFragments ) => {
+            println(feature, peak.rt)
+
+            bw.write("BEGIN IONS\n")
+            bw.write(s"FEATURE_ID=$idx\n")
+            bw.write(s"PEPMASS=$feature\n")
+            bw.write(s"SCANS=${peak.scanId.mkString(" ")}\n")
+            bw.write(s"RTINSECONDS=${peak.rt * 60}\n")
+            bw.write(s"CHARGE=1${peak.polarity}\n")
+            bw.write(s"MSLEVEL=2\n")
+
+            ionsFragments.foreach {
+              case (mz, intensity) =>
+                bw.write(s"$mz $intensity\n")
+            }
+            bw.write("END IONS\n\n")
+          }
+        }
+        bw.close()
       }
 
       case None => System.err.println("missing file !")
