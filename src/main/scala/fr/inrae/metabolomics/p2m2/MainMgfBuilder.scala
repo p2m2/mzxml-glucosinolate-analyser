@@ -13,11 +13,11 @@ object MainMgfBuilder extends App {
                      noiseIntensityMS1 : Double = 5000.0,
                      percentKeepMs2Fragment : Double = 0.1,
                      diffTime : Double = 10000, //5 sec
-                     precisionMz : Int = 3,
-                     precisionMzFragment : Int = 2,
+                     precisionMz : Int = 2,
+                     precisionMzFragment : Int = 0,
                      precisionIntensityFragment : Int = 1,
-                     lowerBoundRtWindowsMS2 : Double = 0.1,
-                     upperBoundRtWindowsMS2 : Double = 0.1,
+                     lowerBoundRtWindowsMS2 : Double = 0.05,
+                     upperBoundRtWindowsMS2 : Double = 0.05,
                    )
 
   val builder = OParser.builder[Config]
@@ -122,7 +122,7 @@ object MainMgfBuilder extends App {
         }.groupBy( x  => {
           (x._1,x._2)
           })
-           // .filter(_._1._1>410.01)
+           // .filter(_._1._1>421.01)
            // .filter(_._1._1<422.032)
             .map( f => (f._1,f._2.map(_._3).sortBy( (x : Peak)  => x.rt) ))
 
@@ -136,18 +136,23 @@ object MainMgfBuilder extends App {
           .zipWithIndex
           .map {
             case ((feature,rt, peak: Peak), idx) =>
-              println(feature, peak.rt)
               val ionsFragments = ScanLoader
                 .scansMs(source, index,
                   Some(peak.rt-config.lowerBoundRtWindowsMS2), Some(peak.rt+config.upperBoundRtWindowsMS2), 2)
+                .map {
+                  case (basicScan) => source.parseScan(basicScan.getNum, true)
+                }
                 .filter {
-                  case (basicScan) =>
-                    val scan = source.parseScan(basicScan.getNum, true)
-                    ((scan.getPrecursor.getMzTarget - feature).abs < 0.1) && (scan.fetchSpectrum() != null)
+                  case (scan) =>
+                    (round(scan.getPrecursor.getMzTarget,config.precisionMz) - feature).abs == 0
+                }
+                .filter {
+                  case (scan) =>
+                     (scan.fetchSpectrum() != null)
                 }
                 .flatMap {
-                case (basicScan) =>
-                  val scan = source.parseScan(basicScan.getNum, true)
+                case (scan) =>
+                  println(feature, peak.rt,scan.getPrecursor.getMzTarget)
                   val spectrum = scan.fetchSpectrum()
                   val mzValues = spectrum.getMZs
                   mzValues
