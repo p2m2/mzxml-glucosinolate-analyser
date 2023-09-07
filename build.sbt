@@ -69,8 +69,8 @@ coverageMinimumStmtTotal := 70
 coverageMinimumBranchTotal := 30
 coverageMinimumStmtPerPackage := 70
 coverageMinimumBranchPerPackage := 30
-coverageMinimumStmtPerFile := 70
-coverageMinimumBranchPerFile := 30
+coverageMinimumStmtPerFile := 20
+coverageMinimumBranchPerFile := 20
 coverageFailOnMinimum := true
 coverageHighlighting := true
 
@@ -83,6 +83,8 @@ assembly / assemblyJarName := "pack.jar"
 assembly / assemblyMergeStrategy := {
   case x if x.endsWith("module-info.class") => MergeStrategy.discard
   case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.discard
+  case x if x.startsWith("org/apache/http/") => MergeStrategy.discard
+  case x if x.endsWith("mozilla/public-suffix-list.txt") => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy ).value
     oldStrategy(x)

@@ -34,7 +34,7 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test
 ```
 
 ```shell
-java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f test.features ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
 ```
 
 ## Clustering

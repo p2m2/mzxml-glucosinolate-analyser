@@ -242,7 +242,7 @@ object MainDetection extends App {
             l => l.trim.nonEmpty
           )
         .map {
-          v => v.trim.toDouble
+          v => println(v);v.trim.toDouble
         }
 
         ScanLoader.selectIons(
