@@ -40,8 +40,16 @@ object MainMgfBuilder extends App {
         .text(s"RT Windows size. ${Config().diffTime} "),
       opt[Int]('p', "precision")
         .optional()
-        .action((x, c) => c.copy(diffTime = x))
+        .action((x, c) => c.copy(precisionMz = x))
         .text(s"MZ precision. ${Config().precisionMz} "),
+      opt[Int]('q', "precisionFragment")
+        .optional()
+        .action((x, c) => c.copy(precisionMzFragment = x))
+        .text(s"MZ precisionMzFragment. ${Config().precisionMzFragment} "),
+      opt[Int]('r', "precisionIntensityFragment")
+        .optional()
+        .action((x, c) => c.copy(precisionIntensityFragment = x))
+        .text(s"MZ precisionIntensityFragment. ${Config().precisionIntensityFragment} "),
       arg[File]("<file>...")
         .action((x, c) => c.copy(mzFile = Some(x))),
       help("help").text("prints this usage text"),

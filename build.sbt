@@ -1,4 +1,4 @@
-scalaVersion := "2.13.8"
+scalaVersion := "2.13.11"
 name := "mzxml-glucosinolates-phenolics-analyser"
 organization := "com.github.p2m2"
 organizationName := "p2m2"
@@ -20,16 +20,18 @@ developers := List(
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "4.1.0",
   "com.github.chhh" % "msftbx" % "1.8.8",
-  "com.lihaoyi" %% "ujson" % "2.0.0",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
-  "com.lihaoyi" %% "upickle" % "2.0.0",
+  "com.lihaoyi" %% "ujson" % "3.0.0",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.2.0",
+  "com.lihaoyi" %% "upickle" % "3.0.0",
   "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
-  ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.0")
+  ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.3.6")
     .exclude("commons-codec","commons-codec")
     .exclude("org.glassfish.jaxb","*")
-    .exclude("jakarta.xml.bind","jakarta.xml.bind-api"),
-  ("org.eclipse.rdf4j" % "rdf4j-rio" % "4.2.0"),
-  "org.slf4j" % "slf4j-simple" % "2.0.3",
+    .exclude("jakarta.xml.bind","jakarta.xml.bind-api")
+  //  .exclude("org.apache.httpcomponents","*")
+  ,
+  //("org.eclipse.rdf4j" % "rdf4j-rio" % "4.3.6"),
+  "org.slf4j" % "slf4j-simple" % "2.0.5",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
 
 )
