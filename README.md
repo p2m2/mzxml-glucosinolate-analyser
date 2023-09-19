@@ -34,7 +34,7 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test
 ```
 
 ```shell
-java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f test.features ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
 ```
 
 ## Clustering
@@ -43,12 +43,22 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection -f test.fe
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainClustering 20181018-037_Glucosinolate 20181018-038_Glucosinolate
 ```
 
+## Build MGF
+
+#### todo
+
+les peaks sont ordonnés par RT. on garde le premier de la liste. On devrait plutot garder le peak le plus intense.
+
+```shell
+java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainMgfBuilder src/test/resources/20181018-038.mzXML
+```
+
+
 
 ## Chebi Glucosinolate
 
 1) https://www.ebi.ac.uk/chebi/advancedSearchFT.do?searchString=glucosinolate
-2) "Download your results"
-=>ChEBI_Results.tsv
+2) "Download your results" `ChEBI_Results.tsv`
 
 ## RDF
 
@@ -65,13 +75,13 @@ java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfGenerator 2018101
 ```shell
 srun --mem=20G --pty bash
 . /local/env/envconda.sh
-conda create -p ~/openjdk11_env sbt openjdk
+conda create -p ~/openjdk_env sbt openjdk
 ```
 
 ```shell
 . /local/env/envconda.sh
 export PATH=$HOME/bin:$PATH
-conda activate /home/genouest/inra_umr1349/ofilangi/openjdk11_env
+conda activate /home/genouest/inra_umr1349/ofilangi/openjdk_env
 ```
 ### AskoClics
 
