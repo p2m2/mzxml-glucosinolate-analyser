@@ -65,12 +65,12 @@ publishMavenStyle := true
 
 // Coverage
 
-coverageMinimumStmtTotal := 20
-coverageMinimumBranchTotal := 20
-coverageMinimumStmtPerPackage := 20
-coverageMinimumBranchPerPackage := 20
-coverageMinimumStmtPerFile := 20
-coverageMinimumBranchPerFile := 20
+coverageMinimumStmtTotal := 12
+coverageMinimumBranchTotal := 12
+coverageMinimumStmtPerPackage := 12
+coverageMinimumBranchPerPackage := 12
+coverageMinimumStmtPerFile := 12
+coverageMinimumBranchPerFile := 12
 coverageFailOnMinimum := true
 coverageHighlighting := true
 

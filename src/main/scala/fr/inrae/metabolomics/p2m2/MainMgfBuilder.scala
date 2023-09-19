@@ -68,8 +68,10 @@ object MainMgfBuilder extends App {
     case Some(config) =>
       process(config)
     // do something
-    case _ => System.err.println("Ko")
+    case _ => 
+      System.err.println("Ko")
     // arguments are bad, error message will have been displayed
+      throw new java.lang.IllegalArgumentException("bad arguments")
   }
 
   def rtInMs(rt : Double) = rt*1000*60
@@ -95,7 +97,7 @@ object MainMgfBuilder extends App {
       case Some(f) => {
         val (source, index) = ScanLoader.read(f)
         val noiseIntensityMS1 = config.noiseIntensityMS1
-        val start: Option[Double] = Some(0.5)
+        val start: Option[Double] = None
         val end: Option[Double] = None
 
         val peaksMS1 = ScanLoader
