@@ -11,10 +11,10 @@ object MainClusteringTest extends TestSuite {
     fr.inrae.metabolomics.p2m2.MainDetection.main(Array(
       "-s", "5.0",
       "-e", "7.5",
-      "-o", "./test",
+      "-o", "./testClustering",
       getClass.getResource("/20181018-037.mzXML").getPath))
     fr.inrae.metabolomics.p2m2.MainClustering.main(Array(
-      "./test",
+      "./testClustering",
     ))
   }
 
