@@ -12,6 +12,7 @@ Detection of Ions/Metabolites for Glucosinolates and Phenolics (organism Brassic
 ### assembly
 
 ```bash
+mkdir assembly
 sbt assembly
 ```
 
