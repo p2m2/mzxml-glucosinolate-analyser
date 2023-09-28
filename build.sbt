@@ -1,4 +1,4 @@
-scalaVersion := "2.13.11"
+scalaVersion := "2.13.12"
 name := "mzxml-glucosinolates-phenolics-analyser"
 organization := "com.github.p2m2"
 organizationName := "p2m2"
