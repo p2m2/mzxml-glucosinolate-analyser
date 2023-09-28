@@ -3,7 +3,6 @@ package fr.inrae.metabolomics.p2m2.builder
 import utest.{TestSuite, Tests, test}
 
 import java.io.File
-import scala.Double.NaN
 
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {
@@ -23,11 +22,13 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None,  // RT start
           None,  // RT end
-          noiseIntensity=0.1,
+          minM0Abundance=0.1,
           5.0,
           nbCarbonMax=0.0,
           2.0,
           5.0,
+          minMzCoreStructure = 0.01,
+          precisionDeltaM0M2 = 0.001,
           deltaMOM2 = 1.996
         )
       assert(v2.isEmpty)
@@ -41,11 +42,13 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,
           0.0,
+          minMzCoreStructure = 0.01,
+          precisionDeltaM0M2 = 0.001,
           deltaMOM2 = 1.996
         )
       assert(v2.isEmpty)
@@ -59,11 +62,13 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,
           1.0,
+          minMzCoreStructure = 0.01,
+          precisionDeltaM0M2 = 0.001,
           deltaMOM2 = 1.996
         )
       assert(v2.isEmpty)
@@ -78,11 +83,13 @@ object ScanLoaderTest extends TestSuite {
           v._2,
           None, // RT start
           None, // RT end
-          noiseIntensity = 0.1,
+          minM0Abundance = 0.1,
           5.0,
           nbCarbonMax = 25.0,
           2.0,
           5.0,
+          minMzCoreStructure = 0.01,
+          precisionDeltaM0M2 = 0.001,
           deltaMOM2 = 1.996
         )
       assert(v2.nonEmpty)

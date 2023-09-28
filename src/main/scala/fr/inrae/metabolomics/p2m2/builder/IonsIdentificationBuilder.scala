@@ -15,23 +15,15 @@ case class IonsIdentificationBuilder(
                                    ) {
   def getPath(source : MZXMLFile) : String =
     new File(source.getPath).getCanonicalPath //.replace(new File(".").getCanonicalPath,".")
-  def getInfo( p :PeakIdentification,tolMzh : Double, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
-    case true =>
-      if ( p.peaks.head.mz >= mzCoreStructure )
-        Some(IonsIdentification(
-          getPath(source),
-          p,
-          neutralLosses = ScanLoader.detectNeutralLoss(source,index,p,nls,tolMzh=tolMzh,noiseIntensity = noiseIntensity),
-          daughterIons = ScanLoader.detectDaughterIons(source,index,p,dis,tolMzh=tolMzh,noiseIntensity = noiseIntensity)
-        ))
-      else
-        Some(IonsIdentification(
-          getPath(source),
-          p,
-          neutralLosses = Map(),
-          daughterIons = Map()
-        ))
-    case false => None
+  def getInfo( p :PeakIdentification,tolMzh : Double) : Option[IonsIdentification] = if (p.peaks.nonEmpty) {
+    Some(IonsIdentification(
+      getPath(source),
+      p,
+      neutralLosses = ScanLoader.detectNeutralLoss(source, index, p, nls, tolMzh = tolMzh, noiseIntensity = noiseIntensity),
+      daughterIons = ScanLoader.detectDaughterIons(source, index, p, dis, tolMzh = tolMzh, noiseIntensity = noiseIntensity)
+    ))
+  } else {
+    None
   }
 
   /**
@@ -40,14 +32,14 @@ case class IonsIdentificationBuilder(
    * @param mzCoreStructure minimum size of a metabolite according param family
    * @return
    */
-  def findDiagnosticIonsAndNeutralLosses(tolMzh : Double, mzCoreStructure : Double): Seq[IonsIdentification] = {
+  def findDiagnosticIonsAndNeutralLosses(tolMzh : Double): Seq[IonsIdentification] = {
     println("\n== detectNeutralLoss/detectDaughterIons == ")
 
     peaks.zipWithIndex
       . flatMap {
      case (x,idx) =>
        print(s"\r===>$idx/${peaks.size}")
-       getInfo(x,tolMzh,mzCoreStructure)
+       getInfo(x,tolMzh)
     }
       .sortBy( x => (x.ion.rt,x.ion.peaks.head.mz) )
   }

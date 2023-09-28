@@ -14,6 +14,7 @@ object ConfigReaderTest extends TestSuite {
         |    "numberSulfurMin" : 2,
         |    "numberSulfurMax" : 5,
         |    "minMzCoreStructure" : 0,
+        |    "minM0Abundance" : 0.1,
         |    "neutralLoss" :
         |      {
         |        "gluconolactone" : 178.0

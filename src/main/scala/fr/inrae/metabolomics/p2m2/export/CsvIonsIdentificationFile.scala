@@ -30,7 +30,6 @@ case object CsvIonsIdentificationFile {
       bw.write(s"CHEBI;")
       //bw.write(s"BRACHEMDB;")
       bw.write(s"BRASSICA;")
-      bw.write("mz threshold;")
       bw.write("Nb (NL+DI);")
       bw.write(s"NL;")
       bw.write(s"DI;")
@@ -72,11 +71,6 @@ case object CsvIonsIdentificationFile {
               }) + "[R="+ ChemicalUtils.correlation(m.formula,metabolitesIdentificationId.ion.peaks.map( p=> p.abundance)) + "]"
           }
           bw.write(namesAndR.mkString(",")+";")
-          if ( metabolitesIdentificationId.ion.peaks.head.mz < configJson.minMzCoreStructure(familyMetabolite) ) {
-            bw.write("*;")
-          } else
-            bw.write(";")
-
           bw.write(s"${metabolitesIdentificationId.scoreIdentification};")
 
           neutralLosses
