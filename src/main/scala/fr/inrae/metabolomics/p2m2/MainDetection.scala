@@ -24,7 +24,7 @@ object MainDetection extends App {
                      endRT: Option[Double] = None,
                      overrepresentedPeak: Int = 800,
                      precisionMzh: Int = 1000,
-                     toleranceMz: Double = 0.01,
+                     toleranceMz: Double = 0.005,
                      warmup: Double = 0.50, // (30 sec)
                      outfile: Option[String] = None,
                      verbose: Boolean = false,

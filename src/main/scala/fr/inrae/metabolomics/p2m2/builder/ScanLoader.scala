@@ -20,8 +20,6 @@ case object ScanLoader {
    */
   def read( f : File ) : (MZXMLFile,MZXMLIndex) = {
     val source : MZXMLFile = new MZXMLFile(f.getPath)
-    println(source.parseRunInfo())
-    //source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
     println("==========================================================")
@@ -62,7 +60,7 @@ case object ScanLoader {
       // .filter( _ == 3569)
       .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, false)) match {
         case Success(scan) => Some(scan)
-        case _ => None
+        case _ => print(scanNumRaw);None
       })
       .filter(_.getMsLevel == ms).toSeq
       .filter(scan => start match {
