@@ -37,6 +37,8 @@ object ConfigReaderTest extends TestSuite {
       val conf = ConfigReader.read(config)
       assert(conf.metabolites == Seq("Glucosinolate"))
       assert(conf.deltaMp0Mp2("Glucosinolate") == 1.996)
+      assert(conf.numberCarbonMin("Glucosinolate") == 2.0)
+      assert(conf.numberCarbonMax("Glucosinolate") == 25.0)
       assert(conf.numberSulfurMin("Glucosinolate") == 2.0)
       assert(conf.neutralLoss("Glucosinolate") == Map("gluconolactone" -> 178.0))
       assert(conf.daughterIons("Glucosinolate") == Map("C6H11O9S_259" -> 259.0))

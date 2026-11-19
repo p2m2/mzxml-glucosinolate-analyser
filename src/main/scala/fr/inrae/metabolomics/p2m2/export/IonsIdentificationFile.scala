@@ -19,7 +19,6 @@ case object IonsIdentificationFile {
 
   def load(in: File) : (Seq[IonsIdentification],String,ConfigReader) = {
     val s = Source.fromFile(in.getPath)
-    println(in.getPath)
     Try(read[FormatIonsIdentification](s.getLines().mkString(""))) match {
       case Success(value) => (value.list,value.familyMetabolite,value.configJson)
       case Failure(exception) => throw exception

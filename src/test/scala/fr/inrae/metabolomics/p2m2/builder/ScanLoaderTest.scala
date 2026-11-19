@@ -3,7 +3,6 @@ package fr.inrae.metabolomics.p2m2.builder
 import utest.{TestSuite, Tests, test}
 
 import java.io.File
-import scala.Double.NaN
 
 object ScanLoaderTest extends TestSuite {
   val tests = Tests {

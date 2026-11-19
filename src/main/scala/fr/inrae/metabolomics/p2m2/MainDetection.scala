@@ -91,13 +91,10 @@ object MainDetection extends App {
     )
   }
 
-  // OParser.parse returns Option[Config]
   OParser.parse(parser1, args, Config()) match {
     case Some(config) =>
       process(config)
-    // do something
     case _ => System.err.println("Ko")
-    // arguments are bad, error message will have been displayed
   }
 
   def process(config: Config): Unit = {
@@ -164,7 +161,6 @@ object MainDetection extends App {
                     println(s"========= check ${csvFile.getPath},${dumpFile.getPath} ===============")
                     values.par
                 }
-                //
               }
               val t = ((confJson.di(family).keys.size+confJson.nl(family).keys.size)*0.1).round
               values.filter( _.scoreIdentification > t ).map( (_,mzFile.getName) )
@@ -173,7 +169,6 @@ object MainDetection extends App {
             (ion.ion.peaks.head.mz*100).round/100.toDouble }
             .toList
             .sortBy { case (mz : Double , s: ParSeq[(IonsIdentification,String)]) => mz }
-      //    .sortBy(_._1)
 
         CandidateResume.build(allSelectedIons,family,confJson,new File(s"resume_${family}.txt"))
       })

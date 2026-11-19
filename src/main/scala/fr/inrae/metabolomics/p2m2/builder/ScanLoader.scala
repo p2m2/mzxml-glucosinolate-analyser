@@ -6,7 +6,6 @@ import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml._
 
 import java.io.File
-import scala.Double.NaN
 import scala.jdk.CollectionConverters._
 import scala.math.sqrt
 import scala.util.{Success, Try}
@@ -21,7 +20,6 @@ case object ScanLoader {
   def read( f : File ) : (MZXMLFile,MZXMLIndex) = {
     val source : MZXMLFile = new MZXMLFile(f.getPath)
     println(source.parseRunInfo())
-    //source.setExcludeEmptyScans(true)
 
     val index : MZXMLIndex = source.fetchIndex()
     println("==========================================================")
@@ -36,7 +34,6 @@ case object ScanLoader {
     ).mkString("\n\n") } ")
 
     (source,index)
-    // The index gives you the scan numbers, on the lowest level you can parse// The index gives you the scan numbers, on the lowest level you can parse
   }
 
   /**
@@ -57,9 +54,8 @@ case object ScanLoader {
              ): Seq[IScan] = {
     index
       .getMapByRawNum
-      .keySet() // The second parameter asks the parser to parse the spectrum along
+      .keySet()
       .asScala
-      // .filter( _ == 3569)
       .flatMap(scanNumRaw => Try(source.parseScan(scanNumRaw, false)) match {
         case Success(scan) => Some(scan)
         case _ => None
@@ -163,9 +159,6 @@ case object ScanLoader {
                                           deltaMOM2 : Double
                                         ): Seq[PeakIdentification] = {
     println("\n== Search for isotopes sulfur == ")
-    // the file using those numbers. We need the raw scan numbers (the numbers
-    // as they're used in the file). The internal scan numbering scheme always
-    // renumbers all scans starting from 1 and increasing by 1 consecutively.
     val allScans = scansMs(source,index,start,end,1)
 
     allScans.zipWithIndex.flatMap {
@@ -240,7 +233,6 @@ case object ScanLoader {
         val scan = source.parseScan(basicScan.getNum, true)
         val spectrum = scan.fetchSpectrum()
         val mzValues = spectrum.getMZs
-        scan.getIm
         mzValues
           .zipWithIndex
           .filter { case (mz, _) => mz < peak.peaks.head.mz }
@@ -289,7 +281,6 @@ case object ScanLoader {
 
     println(s"\n=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
 
-    // val mzs = peaks.map(_.peaks.head.mz)
     val allScans = scansMs(source, index,None,None, 1)
 
     val countAllPeak: Seq[Int] =
@@ -343,7 +334,6 @@ case object ScanLoader {
             val v = spectrum.findClosestMzIdx(mzSearch)
             val mz = spectrum.getMZs()(v)
             if ( (mzSearch - mz).abs < tolMzh) {
-              //println(spectrum.getIntensities()(v),noiseIntensity)
               if (spectrum.getIntensities()(v)>noiseIntensity)
                 Some((round100(mz),round100(spectrum.getIntensities()(v)/scan2.getBasePeakIntensity)))
               else
@@ -368,8 +358,6 @@ case object ScanLoader {
     val scanMs2: Seq[IScan] = ScanLoader.scansMs(
       source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
     )
-
-    //  val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     val mz = p.peaks.head.mz
 
@@ -396,7 +384,6 @@ case object ScanLoader {
     val scanMs2: Seq[IScan] = ScanLoader.scansMs(
       source, index, Some(sc.getRt - precisionRtTime), Some(sc.getRt + precisionRtTime), 2
     )
-    //val scanMs2 : Seq[IScan]= Seq(source.parseScan(p.numScan, true))
 
     dis.map(
       di => {

@@ -14,20 +14,20 @@ import scala.util.{Failure, Success, Try}
  */
 
 case object Chebi {
-  private val r = getClass.getResource("/glucosinolate_ChEBI.tsv")
+  private val resource = getClass.getResource("/glucosinolate_ChEBI.tsv")
 
-  private val entries : Seq[Map[String,String]] = Try(r.getPath) match {
+  private val entries : Seq[Map[String,String]] = Try(resource.getPath) match {
     case Success(_) =>
-      build(Source.fromInputStream(r.openStream()))
+      build(Source.fromInputStream(resource.openStream()))
     case Failure(_) =>
       System.err.println("Unable to find the export of glucosinolate entries from the ChEBI database .")
       Seq()
   }
 
-  def build(b : BufferedSource): Seq[Map[String,String]] = {
-    val header = b.getLines().take(1).mkString.split("\t")
+  def build(source: BufferedSource): Seq[Map[String,String]] = {
+    val header = source.getLines().take(1).mkString.split("\t")
 
-    b.getLines().map(
+    source.getLines().map(
       line => line.split("\t").zipWithIndex.map {
         case (record,idx) => header(idx) -> record
       }.toMap

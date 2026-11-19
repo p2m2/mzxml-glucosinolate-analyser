@@ -4,19 +4,19 @@ import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
 
 case object BraChemDb {
-  private val r = getClass.getResource("/BraChemDB.csv")
+  private val resource = getClass.getResource("/BraChemDB.csv")
 
-  private val entries: Map[String, String] = Try(r.getPath) match {
+  private val entries: Map[String, String] = Try(resource.getPath) match {
     case Success(_) =>
-      build(Source.fromInputStream(r.openStream()))
+      build(Source.fromInputStream(resource.openStream()))
     case Failure(_) =>
       System.err.println("Unable to find the export of BraChemDB entries.")
       Map()
   }
 
-  def build(b: BufferedSource): Map[String, String] = {
+  def build(source: BufferedSource): Map[String, String] = {
 
-    b.getLines().flatMap(
+    source.getLines().flatMap(
       line => line.split("\t") match {
        case l if l.length==2 => Some(l(0),l(1))
        case _ => None

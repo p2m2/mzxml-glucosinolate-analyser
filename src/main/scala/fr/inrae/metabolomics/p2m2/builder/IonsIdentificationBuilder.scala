@@ -14,7 +14,7 @@ case class IonsIdentificationBuilder(
                                      noiseIntensity : Double = 0.0
                                    ) {
   def getPath(source : MZXMLFile) : String =
-    new File(source.getPath).getCanonicalPath //.replace(new File(".").getCanonicalPath,".")
+    new File(source.getPath).getCanonicalPath
   def getInfo( p :PeakIdentification,tolMzh : Double, mzCoreStructure : Double) : Option[IonsIdentification] = p.peaks.nonEmpty match {
     case true =>
       if ( p.peaks.head.mz >= mzCoreStructure )
@@ -44,11 +44,11 @@ case class IonsIdentificationBuilder(
     println("\n== detectNeutralLoss/detectDaughterIons == ")
 
     peaks.zipWithIndex
-      . flatMap {
-     case (x,idx) =>
-       print(s"\r===>$idx/${peaks.size}")
-       getInfo(x,tolMzh,mzCoreStructure)
-    }
+      .flatMap {
+        case (x,idx) =>
+          print(s"\r===>$idx/${peaks.size}")
+          getInfo(x,tolMzh,mzCoreStructure)
+      }
       .sortBy( x => (x.ion.rt,x.ion.peaks.head.mz) )
   }
 }

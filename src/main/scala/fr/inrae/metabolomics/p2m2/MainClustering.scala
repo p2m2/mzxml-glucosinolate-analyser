@@ -32,9 +32,7 @@ object MainClustering extends App {
   OParser.parse(parser1, args, Config()) match {
     case Some(config) =>
       process(config)
-    // do something
     case _ => System.err.println("Ko")
-    // arguments are bad, error message will have been displayed
   }
 
   def precision(mz:Double,precision: Int) : Double = (mz * precision).round / precision.toDouble
@@ -60,8 +58,6 @@ object MainClustering extends App {
 
             val mz = precision(ii.ion.peaks.head.mz,100)
             val rt = precision(ii.ion.rt,10)
-           // (ii.daughterIons.foreach(print(_)))
-         //   (mz, rt, ii.daughterIons.keys.mkString(","))
             val v = ScanLoader.read(new File(ii.pathFile))
             val r2 = ScanLoader.getDeltaNeutralLossesFromPeak(v._1, v._2, ii.ion, 100)
 

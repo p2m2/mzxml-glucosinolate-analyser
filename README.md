@@ -25,6 +25,21 @@ mzXML should contains MS1/MS2 spectrum (Data Independent Acquisition)
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainDetection ./src/test/resources/20181018-037.mzXML ./src/test/resources/20181018-038.mzXML
 ```
 
+Options:
+
+| Option | Description | Default |
+|---|---|---|
+| `-j, --jsonFamilyMetabolitesDetection <file>` | JSON configuration of the metabolite family to detect | `default.json` |
+| `-i, --noiseIntensity <x>` | Keep ions above an absolute intensity (else noise is computed on warm-up time) | computed |
+| `-w, --warm-up time <sec>` | Warm-up duration used to compute noise | `0.50` |
+| `-s, --startRT <x>` | Start retention time (min) | - |
+| `-e, --endRT <x>` | End retention time (min) | - |
+| `-p, --overrepresentedPeak <n>` | Filter over represented peaks | `800` |
+| `-m, --precisionMzh <n>` | Precision/rounded Mz (number of decimal digits) | `1000` |
+| `-t, --toleranceMz <x>` | Tolerance accepted | `0.01` |
+| `-o, --outputFile <file>` | Output path file | `<input>_<family>` |
+| `--verbose` | Verbose mode | - |
+
 ## Clustering
 
 ```shell
@@ -46,6 +61,19 @@ Generation of Eligible Ion targeting Glucosinolate with Daughter Ion and Neutral
 
 ```shell
 java -cp ./assembly/pack.jar fr.inrae.metabolomics.p2m2.MainRdfGenerator 20181018-037_Glucosinolate 20181018-038_Glucosinolate
+```
+
+Options:
+
+| Option | Description | Default |
+|---|---|---|
+| `-o, --outputFile <file>` | Output RDF file (`.ttl`, `.jsonld`, `.trig`, `.nt`, `.n3`, `.rdf`) | `export.ttl` |
+| `-m, --minScoreThreshold <n>` | Minimal identification score to build the RDF file | `4` |
+
+## Tests
+
+```shell
+sbt test
 ```
 
 

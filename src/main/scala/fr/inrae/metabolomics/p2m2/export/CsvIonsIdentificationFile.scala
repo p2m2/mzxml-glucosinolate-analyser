@@ -26,9 +26,7 @@ case object CsvIonsIdentificationFile {
         i=> bw.write(s"ms+$i;intensity+$i;abundance+$i;")
       )
 
-     // bw.write(s"ms+0;intensity+0;abundance+0;ms+1;intensity+1;abundance+1;ms+1;intensity+2;abundance+2;ms+3;intensity+3;abundance+3;")
       bw.write(s"CHEBI;")
-      //bw.write(s"BRACHEMDB;")
       bw.write(s"BRASSICA;")
       bw.write("mz threshold;")
       bw.write("Nb (NL+DI);")
@@ -56,11 +54,7 @@ case object CsvIonsIdentificationFile {
           }
 
           bw.write(metabolitesDBChebi.mkString(",") +";")
-/*
-          bw.write(
-            BraChemDb.getEntries(
-              metabolitesIdentificationId.ion.peaks.head.mz).mkString(",") + ";")
-*/
+
           val metabolitesDB = configJson.getEntriesBaseRef(familyMetabolite,metabolitesIdentificationId.ion.peaks.head.mz)
 
           /* metabolites name from database and R computed with isotopic distribution (formula) and experimental abundance */

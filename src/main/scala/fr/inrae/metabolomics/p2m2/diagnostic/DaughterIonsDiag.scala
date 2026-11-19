@@ -6,7 +6,7 @@ import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
 
 case object DaughterIonsDiag {
 
-  def round(v : Double) = (v*1).round / 1.toDouble
+  def round(v: Double): Int = v.round.toInt
 
   def getPeaksWithIntensitiesNoNull(
                                      source: MZXMLFile,
