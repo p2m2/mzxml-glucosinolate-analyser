@@ -26,8 +26,8 @@ object MainRdfGenerator extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("rdf-generator"),
-      head("rdf-generator", "1.0"),
+      programName("clustering-analyser"),
+      head("clustering-analyser", "1.0"),
       arg[File]("<file>...")
         .unbounded()
         .action((x, c) => c.copy(mzFiles = c.mzFiles :+ x)),
@@ -48,7 +48,9 @@ object MainRdfGenerator extends App {
   OParser.parse(parser1, args, Config()) match {
     case Some(config) =>
       process(config)
+    // do something
     case _ => System.err.println("Ko")
+    // arguments are bad, error message will have been displayed
   }
 
   def process(config: Config) = {
@@ -60,7 +62,7 @@ object MainRdfGenerator extends App {
       "owl" -> "http://www.w3.org/2002/07/owl#",
       "prov" -> "http://www.w3.org/ns/prov#",
       "p2m2" -> "https://p2m2.github.io/resource/ontologies/2022/2/p2m2-ontology-3#",
-      "sio" -> "http://semanticscience.org/resource/"
+      "sio" -> " http://semanticscience.org/resource/"
     )
 
     val builder : ModelBuilder = new ModelBuilder()
@@ -72,6 +74,8 @@ object MainRdfGenerator extends App {
       .subject(repository)
       .add(RDF.TYPE,"p2m2:SoftwareRepository")
       .add(RDFS.LABEL,"p2m2/mzxml-glucosinolate-analyser")
+
+  //  val analyzer =
 
     /* Index file, Seq(IonsIdentification) */
     config.mzFiles.zipWithIndex.map {
@@ -88,6 +92,7 @@ object MainRdfGenerator extends App {
 
               builder
                 .subject((s"file:${ii.pathFile}"))
+              //  .add(RDF.TYPE,"p2m2:MassSpectrometerOutputFile")
                 .add("p2m2:has_in_silico_analyze",analyze)
 
               val ion = Values.bnode
@@ -142,6 +147,7 @@ object MainRdfGenerator extends App {
                 case _ =>
               }
 
+             //ii.daughterIons
             }
           )
     }
