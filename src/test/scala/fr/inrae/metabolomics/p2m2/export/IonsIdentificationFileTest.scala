@@ -1,6 +1,5 @@
 package fr.inrae.metabolomics.p2m2.`export`
 
-import fr.inrae.metabolomics.p2m2.`export`.CsvIonsIdentificationFileTest.getClass
 import fr.inrae.metabolomics.p2m2.builder.ScanLoader
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import utest.{TestSuite, Tests, test}

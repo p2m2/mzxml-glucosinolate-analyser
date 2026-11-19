@@ -17,6 +17,8 @@ developers := List(
   Developer("ofilangi", "Olivier Filangi", "olivier.filangi@inrae.fr",url("https://github.com/ofilangi"))
 )
 
+resolvers += ("EBI Repository" at "https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/").withAllowInsecureProtocol(true)
+
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "4.1.0",
   "com.github.chhh" % "msftbx" % "1.8.8",
@@ -24,14 +26,15 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
   "com.lihaoyi" %% "upickle" % "2.0.0",
   "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
-  ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.0")
-    .exclude("commons-codec","commons-codec")
-    .exclude("org.glassfish.jaxb","*")
-    .exclude("jakarta.xml.bind","jakarta.xml.bind-api"),
-  ("org.eclipse.rdf4j" % "rdf4j-rio" % "4.2.0"),
+  ("uk.ac.ebi.jmzml" % "jmzml" % "1.7.11")
+    // jmzml pulls the legacy JAXB 2.2.7 toolchain (jaxb-xjc/jaxb-core) via pride-xml-handling,
+    // which bundles com/sun/xml/txw2 classes that collide with the modern org.glassfish.jaxb:txw2
+    // pulled in by msftbx. Those artefacts are only needed at schema-compile time, not at runtime.
+    .exclude("com.sun.xml.bind", "jaxb-xjc")
+    .exclude("com.sun.xml.bind", "jaxb-core"),
+  "org.apache.commons" % "commons-compress" % "1.21",
   "org.slf4j" % "slf4j-simple" % "2.0.3",
   "com.lihaoyi" %% "utest" % "0.8.1" % Test,
-
 )
 
 credentials += {

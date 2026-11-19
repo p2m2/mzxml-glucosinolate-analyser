@@ -1,6 +1,7 @@
 package fr.inrae.metabolomics.p2m2.builder
 
 import fr.inrae.metabolomics.p2m2.database.ChemicalUtils
+import fr.inrae.metabolomics.p2m2.fileformats.{MzXmlReader, SpectrumFileReaderFactory, SpectrumData, Peak => SpectrumPeak, Scan => SpectrumScan}
 import umich.ms.datatypes.scan.IScan
 import umich.ms.datatypes.spectrum.ISpectrum
 import umich.ms.fileio.filetypes.mzxml._
@@ -13,27 +14,40 @@ import scala.util.{Success, Try}
 case object ScanLoader {
 
   /**
-   * Reade a MZXML File and give MZXML Structure file
+   * Reads a MZXML File and gives the raw MZXML structures (legacy API).
    * @param f mzxml file
-   * @return
+   * @return (source, index) mzxml structures
    */
-  def read( f : File ) : (MZXMLFile,MZXMLIndex) = {
-    val source : MZXMLFile = new MZXMLFile(f.getPath)
+  def read(f: File): (MZXMLFile, MZXMLIndex) = {
+    val source: MZXMLFile = new MZXMLFile(f.getPath)
     println(source.parseRunInfo())
 
-    val index : MZXMLIndex = source.fetchIndex()
+    val index: MZXMLIndex = source.fetchIndex()
     println("==========================================================")
-    println("FILE            : "+f.getAbsolutePath)
-    println("MS1 size        : "+scansMs(source, index, None, None, 1).size)
-    println("MS2 size        : "+scansMs(source, index, None, None, 2).size)
+    println("FILE            : " + f.getAbsolutePath)
+    println("MS1 size        : " + scansMs(source, index, None, None, 1).size)
+    println("MS2 size        : " + scansMs(source, index, None, None, 2).size)
     println(s"Instruments    : \n${source.parseRunInfo().getInstruments.values().asScala.map(
       k =>
-        "Model:"+k.getModel+" Analyzer:"+k.getAnalyzer +"\n"+
-          "Detector:"+k.getDetector +" Ionisation:"+k.getIonisation +"\n"+
-          "Manufacturer:"+k.getManufacturer + " S/N:" + k.getSerialNumber
+        "Model:" + k.getModel + " Analyzer:" + k.getAnalyzer + "\n" +
+          "Detector:" + k.getDetector + " Ionisation:" + k.getIonisation + "\n" +
+          "Manufacturer:" + k.getManufacturer + " S/N:" + k.getSerialNumber
     ).mkString("\n\n") } ")
 
-    (source,index)
+    (source, index)
+  }
+
+  /**
+   * Reads a mass spectrometry file (mzXML, mzML, xcms) and extracts it
+   * into a unified [[SpectrumData]] structure.
+   * @param f file to read
+   * @return extracted spectral data
+   */
+  def readSpectrumData(f: File): SpectrumData = {
+    SpectrumFileReaderFactory.getReaderForFile(f) match {
+      case Some(reader) => reader.read(f)
+      case None         => new MzXmlReader().read(f) // fallback to the mzXML parser
+    }
   }
 
   /**
@@ -108,6 +122,65 @@ case object ScanLoader {
 
   }
 
+  /**
+   * Build a [[PeakIdentification]] from a unified [[SpectrumScan]] and its peaks.
+   *
+   * @param scan             : scan of the spectrum
+   * @param mz               : m/z values sorted by increasing m/z
+   * @param intensities      : associated intensities
+   * @param basePeakIntensity: intensity of the base peak of the scan
+   * @param idxIsotope0      : index of M+0 in the spectrum
+   * @param idxIsotope1      : index of M+1 in the spectrum - could be None if the method don't use M+1
+   * @param idxIsotope2      : index of M+2 in the spectrum - could be None if the method don't use M+2
+   * @return PeakIdentification
+   */
+  def fillPeakIdentification(
+                              scan: SpectrumScan,
+                              mz: Array[Double],
+                              intensities: Array[Double],
+                              basePeakIntensity: Double,
+                              idxIsotope0: Int,
+                              idxIsotope1: Option[Int],
+                              idxIsotope2: Option[Int],
+                              idxIsotope3: Option[Int],
+                            ): PeakIdentification = {
+    val lIdxPeaks = Seq(Some(idxIsotope0), idxIsotope1, idxIsotope2, idxIsotope3)
+    PeakIdentification(
+      scan.num,
+      lIdxPeaks.flatten,
+      lIdxPeaks.zipWithIndex.flatMap {
+        case (idxOption, isotopeNum) => idxOption match {
+          case Some(idx) =>
+            Some(Peak(
+              isotopeNum,
+              intensities(idx),
+              intensities(idx) / basePeakIntensity,
+              mz(idx)
+            ))
+          case None => None
+        }
+      },
+      scan.rt
+    )
+  }
+
+  /**
+   * Index of the m/z value closest to `target` in a sorted ascending m/z array.
+   */
+  private def findClosestMzIdx(mzValues: Array[Double], target: Double): Int = {
+    if (mzValues.isEmpty) 0
+    else {
+      var lo = 0
+      var hi = mzValues.length - 1
+      while (lo < hi) {
+        val mid = (lo + hi) >>> 1
+        if (mzValues(mid) < target) lo = mid + 1 else hi = mid
+      }
+      if (lo == 0) 0
+      else if (math.abs(mzValues(lo) - target) < math.abs(mzValues(lo - 1) - target)) lo
+      else lo - 1
+    }
+  }
 
   def calcBackgroundNoisePeak(
                                  source: MZXMLFile,
@@ -141,6 +214,43 @@ case object ScanLoader {
     println(s"=====   mean = $mean std = $std =========")
     if (mean != mean) {
       throw new Exception("Can not compute Mean with durationTime (seconds):"+startDurationTime)
+    }
+    mean
+  }
+
+  /**
+   * Compute the background noise intensity using the MS2 spectra acquired
+   * during the warm-up period (RT between 0 and startDurationTime).
+   *
+   * When no MS2 spectrum falls in the warm-up window (e.g. the acquisition
+   * of the file starts later than `startDurationTime`), the whole MS2 scan
+   * set of the run is used as a fallback so that a meaningful (non-zero)
+   * noise estimate is still computed instead of silently returning 0.
+   */
+  def calcBackgroundNoisePeak(spectrumData: SpectrumData, startDurationTime: Double): Double = {
+    val windowedMs2: Seq[Double] =
+      spectrumData.scans
+        .filter(_.msLevel == 2)
+        .filter(scan => scan.rt >= 0.0 && scan.rt <= startDurationTime)
+        .filter(_.peaks.nonEmpty)
+        .map(scan => scan.peaks.map(_.intensity).sum / scan.peaks.size)
+
+    val allScans: Seq[Double] =
+      if (windowedMs2.nonEmpty) windowedMs2
+      else spectrumData.scans
+        .filter(_.msLevel == 2)
+        .filter(_.peaks.nonEmpty)
+        .map(scan => scan.peaks.map(_.intensity).sum / scan.peaks.size)
+
+    val mean = allScans.size match {
+      case _ if allScans.nonEmpty => allScans.sum / allScans.size
+      case _ => 0.0
+    }
+    val std = sqrt(allScans.map(v => (v - mean) * (v - mean)).sum / allScans.size)
+    println(" ======= BackgroundNoisePeak ==========")
+    println(s"=====   mean = $mean std = $std =========")
+    if (mean != mean) {
+      throw new Exception("Can not compute Mean with durationTime (seconds):" + startDurationTime)
     }
     mean
   }
@@ -215,6 +325,86 @@ case object ScanLoader {
           .map { case (idx0,idx1,idx2,idx3) =>
             fillPeakIdentification(scan, spectrum, idx0, Some(idx1), Some(idx2), Some(idx3))
           }
+    }
+  }
+
+  /**
+   * Same as the MZXML based [[selectEligibleIons]] but working on a
+   * unified [[SpectrumData]] structure.
+   */
+  def selectEligibleIons(
+                          spectrumData: SpectrumData,
+                          start: Option[Double],
+                          end: Option[Double],
+                          noiseIntensity: Double,
+                          nbCarbonMin: Double,
+                          nbCarbonMax: Double,
+                          nbSulfurMin: Double,
+                          nbSulfurMax: Double,
+                          precision: Double,
+                          deltaMOM2: Double
+                        ): Seq[PeakIdentification] = {
+    println("\n== Search for isotopes sulfur == ")
+    val allScans = spectrumData.scans
+      .filter(_.msLevel == 1)
+      .filter(scan => start.forall(_ <= scan.rt))
+      .filter(scan => end.forall(_ >= scan.rt))
+
+    allScans.zipWithIndex.flatMap {
+      case (scan, i) =>
+        print(s"\r===>$i/${allScans.size}")
+        if (scan.peaks.isEmpty) Seq.empty
+        else {
+          val sortedPeaks = scan.peaks.sortBy(_.mz)
+          val intensities = sortedPeaks.map(_.intensity).toArray
+          val mzValues = sortedPeaks.map(_.mz).toArray
+          val basePeakIntensity = intensities.max
+
+          mzValues.zipWithIndex
+            .filter { case (_, idx) => intensities(idx) > noiseIntensity }
+            .map { case (mz0, idx0) =>
+              val mz_ms_p2 = mz0 + deltaMOM2
+              val idx2 = findClosestMzIdx(mzValues, mz_ms_p2)
+              val mz_p2 = mzValues(idx2)
+              val idx1 = findClosestMzIdx(mzValues, mz0 + 1.0)
+              val mz1 = mzValues(idx1)
+              (mz0, idx0, mz1, idx1, mz_p2, idx2)
+            }
+            .filter { case (mz, _, _, _, mz2, _) =>
+              ((mz - mz2).abs - deltaMOM2).abs < precision
+            }
+            /* criteria M1 of Isotope C are present at 1.1 and S are present 4.4 % */
+            .filter { case (_, idx0, _, idx1, _, _) =>
+              intensities(idx1) >= intensities(idx0) *
+                (ChemicalUtils.abundanceIsotope("C")(1) * nbCarbonMin +
+                  ChemicalUtils.abundanceIsotope("S")(1) * nbSulfurMin)
+            }
+            .filter { case (_, idx0, _, idx1, _, _) =>
+              intensities(idx1) <
+                intensities(idx0) *
+                  (ChemicalUtils.abundanceIsotope("C")(1) * nbCarbonMax +
+                    ChemicalUtils.abundanceIsotope("S")(1) * nbSulfurMax)
+            }
+            /* criteria M2 of Isotope S are present 4.4 % */
+            .filter { case (_, idx0, _, _, _, idx2) =>
+              intensities(idx2) >= intensities(idx0) *
+                ChemicalUtils.abundanceIsotope("S")(2) * nbSulfurMin
+            }
+            .filter { case (_, idx0, _, _, _, idx2) =>
+              intensities(idx2) < intensities(idx0) *
+                ChemicalUtils.abundanceIsotope("S")(2) * nbSulfurMax
+            }
+            .map {
+              case (mz0, idx0, _, idx1, _, idx2) =>
+                val idx3 = findClosestMzIdx(mzValues, mz0 + 3.0)
+                (idx0, idx1, idx2, idx3)
+            }
+            .map { case (idx0, idx1, idx2, idx3) =>
+              fillPeakIdentification(scan, mzValues, intensities, basePeakIntensity,
+                idx0, Some(idx1), Some(idx2), Some(idx3))
+            }
+            .toSeq
+        }
     }
   }
 
@@ -318,6 +508,59 @@ case object ScanLoader {
     IonsIdentificationBuilder(source, index,newL,nls,dis,noiseIntensity=noiseIntensity)
   }
 
+  /**
+   * Same as the MZXML based [[filterOverRepresentedPeak]] but working on a
+   * unified [[SpectrumData]] structure.
+   */
+  def filterOverRepresentedPeak(
+                                 spectrumData: SpectrumData,
+                                 peaks: Seq[PeakIdentification],
+                                 noiseIntensity: Double,
+                                 threshold: Int,
+                                 nls: Seq[(String, Double)],
+                                 dis: Seq[(String, Double)]
+                               ): IonsIdentificationBuilder = {
+
+    println(s"\n=== filterOverRepresentedPeak == threshold=$threshold size=${peaks.length}")
+
+    val allScans = spectrumData.scans.filter(_.msLevel == 1)
+
+    val countAllPeak: Seq[Int] =
+      allScans
+        .zipWithIndex
+        .map {
+          case (scan, i) =>
+            print(s"\r===>$i/${allScans.size}")
+            if (scan.peaks.isEmpty) peaks.indices.map(_ => 0)
+            else {
+              val sortedPeaks = scan.peaks.sortBy(_.mz)
+              val intensities = sortedPeaks.map(_.intensity).toArray
+              val mzValues = sortedPeaks.map(_.mz).toArray
+              peaks.map(_.peaks.head.mz)
+                .map(mz => {
+                  val idx = findClosestMzIdx(mzValues, mz)
+                  if (intensities(idx) > noiseIntensity)
+                    1
+                  else
+                    0
+                })
+            }
+        }
+        /* count all peak over the chromatogram */
+        .foldLeft(peaks.indices.map(_ => 0))(
+          (s, elt) => s.zipWithIndex.map { case (e, i) => e + elt(i) }
+        )
+
+    val newL = peaks.zipWithIndex filter {
+      case (_, i) => countAllPeak(i) < threshold
+    } map {
+      case (p, _) => p
+    }
+
+    println(s" new size:${newL.length}")
+    IonsIdentificationBuilder.fromSpectrumData(spectrumData, newL, nls, dis, noiseIntensity)
+  }
+
   def round100(v : Double) : Double = (v*100).round / 100.toDouble
 
   def searchIons(source: MZXMLFile,
@@ -340,6 +583,35 @@ case object ScanLoader {
                 None
             } else None
           case _ => None
+        }
+    }.sorted.lastOption // take the biggest value
+  }
+
+  /**
+   * Same as the MZXML based [[searchIons]] but working on a unified
+   * [[SpectrumData]] structure.
+   */
+  def searchIons(spectrumData: SpectrumData,
+                 l: Seq[SpectrumScan],
+                 mzSearch: Double,
+                 tolMzh: Double,
+                 noiseIntensity: Double,
+                ): Option[(Double, Double)] = {
+    l.flatMap {
+      scan =>
+        if (scan.peaks.isEmpty) None
+        else {
+          val sortedPeaks = scan.peaks.sortBy(_.mz)
+          val intensities = sortedPeaks.map(_.intensity).toArray
+          val mzValues = sortedPeaks.map(_.mz).toArray
+          val v = findClosestMzIdx(mzValues, mzSearch)
+          val mz = mzValues(v)
+          if ((mzSearch - mz).abs < tolMzh) {
+            if (intensities(v) > noiseIntensity)
+              Some((round100(mz), round100(intensities(v) / intensities.max)))
+            else
+              None
+          } else None
         }
     }.sorted.lastOption // take the biggest value
   }
@@ -370,6 +642,34 @@ case object ScanLoader {
     ).toMap
   }
 
+  /**
+   * Same as the MZXML based [[detectNeutralLoss]] but working on a unified
+   * [[SpectrumData]] structure.
+   */
+  def detectNeutralLoss(
+                         spectrumData: SpectrumData,
+                         p: PeakIdentification,
+                         nls: Seq[(String, Double)], /* name, distance */
+                         tolMzh: Double,
+                         precisionRtTime: Double,
+                         noiseIntensity: Double,
+                       ): Map[String, Option[(String, Double, Double)]] = {
+
+    val scanMs2: Seq[SpectrumScan] = spectrumData.scans
+      .filter(_.msLevel == 2)
+      .filter(scan => scan.rt >= p.rt - precisionRtTime && scan.rt <= p.rt + precisionRtTime)
+
+    val mz = p.peaks.head.mz
+
+    nls.map(
+      nl => {
+        nl._1 ->
+          searchIons(spectrumData, scanMs2, mz - nl._2, tolMzh, noiseIntensity)
+            .map(x => (nl._1, x._1, x._2))
+      }
+    ).toMap
+  }
+
   def detectDaughterIons(
                           source: MZXMLFile,
                           index: MZXMLIndex,
@@ -390,6 +690,32 @@ case object ScanLoader {
         di._1->
           searchIons(source,scanMs2,di._2,tolMzh,noiseIntensity)
           .map( x => (di._1,x._1,x._2) )
+      }
+    ).toMap
+  }
+
+  /**
+   * Same as the MZXML based [[detectDaughterIons]] but working on a unified
+   * [[SpectrumData]] structure.
+   */
+  def detectDaughterIons(
+                          spectrumData: SpectrumData,
+                          p: PeakIdentification,
+                          dis: Seq[(String, Double)], /* name , mz */
+                          tolMzh: Double,
+                          precisionRtTime: Double,
+                          noiseIntensity: Double,
+                        ): Map[String, Option[(String, Double, Double)]] = {
+
+    val scanMs2: Seq[SpectrumScan] = spectrumData.scans
+      .filter(_.msLevel == 2)
+      .filter(scan => scan.rt >= p.rt - precisionRtTime && scan.rt <= p.rt + precisionRtTime)
+
+    dis.map(
+      di => {
+        di._1 ->
+          searchIons(spectrumData, scanMs2, di._2, tolMzh, noiseIntensity)
+            .map(x => (di._1, x._1, x._2))
       }
     ).toMap
   }

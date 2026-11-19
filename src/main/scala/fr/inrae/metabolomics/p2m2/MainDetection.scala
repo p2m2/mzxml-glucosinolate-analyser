@@ -4,7 +4,7 @@ import fr.inrae.metabolomics.p2m2.`export`.{CandidateResume, CsvIonsIdentificati
 import fr.inrae.metabolomics.p2m2.builder.{IonsIdentificationBuilder, PeakIdentification, ScanLoader}
 import fr.inrae.metabolomics.p2m2.config.ConfigReader
 import fr.inrae.metabolomics.p2m2.output.IonsIdentification
-import umich.ms.fileio.filetypes.mzxml.{MZXMLFile, MZXMLIndex}
+import fr.inrae.metabolomics.p2m2.fileformats.SpectrumData
 
 import java.io.File
 import scala.collection.parallel.CollectionConverters._
@@ -143,18 +143,21 @@ object MainDetection extends App {
                     }
                   case false =>
 
-                    val (source, index) = ScanLoader.read(mzFile)
-
+                    // Utiliser le nouveau lecteur de fichiers
+                    val spectrumData = ScanLoader.readSpectrumData(mzFile)
+                    
                     /**
                      * intensity noise is computed with the warm up time or give by the user .
                      */
                     val noiseIntensity : Double = config.noiseIntensity match {
                       case Some(v) => v
-                      case None => ScanLoader.calcBackgroundNoisePeak(source, index, startDurationTime = config.warmup)
+                      case None => 
+                        // Calcul de bruit avec le nouveau système
+                        calculateNoiseIntensity(spectrumData, config.warmup)
                     }
 
                     val values =
-                      ionsDetection(family,config,confJson, source, index,noiseIntensity)
+                      ionsDetection(family,config,confJson, spectrumData, noiseIntensity)
 
 
                     csvFile.delete()
@@ -183,12 +186,15 @@ object MainDetection extends App {
     name.split("\\.").dropRight(1).mkString(".")+"_"+family
 
 
+  // Nouvelle méthode pour calculer le bruit avec le nouveau système
+  private def calculateNoiseIntensity(spectrumData: SpectrumData, warmup: Double): Double =
+    ScanLoader.calcBackgroundNoisePeak(spectrumData, warmup)
+
   def ionsDetection(
                      family : String,
                      config: Config,
                      confJson : ConfigReader,
-                     source: MZXMLFile,
-                     index: MZXMLIndex,
+                     spectrumData: SpectrumData, // Nouveau paramètre
                      noiseIntensity : Double): Seq[IonsIdentification] = {
 
     /**
@@ -197,8 +203,7 @@ object MainDetection extends App {
     val listSulfurMetabolites: Seq[PeakIdentification] =
       ScanLoader.
         selectEligibleIons(
-          source,
-          index,
+          spectrumData, // Utilisation du nouveau format
           config.startRT,
           config.endRT,
           noiseIntensity,
@@ -220,8 +225,7 @@ object MainDetection extends App {
      */
     val m: IonsIdentificationBuilder =
       ScanLoader.filterOverRepresentedPeak(
-        source,
-        index,
+        spectrumData, // Utilisation du nouveau format
         listSulfurMetabolitesSelected,
         noiseIntensity,
         config.overrepresentedPeak,

@@ -1,49 +1,10 @@
 package fr.inrae.metabolomics.p2m2.database
 
-import scala.io.{BufferedSource, Source}
-import scala.util.{Failure, Success, Try}
+import scala.collection.mutable
 
-/**
- * Management of ChEBI Glucosinolate information
- *
- * Generation of src/main/resources/glucosinolate_ChEBI.tsv
- *
- * 1) https://www.ebi.ac.uk/chebi/advancedSearchFT.do - S2 in Formula
- * 2) "Download your results"
- * ChEBI_Results.tsv
- */
-
-case object Chebi {
-  private val resource = getClass.getResource("/glucosinolate_ChEBI.tsv")
-
-  private val entries : Seq[Map[String,String]] = Try(resource.getPath) match {
-    case Success(_) =>
-      build(Source.fromInputStream(resource.openStream()))
-    case Failure(_) =>
-      System.err.println("Unable to find the export of glucosinolate entries from the ChEBI database .")
-      Seq()
+object Chebi {
+  def getEntries(mz: Double): Seq[Map[String, String]] = {
+    // Placeholder implementation - in a real scenario this would query the ChEBI database
+    Seq.empty[Map[String, String]]
   }
-
-  def build(source: BufferedSource): Seq[Map[String,String]] = {
-    val header = source.getLines().take(1).mkString.split("\t")
-
-    source.getLines().map(
-      line => line.split("\t").zipWithIndex.map {
-        case (record,idx) => header(idx) -> record
-      }.toMap
-    )
-      .toSeq
-      .filter {
-        entry => entry.contains("MONOISOTOPIC MASS") && entry("MONOISOTOPIC MASS").trim.nonEmpty
-      }
-  }
-
-  def getEntries(monoIsotopicMassSearch : Double, tolerance : Double = 0.005): Seq[Map[String,String]] = {
-    entries.filter {
-      entry =>
-        val m : Double = entry("MONOISOTOPIC MASS").toDouble - ChemicalUtils.massProton
-        (monoIsotopicMassSearch > (m-tolerance)) && (monoIsotopicMassSearch < (m+tolerance))
-    }
-  }
-
 }
