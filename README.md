@@ -20,6 +20,18 @@ extension:
 | mzML | `.mzml` | `MzMLReader` (jmzml 1.7.11) |
 | XCMS CSV export (columns `mz, intensity, rt`) | `.xcms`, `.csv` | `XcmsReader` (simplified) |
 
+The mzML reader copes with the writer differences observed in the wild (ProteoWizard/MsConvert
+vs ThermoRawFileParser):
+
+- binary data arrays are identified by their m/z (`MS:1000514`) / intensity (`MS:1000515`)
+  accession wherever it appears in the array cvParam list — some writers list the data type and
+  compression cvParams first;
+- the ms-level (`MS:1000511`) is looked up on both the `spectrum` and the `<scan>` elements;
+- spectra without any ms-level cvParam that are flagged as non-MS — e.g. UV/vis traces from a
+  second controller, cvParam `MS:1000804` "electromagnetic radiation spectrum" — are dropped
+  instead of being silently mis-classified as MS1;
+- scan start times expressed in seconds are converted to minutes (minutes are used internally).
+
 ## Installation
 
 Requires JDK 17+ and [sbt](https://www.scala-sbt.org/).
@@ -54,12 +66,7 @@ Options:
 | `<file>...` | Input raw files (mzXML / mzML / xcms) | — |
 | `-j, --jsonFamilyMetabolitesDetection <file>` | JSON configuration of the metabolite family to detect | `default.json` |
 | `-i, --noiseIntensity <x>` | Keep ions above an absolute intensity; when omitted the noise is computed from the warm-up time | computed |
-| `-w, --warm-up time <sec>` | Warm-up duration used to compute the noise | `0.50` |
-
-> **Noise estimation.** When `-i` is omitted, the noise intensity is computed as the mean MS2 peak
-> intensity over the warm-up window (RT `[0, startDurationTime]`). If no MS2 spectrum falls inside
-> that window (e.g. acquisition starts later than the warm-up duration), the whole MS2 scan set of
-> the run is used as a fallback so a meaningful non-zero noise estimate is produced instead of 0.
+| `-w, --warm-up time <min>` | Warm-up duration (minutes) used to compute the noise | `0.50` |
 | `-s, --startRT <x>` | Start retention time (min) | — |
 | `-e, --endRT <x>` | End retention time (min) | — |
 | `-p, --overrepresentedPeak <n>` | Filter out over-represented peaks (peaks found in more than *n* MS1 spectra) | `800` |
@@ -68,6 +75,11 @@ Options:
 | `-o, --outputFile <file>` | Output path file | `<input>_<family>` |
 | `--verbose` | Verbose mode | — |
 | `--help` | Print usage text | — |
+
+> **Noise estimation.** When `-i` is omitted, the noise intensity is computed as the mean MS2 peak
+> intensity over the warm-up window (RT `[0, -w]` in minutes). If no MS2 spectrum falls inside
+> that window (e.g. acquisition starts later than the warm-up duration), the whole MS2 scan set of
+> the run is used as a fallback so a meaningful non-zero noise estimate is produced instead of 0.
 
 ### Outputs
 
@@ -96,8 +108,9 @@ daughter ions, minimum m/z of the core structure) are defined in a JSON configur
 ## Project structure
 
 - `src/main/scala/fr/inrae/metabolomics/p2m2/MainDetection.scala` — command line entry point
-- `src/main/scala/fr/inrae/metabolomics/p2m2/builder/ScanLoader.scala` — scan/picking algorithms
-  (legacy mzXML API kept for compatibility with the new `SpectrumData` API)
+- `src/main/scala/fr/inrae/metabolomics/p2m2/builder/ScanLoader.scala` — detection pipeline:
+  `readSpectrumData` dispatches to the reader factory, then ion selection, over-represented peak
+  filtering and background noise estimation
 - `src/main/scala/fr/inrae/metabolomics/p2m2/fileformats/` — `SpectrumFileReader` abstraction and
   the mzXML / mzML / XCMS readers
 - `src/main/scala/fr/inrae/metabolomics/p2m2/export/` — CSV, upickle and resume exports
